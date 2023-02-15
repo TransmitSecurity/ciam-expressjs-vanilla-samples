@@ -24,11 +24,8 @@
           if (currentUser) {
             const elem = document.getElementById('authenticate');
             elem.removeAttribute('hidden');
-            updateElementText('usnLabel', currentUser.username);
-          }/* else {
-            const elem = document.getElementById('register');
-            elem.removeAttribute('hidden');
-          }*/
+            updateElementText('authnBtn', `Login with ${currentUser.username}`);
+          }
         });
       }
 
@@ -77,15 +74,13 @@
     <p>authSessionId: <%=authSessionId%></p>
     <br><br>
     <div id="authenticate" hidden>
-      Username:
-      <span id="usnLabel"></span>
-      <br><br>
       <button id="authnBtn" onclick="doAuthentication()">Authenticate</button>
-      <hr>
+      <div class="divider">
+        <span class="divider-text">or</span>
+      </div>
     </div>
     <div id="register">
-      Username:
-      <input id="usnInput" type="text"/>
+      <input id="usnInput" type="text" placeholder="Username"/>
       <br><br>
       <button id="regBtn" onclick="doRegistration()">Register New</button>
     </div>
