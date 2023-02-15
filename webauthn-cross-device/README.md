@@ -8,6 +8,7 @@ Full guide: https://developer.transmitsecurity.com/guides/webauthn/cross_device_
 1. Extract and display ID token
 1. Config Guide / Video (embedded video? youtube?)
 1. Additional styling cleanups
+1. TBD monitor points, other production stuff to allow also loading as a demo service.
 
 <img src="https://user-images.githubusercontent.com/75998795/219098021-6afe792d-bd01-4c08-8ac8-403f5f57e520.gif"  width="150" height="150">
 
