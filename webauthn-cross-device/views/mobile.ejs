@@ -1,0 +1,94 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mobile Device</title>
+    <link rel="stylesheet" href="/stylesheets/style.css"/>
+    
+    <script type="text/javascript"  src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"></script>
+    <script>
+      let currentUser = undefined;
+
+      function updateElementText(id, text) {
+        try {
+          document.getElementById(id).textContent = text;
+        } catch(ex) { console.log(ex); }
+      }
+
+      async function init() {
+        window.WebAuthnSdk.init('<%= clientId%>', {serverPath: "https://webauthn.identity.security"})
+        .then(async () => {
+          const bindingInfo = await window.WebAuthnSdk.attachDevice('<%= authSessionId%>');
+          console.log(JSON.stringify(bindingInfo));
+          currentUser = (await window.WebAuthnSdk.getDeviceUsers()).find((u) => {return u.isCurrent});
+          console.log(currentUser);
+          if (currentUser) {
+            const elem = document.getElementById('authenticate');
+            elem.removeAttribute('hidden');
+            updateElementText('usnLabel', currentUser.username);
+          } else {
+            const elem = document.getElementById('register');
+            elem.removeAttribute('hidden');
+          }
+        });
+      }
+
+      async function doRegistration() {
+        try {
+          const username = document.getElementById('usnInput').value;
+          await fetch("/mobile/authorize-session-user", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              username: username, 
+              authSessionId: '<%= authSessionId%>'
+            })
+          });
+          await window.WebAuthnSdk.prepareWebauthnRegistration(username, username, '<%= authSessionId%>');
+          const authCode = await window.WebAuthnSdk.executeWebauthnRegistration();
+          updateElementText('status', `Completed with auth code: ${authCode}`);
+          console.log(authCode);
+        } catch (ex) {
+          updateElementText('status', `Error during registration: ${ex}`);
+        }
+      }
+
+      async function doAuthentication() {
+        try {
+          await window.WebAuthnSdk.prepareWebauthnAuthentication(currentUser.username);
+          authCode = await window.WebAuthnSdk.executeWebauthnAuthentication();
+          updateElementText('status', `Completed with auth code: ${authCode}`);
+          console.log(authCode);
+        } catch (ex) {
+          updateElementText('status', `Error during authentication: ${ex}`);
+        }
+      }
+
+      
+
+    </script>
+  </head>
+
+  <body onload="init()">
+    <h1>Mobile Device</h1>
+    <span>Client ID = <%= clientId%></span>
+    <p>Access this page via the QR</p>
+    <p>authSessionId: <%=authSessionId%></p>
+    <br><br>
+    <div id="register" hidden>
+      Username:
+      <input id="usnInput" type="text"/>
+      <br><br>
+      <button id="regBtn" onclick="doRegistration()">Register</button>
+    </div>
+    <div id="authenticate" hidden>
+      <span id="usnLabel"></span>
+      <br><br>
+      <button id="authnBtn" onclick="doAuthentication()">Authenticate</button>
+    </div>
+    <br><br>
+    <span id="status"></span>
+  </body>
+  
+</html>

@@ -1,0 +1,98 @@
+<html>
+  <head>
+    <title>Desktop Device </title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <script type="text/javascript"  src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"></script>
+    <script src="/javascripts/bundle.js"></script>
+    <script>
+      function updateElementText(id, text) {
+        try {
+          document.getElementById(id).textContent = text;
+        } catch(ex) { console.log(ex); }
+      }
+
+      async function init() {
+        try {
+          await window.WebAuthnSdk.init('<%= clientId%>', {serverPath: "https://webauthn.identity.security"})
+          updateElementText('status', `SDK Init done`);
+
+          // enable button
+          const elem = document.getElementById('start');
+          elem.removeAttribute('disabled');
+        } catch(ex) {
+          updateElementText('status', `Error during init: ${ex}`);
+        }
+      }
+
+      // Triggered when the auth device calls attach()
+      async function onDeviceAttach() {
+        // set the status text
+        updateElementText('status', `Mobile device connected`);
+
+        return true; // Return true to keep polling
+      }
+
+      // Triggered at the end of the registration process on the auth device
+      async function onCredentialRegister(authCode) {
+        return await completeSession(authCode);
+      }
+
+      // Triggered at the end of the authentication process on the auth device
+      async function onCredentialAuthenticate(authCode) {
+        return await completeSession(authCode);
+      }
+
+      // Triggered on failure
+      async function onFailure(error) {
+        console.log(error);
+        // Log the error and display a message to the user / navigate to an error page.
+        // set the status text
+        updateElementText('status', `Error: ${error}`);
+      }
+
+      async function completeSession(code) {
+        // set the status text
+        updateElementText('status', `Completed with auth code: ${code}`);
+
+        // Get user tokens using the received code as described below
+        return false;
+      }
+
+
+      async function startCrossDeviceFlow() {
+      // Initiate the cross device flow and provide the handlers.
+        const controller = await window.WebAuthnSdk.startCrossDeviceFlow({
+          onDeviceAttach,
+          onCredentialRegister,
+          onCredentialAuthenticate,
+          onFailure,
+        });
+
+        // Construct the URL of your login page along with the authSessionId param (aid in this example).
+        // It is best to display the generated URL using a QR code.
+        const url = `${window.location.origin}/mobile?aid=${controller.authSessionId}`;
+        const qrElem = document.getElementById('qr');
+        qrElem.setAttribute('src', `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=200x200`);
+        const urlElem = document.getElementById('url');
+        urlElem.textContent = `You can also copy the following link and open in ANOTHER browser:  ${url}`;
+        
+        // set the status text
+        const statusElem = document.getElementById('status');
+        statusElem.textContent = "Polling";
+      }
+
+    </script>
+  </head>
+
+  <body onload="init()">
+    <h1>Desktop Device</h1>
+    <span>Client ID =  <%= clientId%></span>
+    <br><br>
+    <button id="start" onclick="startCrossDeviceFlow()" disabled>Start</button>
+    <br><br>
+    <img id="qr" src="" />
+    <p id="url"></p>
+    <br><br>
+    <span id="status"></span>
+  </body>
+</html>

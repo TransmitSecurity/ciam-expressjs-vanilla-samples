@@ -1,0 +1,27 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00b7ff;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    padding: 30px;
+    font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
+    overflow: clip;
+    text-overflow: ellipsis;
+  }
+
+  button {
+    width: 80%;
+    height: 30px;
+    font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
+  }
+
+  input {
+    width: 100%;
+  }
+}
