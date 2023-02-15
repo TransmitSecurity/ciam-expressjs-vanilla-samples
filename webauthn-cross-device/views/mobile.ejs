@@ -25,10 +25,10 @@
             const elem = document.getElementById('authenticate');
             elem.removeAttribute('hidden');
             updateElementText('usnLabel', currentUser.username);
-          } else {
+          }/* else {
             const elem = document.getElementById('register');
             elem.removeAttribute('hidden');
-          }
+          }*/
         });
       }
 
@@ -76,16 +76,18 @@
     <p>Access this page via the QR</p>
     <p>authSessionId: <%=authSessionId%></p>
     <br><br>
-    <div id="register" hidden>
-      Username:
-      <input id="usnInput" type="text"/>
-      <br><br>
-      <button id="regBtn" onclick="doRegistration()">Register</button>
-    </div>
     <div id="authenticate" hidden>
+      Username:
       <span id="usnLabel"></span>
       <br><br>
       <button id="authnBtn" onclick="doAuthentication()">Authenticate</button>
+      <hr>
+    </div>
+    <div id="register">
+      Username:
+      <input id="usnInput" type="text"/>
+      <br><br>
+      <button id="regBtn" onclick="doRegistration()">Register New</button>
     </div>
     <br><br>
     <span id="status"></span>
