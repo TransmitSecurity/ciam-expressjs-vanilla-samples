@@ -31,6 +31,10 @@ callbacks and webauthn. For example
 1. If the demo also includes WebAuthn - go back to the Transmit portal and configure the WebAuthn method for your
    newly created app, using the above base URL as origin, and the domain as the
 RPID.
+1. Build the demo using `cd <demo dir>`, and `yarn`
+1. Launch the demo using `yarn start`. The demo will launch on port 8080 and
+   exposed via the above base URL (a button will appear on screen to open, or go
+to the "Ports" tab)
 
 
 For more information on code spaces PLS visit https://code.visualstudio.com/docs/remote/codespaces
