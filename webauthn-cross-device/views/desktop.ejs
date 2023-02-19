@@ -67,17 +67,18 @@
           onFailure,
         });
 
-        // Construct the URL of your login page along with the authSessionId param (aid in this example).
-        // It is best to display the generated URL using a QR code.
-        const url = `${window.location.origin}/mobile?aid=${controller.authSessionId}`;
-        const qrElem = document.getElementById('qr');
-        qrElem.setAttribute('src', `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=200x200`);
-        const urlElem = document.getElementById('url');
-        urlElem.textContent = `You can also copy the following link and open in ANOTHER browser:  ${url}`;
-        
-        // set the status text
-        const statusElem = document.getElementById('status');
-        statusElem.textContent = "Polling";
+        if(controller.authSessionId) {
+          // Construct the URL of your login page along with the authSessionId param (aid in this example).
+          // To use a mobile device, best to display the generated URL using a QR code.
+          const url = `${window.location.origin}/mobile?aid=${controller.authSessionId}`;
+          const qrElem = document.getElementById('qr');
+          qrElem.setAttribute('src', `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=200x200`);
+          
+          updateElementText('url', `You can also copy the following link and open in ANOTHER browser:  ${url}`);
+          updateElementText('status', 'Polling');
+        } else {
+          updateElementText('status', `Something may be wrong with your webauthn config. PLS Check https://portal.identity.security/authentication/webAuthN?app=<%= appId%>`);
+        }
       }
 
     </script>
