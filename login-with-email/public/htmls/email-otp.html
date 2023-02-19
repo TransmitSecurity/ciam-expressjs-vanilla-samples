@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/dev-x-style.css">
+</head>
+<body>
+<h1>Enter your email</h1>
+<input type="text" id="emailInput">
+<button id="loginButton" onclick="login()">Login</button>
+<script type='application/javascript' src="../javascripts/email-otp.js"></script>
+<script>
+    async function login(){
+        loginWithEmail(document.getElementById('emailInput').value)
+    }
+</script>
+</body>
+</html>

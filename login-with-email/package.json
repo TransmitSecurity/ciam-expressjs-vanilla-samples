@@ -1,0 +1,13 @@
+{
+  "name": "login-with-email",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "axios": "^0.16.1",
+    "express": "~4.16.1",
+    "qs": "6.11.0"
+  }
+}
