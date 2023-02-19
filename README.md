@@ -6,7 +6,11 @@ Your can connect the samples to your own Transmit Security tenant and launch the
 
 
 
-https://user-images.githubusercontent.com/75998795/219948975-214ab1d6-580b-4229-b12d-42ff6b3759fd.mp4
+
+
+https://user-images.githubusercontent.com/75998795/219960273-4d11cb42-7d09-4c14-86a0-1ead91f99856.mp4
+
+
 
 
 
