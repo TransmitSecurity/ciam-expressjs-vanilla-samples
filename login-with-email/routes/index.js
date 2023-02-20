@@ -10,13 +10,11 @@ router.get('/', function (req, res, next) {
 
 // This is step 1
 router.get("/verify/:code", (req, res) => {
-    /*const step1Error = 
-    'Please uncomment the code for Step 1 - https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-1-create-redirect-uri';
-    throw Exeception(step1Error);*/
+    throw 'Please uncomment the code for Step 1 - https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-1-create-redirect-uri';
 
-    const code = req.params.code;
+    /*const code = req.params.code;
     console.log(`The code is: ${code}`);
-    res.send(`Verification code: ${code}`);
+    res.send(`Verification code: ${code}`);*/
 });
 
 router.post("/email-otp", async function (req, res, next) {
@@ -24,27 +22,35 @@ router.post("/email-otp", async function (req, res, next) {
     //throw 'Please uncomment the code for Step 3 - https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp';
     try {
 
-        let startEmailFlow = async (accessTokenResponse) => {
-            if (accessTokenResponse) {
-                console.log(`The access-token response is ${JSON.stringify(accessTokenResponse)}`)
-
-                await sendEmailOTP(accessTokenResponse).then((response) => {
-                    console.log(`The email-otp response is ${JSON.stringify(response.data)}`)
-                }).catch((error) => {
-                    console.error(`The email-otp error is ${error}`)
-                })
-            }
-        };
+        const emailFlowResponse = await startEmailFlow()
         
-        await getAccessToken().then(startEmailFlow).catch((error) => {
-            console.error(`The access token error is ${error}`)
-        })
-
-        res.send({received_email: req.body.email});
+        res.send({
+            received_email: req.body.email,
+            message: emailFlowResponse?.message,
+            status: emailFlowResponse?.status
+        });
 
     } catch (error) {
     }
 });
+
+async function startEmailFlow() {
+    const accessTokenResponse = await getAccessToken();
+
+    if (accessTokenResponse) {
+        const emailOtpResponse = await sendEmailOTP(accessTokenResponse);
+
+        if (emailOtpResponse) {
+            
+            return {
+                message: emailOtpResponse.message,
+                status: 200
+            }
+        }
+    }
+
+    return null;
+}
 
 async function getAccessToken() {
     const url = 'https://api.userid-stg.io/oidc/token';
@@ -70,17 +76,15 @@ async function getAccessToken() {
         const accessToken = response?.data?.access_token;
 
         if (accessToken) {
-            console.log(`The access token response is ${accessToken}`)
+            console.log('The access-token request succeeded.', accessToken);
             return accessToken;
         }
 
-        return null;
     } catch (e) {
-
-        const errorLog = `There was a problem with the access token request ${e}`;
-        console.log(errorLog)
-        return errorLog
+        console.error('There was a problem with the access token request', {e})
     }
+
+    return null;
 }
 
 async function sendEmailOTP(bearerToken) {
@@ -98,12 +102,17 @@ async function sendEmailOTP(bearerToken) {
     };
 
     try {
-        return await axios.post(url, data, config);
+        const emailOtpResponse = await axios.post(url, data, config);
+
+        if (emailOtpResponse?.data) {
+            console.log('The email-otp request succeeded', emailOtpResponse.data)
+            return emailOtpResponse.data;
+        }
     } catch (e) {
-        const errorLog = `There was a problem with the email-otp request ${{error: e}}`;
-        console.log(errorLog)
-        return errorLog
+        console.error('There was a problem with the email-otp request', {error: e})
     }
+
+    return null
 }
 
 module.exports = router;
