@@ -18,9 +18,9 @@ router.get("/verify/:code", (req, res) => {
 });
 
 router.post("/email-otp", async function (req, res, next) {
+    throw 'Please uncomment the code for Step 3 - https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp';
 
-    //throw 'Please uncomment the code for Step 3 - https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp';
-    try {
+    /*try {
 
         const emailFlowResponse = await startEmailFlow()
         
@@ -31,7 +31,7 @@ router.post("/email-otp", async function (req, res, next) {
         });
 
     } catch (error) {
-    }
+    }*/
 });
 
 async function startEmailFlow() {
@@ -41,7 +41,7 @@ async function startEmailFlow() {
         const emailOtpResponse = await sendEmailOTP(accessTokenResponse);
 
         if (emailOtpResponse) {
-            
+
             return {
                 message: emailOtpResponse.message,
                 status: 200
@@ -53,9 +53,13 @@ async function startEmailFlow() {
 }
 
 async function getAccessToken() {
-    const url = 'https://api.userid-stg.io/oidc/token';
-    const clientId = 'QMgQyKgMZHUOdlQhVMt0x';
-    const clientSecret = '181f3319-de0f-433c-8426-4dc8d54d7732';
+    throw 'Please uncomment the code that gets the access token before sending the request';
+    /*const url = 'https://api.userid-stg.io/oidc/token';
+
+    throw 'Please set you real client_id and client_secret';
+    const clientId = 'DUMMY_CLIENT_ID';
+    const clientSecret = 'DUMMY_CLIENT_SECRET';
+    
     const requestUrlEncodedParams = qs.stringify({
         'grant_type': 'client_credentials',
         'client_id': clientId,
@@ -84,35 +88,39 @@ async function getAccessToken() {
         console.error('There was a problem with the access token request', {e})
     }
 
-    return null;
+    return null;*/
 }
 
 async function sendEmailOTP(bearerToken) {
-    const url = 'https://api.userid-stg.io/v1/auth/otp/email';
-    const data = {
-        email: 'hila.partuk@transmitsecurity.com',
-        redirect_uri: 'http://localhost:3000/verify',
-        create_new_user: true,
-    };
-    const config = {
-        headers: {
-            Authorization: `Bearer ${bearerToken}`,
-            "Content-Type": 'application/json',
-        },
-    };
-
-    try {
-        const emailOtpResponse = await axios.post(url, data, config);
-
-        if (emailOtpResponse?.data) {
-            console.log('The email-otp request succeeded', emailOtpResponse.data)
-            return emailOtpResponse.data;
+    throw 'Please uncomment the code that uses the access token to send an email';
+    /*
+        const url = 'https://api.userid-stg.io/v1/auth/otp/email';
+        throw 'Please use a real email address';
+        const data = {
+            email: 'DUMMY_USER@transmitsecurity.com',
+            redirect_uri: 'http://localhost:3000/verify',
+            create_new_user: true,
+        };
+        const config = {
+            headers: {
+                Authorization: `Bearer ${bearerToken}`,
+                "Content-Type": 'application/json',
+            },
+        };
+    
+        try {
+            const emailOtpResponse = await axios.post(url, data, config);
+    
+            if (emailOtpResponse?.data) {
+                console.log('The email-otp request succeeded', emailOtpResponse.data)
+                return emailOtpResponse.data;
+            }
+        } catch (e) {
+            console.error('There was a problem with the email-otp request', {error: e})
         }
-    } catch (e) {
-        console.error('There was a problem with the email-otp request', {error: e})
-    }
-
-    return null
+        
+        return null
+        */
 }
 
 module.exports = router;
