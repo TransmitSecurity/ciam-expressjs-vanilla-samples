@@ -14,23 +14,48 @@
         } catch(ex) { console.log(ex); }
       }
 
-      async function init() {
+      // The first step on any WebAuthn flow would be to initialize the SDK. The below function should be called as soon as the page loads.
+      // Note that since this is the authenticating device, we also check whether the device supports WebAuthn, and whether we already have
+      // registered users. This allows us to present an "Authenticate or Register" user experience on the same page.
+      // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-2-set-up-auth-device
+       async function init() {
         try {
+
+          // Initialize the SDK, for more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#1-initialize-the-webauthn-sdk-1
           await window.WebAuthnSdk.init('<%= clientId%>', {serverPath: "https://webauthn.identity.security"});
-          const bindingInfo = await window.WebAuthnSdk.attachDevice('<%= authSessionId%>');
-          console.log(JSON.stringify(bindingInfo));
-          currentUser = (await window.WebAuthnSdk.getDeviceUsers()).find((u) => {return u.isCurrent});
-          console.log(currentUser);
-          if (currentUser) {
-            const elem = document.getElementById('authenticate');
-            elem.removeAttribute('hidden');
-            updateElementText('authnBtn', `Login with ${currentUser.username}`);
+
+          // Check if WebAuthn is supported for this device. if not - no real need to continue. 
+          // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#2-check-for-webauthn-support
+          const isBiometricsSupported = await window.WebAuthnSdk.isPlatformAuthenticatorSupported();
+          if (isBiometricsSupported) {
+
+            // Mark the device as attached. This will trigger an event on the originating desktop device. 
+            // For more information https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#3-attach-the-auth-device-to-the-session
+            const bindingInfo = await window.WebAuthnSdk.attachDevice('<%= authSessionId%>');
+
+            // The below is an example business logic to show authentication iff we have a user that previously registered
+            // Registration for a different user always remains open in this sample app
+            console.log(JSON.stringify(bindingInfo));
+            currentUser = (await window.WebAuthnSdk.getDeviceUsers()).find((u) => {return u.isCurrent});
+            console.log(currentUser);
+            if (currentUser) {
+              const elem = document.getElementById('authenticate');
+              elem.removeAttribute('hidden');
+              updateElementText('authnBtn', `Login with ${currentUser.username}`);
+            }
+          } else { // WebAuthn is not supported
+            updateElementText('status', `WebAuthn is not supported on this device, try scanning with a different one`);
           }
         } catch (ex) {
           updateElementText('status', `Error during init: ${ex}`);
         }
       }
 
+
+      // This functions is triggered when the user chooses to register. Since the cross device flow by default does not allow
+      // registration of credentials, we need to elevate the right. This function calls the backend route (see routes/mobile.js) 
+      // which in turn calls a backend to backend API for fetching a token and elevating the session rights
+      // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-3-register-credentials
       async function doRegistration() {
         try {
           const username = document.getElementById('usnInput').value;
@@ -44,6 +69,11 @@
               authSessionId: '<%= authSessionId%>'
             })
           });
+
+          // Actual registration is performed below
+          // Note that the 2 API calls are done together in this sample app, following a button click. In a production app you might consider
+          // calling prepareWebauthnRegistration BEFORE the button click - this will provide a smoother response UX for the end user.
+          // For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-4-register-credentials
           await window.WebAuthnSdk.prepareWebauthnRegistration(username, username, '<%= authSessionId%>');
           const authCode = await window.WebAuthnSdk.executeWebauthnRegistration();
           updateElementText('status', `Completed with auth code: ${authCode}`);
@@ -53,6 +83,8 @@
         }
       }
 
+      // This functions is triggered when the user chooses to authenticate.
+      // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-4-authenticate-user
       async function doAuthentication() {
         try {
           await window.WebAuthnSdk.prepareWebauthnAuthentication(currentUser.username);
