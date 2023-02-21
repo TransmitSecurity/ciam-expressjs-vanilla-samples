@@ -11,7 +11,7 @@ router.get("/", async function (req, res, next) {
 });
 
 // The following endpoint is used by views/desktop.ejs when a flow is completed, for token exchange
-// SECURITY: Normally the ID token SHOULD NOT reach the UI, however this is a sample app and we want to display it for clarity.
+// SECURITY NOTES: Normally the ID token SHOULD NOT reach the UI, however this is a sample app and we want to display it for clarity.
 // For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-6-get-user-tokens
 router.post("/fetch-tokens", async function (req, res, next) {
   // TODO add error handling, ommited for sample clarity
@@ -32,6 +32,7 @@ async function getUserTokens(authCode) {
     client_secret: process.env.TS_CLIENT_SECRET,
     redirect_uri: process.env.TS_REDIRECT_URI
   });
+
   const options = {
     method: "POST",
     headers: {
@@ -39,10 +40,14 @@ async function getUserTokens(authCode) {
     },
     body: params.toString()
   };
+  console.log(JSON.stringify(options));
 
   try {
     const resp = await fetch(url, options);
     const data = await resp.json();
+
+    // NOTE: A production implementation should also validate the token signatures via the OIDC JWKS API
+    // For more information see https://developer.transmitsecurity.com/openapi/user/oidc/#operation/oidcGetKeys
     console.log(resp.headers, resp.status, data);
     return data;
   } catch (e) {

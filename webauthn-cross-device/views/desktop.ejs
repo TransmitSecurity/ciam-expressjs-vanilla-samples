@@ -33,6 +33,10 @@
         // set the status text
         updateElementText('status', `Mobile device connected`);
 
+        // disable button, to prevent multiple clicks once a device is attached
+        const button = document.getElementById('start');
+        button.disabled = true;
+
         return true; // Return true to keep polling
       }
 
@@ -105,6 +109,14 @@
             })
           });
 
+          // ruff'n'tuff parsing of the token... usually happens server side of course, to be improved for the sample code.
+          const data = await response.json();
+          const idtoken = data?.id_token;
+          const tokenJson = JSON.parse(window.atob(idtoken.split(".")[1]));
+          const username = tokenJson.webauthn_username;
+          updateElementText('status', `Complete flow for user ${username}`);
+          updateElementText('rawToken', JSON.stringify(tokenJson));
+
         } catch (ex) {
           updateElementText('status', `Error during token exchange for code ${authCode}: ${ex}`);
         }
@@ -123,5 +135,7 @@
     <p id="url"></p>
     <br><br>
     <span id="status"></span>
+    <br><br>
+    <span id="rawToken"></span>
   </body>
 </html>

@@ -20,6 +20,7 @@ router.post("/authorize-session-user", async function (req, res, next) {
   const accessToken = await getClientCredentialsToken();
   await authorizeAuthnSession(
     accessToken,
+    
     req.body.authSessionId,
     req.body.username
   );
