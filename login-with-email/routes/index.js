@@ -3,45 +3,83 @@ const axios = require('axios');
 const qs = require('qs');
 const router = express.Router();
 
+let accessToken = null;
+let email = null;
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'Express'});
 });
 
-// This is step 1
-router.get("/verify/:code", (req, res) => {
-    throw 'Please uncomment the code for Step 1 - https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-1-create-redirect-uri';
+router.post("/verify/:code?", async function (req, res) {
+
+    ///${encodeURIComponent(otpCode)}`
+    const otpCode = req?.body?.otpCode;
+    console.log('received body is', req?.body)
+    
+    if (!otpCode) {
+        res.send({
+            message: 'Received OTP is empty',
+        });
+    } else {
+        try {
+            const validateOtpResponse = await validateOTP(otpCode)
+            res.send({
+                received_email: email,
+                received_otp: otpCode,
+                response: validateOtpResponse
+            });
+
+        } catch (error) {
+            res.send({
+                received_email: email,
+                received_otp: otpCode,
+                error
+            });
+        }
+    }
 
     /*const code = req.params.code;
     console.log(`The code is: ${code}`);
-    res.send(`Verification code: ${code}`);*/
+    res.send({code});*/
 });
 
-router.post("/email-otp", async function (req, res, next) {
+router.post("/email-otp", async function (req, res) {
+    email = req?.body?.email;
 
-    //throw 'Please uncomment the code for Step 3 - https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp';
-    try {
-
-        const emailFlowResponse = await startEmailFlow()
-        
+    if (!email) {
         res.send({
-            received_email: req.body.email,
-            message: emailFlowResponse?.message,
-            status: emailFlowResponse?.status
+            message: 'Received email is empty',
         });
+    } else {
+        try {
+            const emailOtpResponse = await startEmailOtpFlow()
+            res.send({
+                received_email: req.body.email,
+                message: emailOtpResponse?.message,
+                status: emailOtpResponse?.status
+            });
 
-    } catch (error) {
+        } catch (error) {
+            res.send({
+                received_email: req.body.email,
+                message: 'Error in the email-otp flow',
+                error
+            });
+        }
     }
 });
 
-async function startEmailFlow() {
+async function startEmailOtpFlow() {
     const accessTokenResponse = await getAccessToken();
 
     if (accessTokenResponse) {
-        const emailOtpResponse = await sendEmailOTP(accessTokenResponse);
+        accessToken = accessTokenResponse;
+
+        const emailOtpResponse = await sendEmailOTP();
 
         if (emailOtpResponse) {
-            
+
             return {
                 message: emailOtpResponse.message,
                 status: 200
@@ -87,16 +125,16 @@ async function getAccessToken() {
     return null;
 }
 
-async function sendEmailOTP(bearerToken) {
+async function sendEmailOTP() {
     const url = 'https://api.userid-stg.io/v1/auth/otp/email';
     const data = {
-        email: 'hila.partuk@transmitsecurity.com',
+        email,
         redirect_uri: 'http://localhost:3000/verify',
         create_new_user: true,
     };
     const config = {
         headers: {
-            Authorization: `Bearer ${bearerToken}`,
+            Authorization: `Bearer ${accessToken}`,
             "Content-Type": 'application/json',
         },
     };
@@ -110,6 +148,33 @@ async function sendEmailOTP(bearerToken) {
         }
     } catch (e) {
         console.error('There was a problem with the email-otp request', {error: e})
+    }
+
+    return null
+}
+
+async function validateOTP(otpCode) {
+    const url = 'https://api.userid-stg.io/v1/auth/otp/email/validation';
+    const data = {
+        email,
+        passcode: otpCode,
+    };
+    const config = {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": 'application/json',
+        },
+    };
+
+    try {
+        const validateOtpResponse = await axios.post(url, data, config);
+
+        if (validateOtpResponse?.data) {
+            console.log('The validate-otp request succeeded', validateOtpResponse.data)
+            return validateOtpResponse.data;
+        }
+    } catch (e) {
+        console.error('There was a problem with the validate-otp request', {error: e})
     }
 
     return null
