@@ -10,6 +10,10 @@
         } catch(ex) { console.log(ex); }
       }
 
+      /*
+       * The first step on any WebAuthn flow would be to initialize the SDK. The below function should be called as soon as the page loads.
+       * For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#1-initialize-the-webauthn-sdk
+       */
       async function init() {
         try {
           await window.WebAuthnSdk.init('<%= clientId%>', {serverPath: "https://webauthn.identity.security"})
@@ -23,6 +27,10 @@
         }
       }
 
+      /*
+       * The below functions are used as event handlers for cross device polling events
+       * For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#2-start-the-cross-device-flow
+       */
       // Triggered when the auth device calls attach()
       async function onDeviceAttach() {
         // set the status text
@@ -58,7 +66,13 @@
       }
 
 
-      async function startCrossDeviceFlow() {
+      /*
+       * The first step in a cross device webauthn flow is to create a session that can be passed between the originating (dekstop) device
+       * and the authenticating (mobile) device. This is done using a call to the WebAuthnSdk.startCrossDeviceFlow function, which registers
+       * callbacks for session events (see functions above) and starts polling.
+       * For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#2-start-the-cross-device-flow
+       */
+      async function initiateCrossDeviceFlow() {
       // Initiate the cross device flow and provide the handlers.
         const controller = await window.WebAuthnSdk.startCrossDeviceFlow({
           onDeviceAttach,
@@ -88,7 +102,7 @@
     <h1>Desktop Device</h1>
     <span>Client ID =  <%= clientId%></span>
     <br><br>
-    <button id="start" onclick="startCrossDeviceFlow()" disabled>Start</button>
+    <button id="start" onclick="initiateCrossDeviceFlow()" disabled>Start</button>
     <br><br>
     <img id="qr" src="" />
     <p id="url"></p>

@@ -14,7 +14,13 @@
         } catch(ex) { console.log(ex); }
       }
 
-      async function init() {
+      /*
+       * The first step on any WebAuthn flow would be to initialize the SDK. The below function should be called as soon as the page loads.
+       * Note that since this is the authenticating device, we also check whether the device supports WebAuthn, and whether we already have
+       * registered users. This allows us to present an "Authenticate or Register" user experience on the same page.
+       * For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-2-set-up-auth-device
+       */
+       async function init() {
         try {
           await window.WebAuthnSdk.init('<%= clientId%>', {serverPath: "https://webauthn.identity.security"});
           const bindingInfo = await window.WebAuthnSdk.attachDevice('<%= authSessionId%>');
@@ -30,6 +36,7 @@
           updateElementText('status', `Error during init: ${ex}`);
         }
       }
+
 
       async function doRegistration() {
         try {
