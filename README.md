@@ -38,6 +38,9 @@ callbacks and webauthn. For example
    box. For example
 `https://ts-ron-legendary-waddle-rx7774944x4cwwrv-8080.preview.app.github.dev/complete`
 * (1:02) Click "Add" to save, this also creates a client ID and a client secret
+
+#### WebAuthen configuration
+You can skip this section is you do not intend to use webauthn
 * (1:04) **IF** the sample also includes WebAuthn - go to the authentication tab and configure the WebAuthn method for your
    newly created app, using the above base URL as origin, and the domain as the
 RPID.
