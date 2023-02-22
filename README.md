@@ -11,8 +11,8 @@ This repository contains sample web apps corresponding to the [guides in the Tra
 Your can connect the samples to your own [Transmit Security tenant](https://portal.identity.security/) and launch them from a Codespace environment
 
 
+https://user-images.githubusercontent.com/75998795/220656434-1894d9de-e1ea-4e9a-b0b6-0a06a26fa901.mp4
 
-https://user-images.githubusercontent.com/75998795/220270930-91c7e47b-df28-4bf1-9980-4c85fccfe3fd.mp4
 
 
 <br>
@@ -60,4 +60,9 @@ Some samples might require you to use web browsers on mobile devices. This is th
 To debug Chrome or Safari browsers running on a mobile device, you can refer to the following documentations:
 * [Remote debug Chrome on Android Devices](https://developer.chrome.com/docs/devtools/remote-debugging/)
 * [Remote debug Safari on iOS Devices](https://webkit.org/web-inspector/enabling-web-inspector/)
+
+
+---
+
+<img src="https://user-images.githubusercontent.com/75998795/220656769-23c0ddda-cf03-4d45-94b9-9b32dd4b9750.gif" width="50" height="50"/> Animated robot courtesy of https://opengameart.org/content/pixel-robot
 
