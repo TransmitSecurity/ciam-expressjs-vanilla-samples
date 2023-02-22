@@ -39,7 +39,7 @@ callbacks and webauthn. For example
 `https://ts-ron-legendary-waddle-rx7774944x4cwwrv-8080.preview.app.github.dev/complete`
 * (1:02) Click "Add" to save, this also creates a client ID and a client secret
 
-#### WebAuthen configuration
+#### WebAuthn configuration
 You can skip this section is you do not intend to use webauthn
 * (1:04) **IF** the sample also includes WebAuthn - go to the authentication tab and configure the WebAuthn method for your
    newly created app, using the above base URL as origin, and the domain as the
@@ -52,5 +52,12 @@ RPID.
    exposed via the above base URL (a button will appear on screen to open, or go
 to the "Ports" tab)
 
-
+Don't forget to stop your code space when you are done!
 For more information on code spaces PLS visit https://code.visualstudio.com/docs/remote/codespaces
+
+### Debugging tabs on a mobile device
+Some samples might require you to use web browsers on mobile devices. This is the case of the WebAuthn cross device sample.
+To debug Chrome or Safari browsers running on a mobile device, you can refer to the following documentations:
+* [Remote debug Chrome on Android Devices](https://developer.chrome.com/docs/devtools/remote-debugging/)
+* [Remote debug Safari on iOS Devices](https://webkit.org/web-inspector/enabling-web-inspector/)
+
