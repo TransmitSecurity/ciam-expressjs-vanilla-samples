@@ -11,7 +11,7 @@ router.get('/', function (req, res, next) {
     res.render('index', {title: 'Express'});
 });
 
-router.post("/verify/:code?", async function (req, res) {
+router.post("/complete/:code?", async function (req, res) {
 
     ///${encodeURIComponent(otpCode)}`
     const otpCode = req?.body?.otpCode;
@@ -91,9 +91,9 @@ async function startEmailOtpFlow() {
 }
 
 async function getAccessToken() {
-    const url = 'https://api.userid-stg.io/oidc/token';
-    const clientId = 'QMgQyKgMZHUOdlQhVMt0x';
-    const clientSecret = '181f3319-de0f-433c-8426-4dc8d54d7732';
+    const url = 'https://api.userid.security/oidc/token';
+    const clientId = process.env.TS_CLIENT_ID;
+    const clientSecret = process.env.TS_CLIENT_SECRET;
     const requestUrlEncodedParams = qs.stringify({
         'grant_type': 'client_credentials',
         'client_id': clientId,
@@ -126,10 +126,10 @@ async function getAccessToken() {
 }
 
 async function sendEmailOTP() {
-    const url = 'https://api.userid-stg.io/v1/auth/otp/email';
+    const url = 'https://api.userid.security/v1/auth/otp/email';
     const data = {
         email,
-        redirect_uri: 'http://localhost:3000/verify',
+        redirect_uri: process.env.TS_REDIRECT_URI,
         create_new_user: true,
     };
     const config = {
@@ -154,7 +154,7 @@ async function sendEmailOTP() {
 }
 
 async function validateOTP(otpCode) {
-    const url = 'https://api.userid-stg.io/v1/auth/otp/email/validation';
+    const url = 'https://api.userid.security/v1/auth/otp/email/validation';
     const data = {
         email,
         passcode: otpCode,

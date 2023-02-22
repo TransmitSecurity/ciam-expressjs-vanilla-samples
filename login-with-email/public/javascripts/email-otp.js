@@ -12,7 +12,7 @@ async function sendEmailOtp(email, handleResponse) {
 
 async function verifyOtp(otpCode, handleResponse) {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/verify');
+    xhr.open('POST', '/complete');
     xhr.setRequestHeader("Content-Type", "application/json");
     console.log('The OTP validation request', otpCode);
     console.log('The OTP validation request', JSON.stringify({otpCode}));

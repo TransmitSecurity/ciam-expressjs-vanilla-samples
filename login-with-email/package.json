@@ -3,11 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "nodemon -r dotenv/config app.js localhost 8080"
   },
   "dependencies": {
     "axios": "^0.16.1",
     "express": "~4.16.1",
     "qs": "6.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "1.18.4",
+    "dotenv": "16.0.3"
   }
 }
