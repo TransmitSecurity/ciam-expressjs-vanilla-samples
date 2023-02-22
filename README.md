@@ -3,7 +3,11 @@
 
 ## Structure of this repository
 
-This repository contains sample web apps corresponding to the [guides in the Transmit Security developer portal](https://developer.transmitsecurity.com/guides/guides_intro/). Each directory contains a standalone sample app that can be configured with your tenant data and launched separately. You can either launch sample apps directly from the browser using GitHub Codespaces, or clone and run from your local machine. See below instructions for both flavors.
+This repository contains sample web apps corresponding to the [guides in the Transmit Security developer portal](https://developer.transmitsecurity.com/guides/guides_intro/). 
+
+Each directory contains a STANDALONE sample app that can be configured with your tenant data. This means that each directory is completely independant of the other directories, can be configured differently and launched separately. Of course if you are experimenting with multiple sample app, you can copy the same `.env` file between directories. Right now you can only launch one sample at a time, by moving between the directories and following the procedure below.
+
+You can either launch sample apps directly from the browser using GitHub Codespaces, or clone and run from your local machine. See below instructions for both flavors.
 
 
 
@@ -34,6 +38,8 @@ callbacks and webauthn. For example
   
 ### Set up the Transmit tenant 
 * (0:47) Go to your tenant pages on the [Transmit portal](https://portal.identity.security/), and create a new app
+* The app should allow you to register new users - make sure the following radio button is checked: <img width="130" alt="image" src="https://user-images.githubusercontent.com/75998795/220659359-4892c0d2-8000-493b-8648-2e2e123e5464.png">
+
 * (0:56) Use the base URL you copied with the suffix `/complete` in the redirect URI
    box. For example
 `https://ts-ron-legendary-waddle-rx7774944x4cwwrv-8080.preview.app.github.dev/complete`
