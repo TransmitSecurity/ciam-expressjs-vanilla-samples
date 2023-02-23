@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="/stylesheets/style.css" />
     <script type="text/javascript"  src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"></script>
     <script>
+      const clientId = import.meta.env.VITE_TS_CLIENT_ID;
       function updateElementText(id, text) {
         try {
           document.getElementById(id).textContent = text;
@@ -14,7 +15,8 @@
       // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#1-initialize-the-webauthn-sdk
       async function init() {
         try {
-          await window.WebAuthnSdk.init('<%= clientId%>', {serverPath: "https://webauthn.identity.security"})
+          updateElementText("clientId", clientId);
+          await window.WebAuthnSdk.init(clientId, {serverPath: "https://webauthn.identity.security"})
           updateElementText('status', `SDK Init done`);
 
           // enable button
@@ -127,7 +129,7 @@
 
   <body onload="init()">
     <h1>Desktop Device</h1>
-    <span>Client ID =  <%= clientId%></span>
+    <span id="clientId"></span>
     <br><br>
     <button id="start" onclick="initiateCrossDeviceFlow()" disabled>Start</button>
     <br><br>

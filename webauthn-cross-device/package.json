@@ -2,9 +2,9 @@
   "name": "cross-device-flow-demo",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "type": "module",
   "scripts": {
-    "start": "nodemon -r dotenv/config app.js localhost 8080"
+    "start": "vite --port 8080"
   },
   "dependencies": {
     "cookie-parser": "~1.4.6",
@@ -12,11 +12,12 @@
     "ejs": "~3.1.8",
     "express": "~4.18.2",
     "morgan": "~1.10.0",
-    "node-fetch-commonjs": "3.2.4",
-    "dotenv": "16.0.3"
+    "node-fetch-commonjs": "3.2.4"
   },
   "devDependencies": {
-    "nodemon": "2.0.20"
+    "sass": "1.58.3",
+    "vite": "^4.1.0",
+    "vite-plugin-mix": "0.4.0"
   },
   "keywords": []
 }

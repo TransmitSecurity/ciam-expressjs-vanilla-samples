@@ -1,4 +1,5 @@
-var express = require("express");
+import express from "express";
+import fetch from"node-fetch-commonjs";
 var router = express.Router();
 
 // Render desktop page
@@ -55,4 +56,4 @@ async function getUserTokens(authCode) {
   }
 }
 
-module.exports = router;
+export const desktopRouter = router;

@@ -1,9 +1,9 @@
-var express = require("express");
+import express from "express";
 var router = express.Router();
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
-  res.redirect("/desktop");
+  res.redirect("/pages/desktop.html");
 });
 
-module.exports = router;
+export const indexRouter = router;

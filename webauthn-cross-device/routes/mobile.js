@@ -1,6 +1,7 @@
-var express = require("express");
+import express from "express";
+import fetch from"node-fetch-commonjs";
+
 var router = express.Router();
-const fetch = require("node-fetch-commonjs");
 
 // Render mobile page
 router.get("/", async function (req, res, next) {
@@ -84,4 +85,4 @@ async function authorizeAuthnSession(accessToken, authSessionId, username) {
   }
 }
 
-module.exports = router;
+export const mobileRouter = router;
