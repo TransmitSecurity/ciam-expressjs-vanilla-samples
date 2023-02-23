@@ -26,7 +26,7 @@ async function getClientCredentialsToken() {
   const url = "https://api.userid.security/oidc/token";
   const params = new URLSearchParams({
     grant_type: "client_credentials",
-    client_id: process.env.TS_CLIENT_ID,
+    client_id: process.env.VITE_TS_CLIENT_ID,
     client_secret: process.env.TS_CLIENT_SECRET
   });
   const options = {
@@ -60,7 +60,7 @@ async function authorizeAuthnSession(accessToken, authSessionId, username) {
       Authorization: `Bearer ${accessToken}`
     },
     body: JSON.stringify({
-      client_id: process.env.TS_CLIENT_ID,
+      client_id: process.env.VITE_TS_CLIENT_ID,
       username: username,
       auth_session_id: authSessionId
     })

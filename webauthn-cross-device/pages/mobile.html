@@ -5,8 +5,9 @@
     <link rel="stylesheet" href="/stylesheets/style.css"/>
     
     <script type="text/javascript"  src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"></script>
-    <script type="module">
-      const clientId = import.meta.env.VITE_TS_CLIENT_ID;
+    <script type="module" src="./config.js"></script>
+
+    <script>
       const urlParams = new URLSearchParams(window.location.search);
       const authSessionId = urlParams.get("aid");
       let currentUser = undefined;
@@ -23,10 +24,11 @@
       // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-2-set-up-auth-device
        async function init() {
         try {
+          const clientId = window.env.VITE_TS_CLIENT_ID;
           updateElementText("clientId", clientId);
 
           // Initialize the SDK, for more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#1-initialize-the-webauthn-sdk-1
-          await window.WebAuthnSdk.init('<%= clientId%>', {serverPath: "https://webauthn.identity.security"});
+          await window.WebAuthnSdk.init(clientId, {serverPath: "https://webauthn.identity.security"});
 
           // Check if WebAuthn is supported for this device. if not - no real need to continue. 
           // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#2-check-for-webauthn-support
@@ -99,21 +101,16 @@
           updateElementText('status', `Error during authentication: ${ex}`);
         }
       }
-
-      window.tsInit = init;
-      window.tsDoAuthentication = doAuthentication;
-      window.tsDoRegistration = doRegistration;
-
     </script>
   </head>
 
-  <body onload="tsInit()">
+  <body onload="init()">
     <h1>Mobile Device</h1>
     <span id="clientId"></span>
     <p>Access this page via the QR</p>
     <br><br>
     <div id="authenticate" hidden>
-      <button id="authnBtn" onclick="tsDoAuthentication()">Authenticate</button>
+      <button id="authnBtn" onclick="doAuthentication()">Authenticate</button>
       <div class="divider">
         <span class="divider-text">or</span>
       </div>
@@ -121,7 +118,7 @@
     <div id="register">
       <input id="usnInput" type="text" placeholder="Username"/>
       <br><br>
-      <button id="regBtn" onclick="tsDoRegistration()">Register New</button>
+      <button id="regBtn" onclick="doRegistration()">Register New</button>
     </div>
     <br><br>
     <span id="status"></span>
