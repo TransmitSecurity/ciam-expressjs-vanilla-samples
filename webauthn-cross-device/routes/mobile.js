@@ -3,15 +3,6 @@ import fetch from"node-fetch-commonjs";
 
 var router = express.Router();
 
-// Render mobile page
-router.get("/", async function (req, res, next) {
-  // TODO add error handling, ommited for sample clarity
-  res.render("mobile", {
-    clientId: process.env.TS_CLIENT_ID,
-    authSessionId: req.query.aid
-  });
-});
-
 // The following endpoint is used by views/mobile.ejs during a registration flow
 // It uses an API to elevate a cross device session to allow credential registration
 // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-3-register-credentials

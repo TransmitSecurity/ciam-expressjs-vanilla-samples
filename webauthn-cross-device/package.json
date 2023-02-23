@@ -4,7 +4,7 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "start": "vite --port 8080"
+    "start": "vite --debug --host --port 8080"
   },
   "dependencies": {
     "cookie-parser": "~1.4.6",
@@ -12,7 +12,8 @@
     "ejs": "~3.1.8",
     "express": "~4.18.2",
     "morgan": "~1.10.0",
-    "node-fetch-commonjs": "3.2.4"
+    "node-fetch-commonjs": "3.2.4",
+    "dotenv": "16.0.3"
   },
   "devDependencies": {
     "sass": "1.58.3",

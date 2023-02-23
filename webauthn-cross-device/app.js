@@ -5,6 +5,7 @@ import {desktopRouter} from "./routes/desktop.js";
 import {indexRouter} from "./routes/index.js";
 
 const app = express();
+app.use(express.json())
 
 app.use('/mobile', mobileRouter);
 app.use('/desktop', desktopRouter);

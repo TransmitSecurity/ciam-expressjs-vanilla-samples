@@ -3,7 +3,7 @@
     <title>Desktop Device </title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
     <script type="text/javascript"  src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"></script>
-    <script>
+    <script type="module">
       const clientId = import.meta.env.VITE_TS_CLIENT_ID;
       function updateElementText(id, text) {
         try {
@@ -86,7 +86,7 @@
         if(controller.authSessionId) {
           // Construct the URL of your login page along with the authSessionId param (aid in this example).
           // To use a mobile device, best to display the generated URL using a QR code.
-          const url = `${window.location.origin}/mobile?aid=${controller.authSessionId}`;
+          const url = `${window.location.origin}/pages/mobile.html?aid=${controller.authSessionId}`;
           const qrElem = document.getElementById('qr');
           qrElem.setAttribute('src', `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=200x200`);
           
@@ -124,14 +124,17 @@
         }
       }
 
+      window.tsInit = init;
+      window.tsInitiateCrossDeviceFlow = initiateCrossDeviceFlow;
+
     </script>
   </head>
 
-  <body onload="init()">
+  <body onload="tsInit()">
     <h1>Desktop Device</h1>
     <span id="clientId"></span>
     <br><br>
-    <button id="start" onclick="initiateCrossDeviceFlow()" disabled>Start</button>
+    <button id="start" onclick="tsInitiateCrossDeviceFlow()" disabled>Start</button>
     <br><br>
     <img id="qr" src="" />
     <p id="url"></p>

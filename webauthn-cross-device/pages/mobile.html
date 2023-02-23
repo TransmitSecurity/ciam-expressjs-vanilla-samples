@@ -5,7 +5,10 @@
     <link rel="stylesheet" href="/stylesheets/style.css"/>
     
     <script type="text/javascript"  src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"></script>
-    <script>
+    <script type="module">
+      const clientId = import.meta.env.VITE_TS_CLIENT_ID;
+      const urlParams = new URLSearchParams(window.location.search);
+      const authSessionId = urlParams.get("aid");
       let currentUser = undefined;
 
       function updateElementText(id, text) {
@@ -20,6 +23,7 @@
       // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-2-set-up-auth-device
        async function init() {
         try {
+          updateElementText("clientId", clientId);
 
           // Initialize the SDK, for more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#1-initialize-the-webauthn-sdk-1
           await window.WebAuthnSdk.init('<%= clientId%>', {serverPath: "https://webauthn.identity.security"});
@@ -31,7 +35,7 @@
 
             // Mark the device as attached. This will trigger an event on the originating desktop device. 
             // For more information https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#3-attach-the-auth-device-to-the-session
-            const bindingInfo = await window.WebAuthnSdk.attachDevice('<%= authSessionId%>');
+            const bindingInfo = await window.WebAuthnSdk.attachDevice(authSessionId);
 
             // The below is an example business logic to show authentication iff we have a user that previously registered
             // Registration for a different user always remains open in this sample app
@@ -66,7 +70,7 @@
             },
             body: JSON.stringify({
               username: username, 
-              authSessionId: '<%= authSessionId%>'
+              authSessionId: authSessionId
             })
           });
 
@@ -74,7 +78,7 @@
           // Note that the 2 API calls are done together in this sample app, following a button click. In a production app you might consider
           // calling prepareWebauthnRegistration BEFORE the button click - this will provide a smoother response UX for the end user.
           // For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-4-register-credentials
-          await window.WebAuthnSdk.prepareWebauthnRegistration(username, username, '<%= authSessionId%>');
+          await window.WebAuthnSdk.prepareWebauthnRegistration(username, username, authSessionId);
           const authCode = await window.WebAuthnSdk.executeWebauthnRegistration();
           updateElementText('status', `Completed with auth code: ${authCode}`);
           console.log(authCode);
@@ -88,7 +92,7 @@
       async function doAuthentication() {
         try {
           await window.WebAuthnSdk.prepareWebauthnAuthentication(currentUser.username);
-          authCode = await window.WebAuthnSdk.executeWebauthnAuthentication();
+          const authCode = await window.WebAuthnSdk.executeWebauthnAuthentication();
           updateElementText('status', `Completed with auth code: ${authCode}`);
           console.log(authCode);
         } catch (ex) {
@@ -96,19 +100,20 @@
         }
       }
 
-      
+      window.tsInit = init;
+      window.tsDoAuthentication = doAuthentication;
+      window.tsDoRegistration = doRegistration;
 
     </script>
   </head>
 
-  <body onload="init()">
+  <body onload="tsInit()">
     <h1>Mobile Device</h1>
-    <span>Client ID = <%= clientId%></span>
+    <span id="clientId"></span>
     <p>Access this page via the QR</p>
-    <p>authSessionId: <%=authSessionId%></p>
     <br><br>
     <div id="authenticate" hidden>
-      <button id="authnBtn" onclick="doAuthentication()">Authenticate</button>
+      <button id="authnBtn" onclick="tsDoAuthentication()">Authenticate</button>
       <div class="divider">
         <span class="divider-text">or</span>
       </div>
@@ -116,7 +121,7 @@
     <div id="register">
       <input id="usnInput" type="text" placeholder="Username"/>
       <br><br>
-      <button id="regBtn" onclick="doRegistration()">Register New</button>
+      <button id="regBtn" onclick="tsDoRegistration()">Register New</button>
     </div>
     <br><br>
     <span id="status"></span>
