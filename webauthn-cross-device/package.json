@@ -7,10 +7,10 @@
     "start": "vite --debug --host --port 8080"
   },
   "dependencies": {
+    "dotenv": "16.0.3",
     "express": "~4.18.2",
     "morgan": "~1.10.0",
-    "node-fetch-commonjs": "3.2.4",
-    "dotenv": "16.0.3"
+    "node-fetch": "^3.3.0"
   },
   "devDependencies": {
     "sass": "1.58.3",
