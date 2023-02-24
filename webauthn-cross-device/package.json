@@ -4,7 +4,9 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "start": "vite --debug --host --port 8080"
+    "start": "vite --debug --host --port 8080",
+    "lint": "eslint \"**/*.{js,html}\"",
+    "format": "prettier .  --write"
   },
   "dependencies": {
     "dotenv": "16.0.3",
@@ -14,6 +16,11 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-import": "^2.27.5",
+    "prettier": "^2.8.4",
     "sass": "1.58.3",
     "vite": "^4.1.0",
     "vite-plugin-mix": "0.4.0"
