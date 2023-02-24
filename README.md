@@ -52,7 +52,11 @@ You can skip this section is you do not intend to use webauthn
 RPID.
 
 ### Complete Codespace configuration
-* (1:16) Now, go back to the application page and copy the value of application ID, client ID and client secret into the created `.env` file
+* (1:16) Now, go back to the application page update your `.env` file:
+  * `VITE_TS_CLIENT_ID` should contain your client id
+  * `TS_CLIENT_SECRET` should contain your client secret
+  * `TS_APP_ID` should contain you application ID
+  * `TS_REDIRECT_URI` should contain the redirect URI you set in your tenant (the base URL with the suffix `/complete`)
 * (1:35) Build the sample using `cd <sample dir>`, and `yarn`
 * (1:46) Launch the sample using `yarn start`. The sample will launch on port 8080 and
    exposed via the above base URL (a button will appear on screen to open, or go
