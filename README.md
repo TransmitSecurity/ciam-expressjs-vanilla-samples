@@ -12,7 +12,7 @@ You can either launch sample apps directly from the browser using GitHub Codespa
 
 
 ## Setting up Codespaces
-Your can connect the samples to your own [Transmit Security tenant](https://portal.identity.security/) and launch them from a Codespace environment
+You can connect the samples to your own [Transmit Security tenant](https://portal.identity.security/) and launch them from a Codespace environment
 
 
 https://user-images.githubusercontent.com/75998795/220656434-1894d9de-e1ea-4e9a-b0b6-0a06a26fa901.mp4
@@ -60,6 +60,19 @@ to the "Ports" tab)
 
 Don't forget to stop your code space when you are done!
 For more information on code spaces PLS visit https://code.visualstudio.com/docs/remote/codespaces
+
+## Running locally
+
+To run the project locally, follow the same steps described in the Codespace set up, but for your local environment.
+
+You will need to use Node version v14.18.0+ or v16.0.0+.
+
+Note that if you are using `npm`, you might need to use the `--force` option when installing the modules:
+
+```bash
+npm install --force
+npm run start
+```
 
 ### Debugging tabs on a mobile device
 Some samples might require you to use web browsers on mobile devices. This is the case of the WebAuthn cross device sample.
