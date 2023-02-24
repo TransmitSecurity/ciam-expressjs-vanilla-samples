@@ -1,27 +1,37 @@
 <html>
   <head>
-    <title>Desktop Device </title>
+    <title>Desktop Device</title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
-    <script type="text/javascript"  src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
+    ></script>
+    <script type="module" src="./config.js"></script>
     <script>
       function updateElementText(id, text) {
         try {
-          document.getElementById(id).textContent = text;
-        } catch(ex) { console.log(ex); }
+          document.getElementById(id).textContent = text
+        } catch (ex) {
+          console.log(ex)
+        }
       }
 
       // The first step on any WebAuthn flow would be to initialize the SDK. The below function should be called as soon as the page loads.
       // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#1-initialize-the-webauthn-sdk
       async function init() {
         try {
-          await window.WebAuthnSdk.init('<%= clientId%>', {serverPath: "https://webauthn.identity.security"})
-          updateElementText('status', `SDK Init done`);
+          const clientId = window.env.VITE_TS_CLIENT_ID
+          updateElementText('clientId', clientId)
+          await window.WebAuthnSdk.init(clientId, {
+            serverPath: 'https://webauthn.identity.security',
+          })
+          updateElementText('status', `SDK Init done`)
 
           // enable button
-          const elem = document.getElementById('start');
-          elem.removeAttribute('disabled');
-        } catch(ex) {
-          updateElementText('status', `Error during init: ${ex}`);
+          const elem = document.getElementById('start')
+          elem.removeAttribute('disabled')
+        } catch (ex) {
+          updateElementText('status', `Error during init: ${ex}`)
         }
       }
 
@@ -31,67 +41,75 @@
       // Triggered when the auth device calls attach()
       async function onDeviceAttach() {
         // set the status text
-        updateElementText('status', `Mobile device connected`);
+        updateElementText('status', `Mobile device connected`)
 
         // disable button, to prevent multiple clicks once a device is attached
-        const button = document.getElementById('start');
-        button.disabled = true;
+        const button = document.getElementById('start')
+        button.disabled = true
 
-        return true; // Return true to keep polling
+        return true // Return true to keep polling
       }
 
       // Triggered at the end of the registration process on the auth device
       async function onCredentialRegister(authCode) {
-        return await completeSession(authCode);
+        return await completeSession(authCode)
       }
 
       // Triggered at the end of the authentication process on the auth device
       async function onCredentialAuthenticate(authCode) {
-        return await completeSession(authCode);
+        return await completeSession(authCode)
       }
 
       // Triggered on failure
       async function onFailure(error) {
-        console.log(error);
+        console.log(error)
         // Log the error and display a message to the user / navigate to an error page.
         // set the status text
-        updateElementText('status', `Error: ${error}`);
+        updateElementText('status', `Error: ${error}`)
       }
 
       async function completeSession(code) {
         // set the status text
         // updateElementText('status', `Completed with auth code: ${code}`);
-        exchangeAndDisplayIDToken(code);
+        exchangeAndDisplayIDToken(code)
 
         // Get user tokens using the received code as described below
-        return false;
+        return false
       }
-
 
       // The first step in a cross device webauthn flow is to create a session that can be passed between the originating (dekstop) device
       // and the authenticating (mobile) device. This is done using a call to the WebAuthnSdk.startCrossDeviceFlow function, which registers
       // callbacks for session events (see functions above) and starts polling.
       // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#2-start-the-cross-device-flow
       async function initiateCrossDeviceFlow() {
-      // Initiate the cross device flow and provide the handlers.
+        // Initiate the cross device flow and provide the handlers.
         const controller = await window.WebAuthnSdk.startCrossDeviceFlow({
           onDeviceAttach,
           onCredentialRegister,
           onCredentialAuthenticate,
           onFailure,
-        });
+        })
 
-        if(controller.authSessionId) {
+        if (controller.authSessionId) {
           // Construct the URL of your login page along with the authSessionId param (aid in this example).
           // To use a mobile device, best to display the generated URL using a QR code.
-          const url = `${window.location.origin}/mobile?aid=${controller.authSessionId}`;
-          const qrElem = document.getElementById('qr');
-          qrElem.setAttribute('src', `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=200x200`);
-          
-          updateElementText('url', `You can also copy the following link and open in ANOTHER browser:  ${url}`);
-          updateElementText('status', 'Polling');
+          const url = `${window.location.origin}/pages/mobile.html?aid=${controller.authSessionId}`
+          const qrElem = document.getElementById('qr')
+          qrElem.setAttribute(
+            'src',
+            `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=200x200`,
+          )
+
+          updateElementText(
+            'url',
+            `You can also copy the following link and open in ANOTHER browser:  ${url}`,
+          )
+          updateElementText('status', 'Polling')
         } else {
-          updateElementText('status', `Something may be wrong with your webauthn config. PLS Check https://portal.identity.security/authentication/webAuthN?app=<%= appId%>`);
+          updateElementText(
+            'status',
+            `Something may be wrong with your webauthn config. PLS Check https://portal.identity.security/authentication/webAuthN?app=<%= appId%>`,
+          )
         }
       }
 
@@ -99,43 +117,41 @@
       // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-3-register-credentials
       async function exchangeAndDisplayIDToken(authCode) {
         try {
-          const response = await fetch("/desktop/fetch-tokens", {
+          const response = await fetch('/desktop/fetch-tokens', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              authCode: authCode
-            })
-          });
+              authCode: authCode,
+            }),
+          })
 
           // ruff'n'tuff parsing of the token... usually happens server side of course, to be improved for the sample code.
-          const data = await response.json();
-          const idtoken = data?.id_token;
-          const tokenJson = JSON.parse(window.atob(idtoken.split(".")[1]));
-          const username = tokenJson.webauthn_username;
-          updateElementText('status', `Complete flow for user ${username}`);
-          updateElementText('rawToken', JSON.stringify(tokenJson));
-
+          const data = await response.json()
+          const idtoken = data?.id_token
+          const tokenJson = JSON.parse(window.atob(idtoken.split('.')[1]))
+          const username = tokenJson.webauthn_username
+          updateElementText('status', `Complete flow for user ${username}`)
+          updateElementText('rawToken', JSON.stringify(tokenJson))
         } catch (ex) {
-          updateElementText('status', `Error during token exchange for code ${authCode}: ${ex}`);
+          updateElementText('status', `Error during token exchange for code ${authCode}: ${ex}`)
         }
       }
-
     </script>
   </head>
 
   <body onload="init()">
     <h1>Desktop Device</h1>
-    <span>Client ID =  <%= clientId%></span>
-    <br><br>
+    <span id="clientId"></span>
+    <br /><br />
     <button id="start" onclick="initiateCrossDeviceFlow()" disabled>Start</button>
-    <br><br>
+    <br /><br />
     <img id="qr" src="" />
     <p id="url"></p>
-    <br><br>
+    <br /><br />
     <span id="status"></span>
-    <br><br>
+    <br /><br />
     <span id="rawToken"></span>
   </body>
 </html>

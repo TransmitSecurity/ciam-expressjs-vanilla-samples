@@ -2,21 +2,28 @@
   "name": "cross-device-flow-demo",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "type": "module",
   "scripts": {
-    "start": "nodemon -r dotenv/config app.js localhost 8080"
+    "start": "vite --debug --host --port 8080",
+    "lint": "eslint \"**/*.{js,html}\"",
+    "format": "prettier .  --write"
   },
   "dependencies": {
-    "cookie-parser": "~1.4.6",
-    "debug": "~4.3.4",
-    "ejs": "~3.1.8",
+    "dotenv": "16.0.3",
     "express": "~4.18.2",
     "morgan": "~1.10.0",
-    "node-fetch-commonjs": "3.2.4",
-    "dotenv": "16.0.3"
+    "node-fetch": "^3.3.0"
   },
   "devDependencies": {
-    "nodemon": "2.0.20"
+    "@types/express": "^4.17.17",
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-import": "^2.27.5",
+    "prettier": "^2.8.4",
+    "sass": "1.58.3",
+    "vite": "^4.1.0",
+    "vite-plugin-mix": "0.4.0"
   },
   "keywords": []
 }

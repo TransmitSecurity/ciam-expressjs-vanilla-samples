@@ -12,7 +12,7 @@ You can either launch sample apps directly from the browser using GitHub Codespa
 
 
 ## Setting up Codespaces
-Your can connect the samples to your own [Transmit Security tenant](https://portal.identity.security/) and launch them from a Codespace environment
+You can connect the samples to your own [Transmit Security tenant](https://portal.identity.security/) and launch them from a Codespace environment
 
 
 https://user-images.githubusercontent.com/75998795/220656434-1894d9de-e1ea-4e9a-b0b6-0a06a26fa901.mp4
@@ -52,7 +52,11 @@ You can skip this section is you do not intend to use webauthn
 RPID.
 
 ### Complete Codespace configuration
-* (1:16) Now, go back to the application page and copy the value of application ID, client ID and client secret into the created `.env` file
+* (1:16) Now, go back to the application page update your `.env` file:
+  * `VITE_TS_CLIENT_ID` should contain your client id
+  * `TS_CLIENT_SECRET` should contain your client secret
+  * `TS_APP_ID` should contain you application ID
+  * `TS_REDIRECT_URI` should contain the redirect URI you set in your tenant (the base URL with the suffix `/complete`)
 * (1:35) Build the sample using `cd <sample dir>`, and `yarn`
 * (1:46) Launch the sample using `yarn start`. The sample will launch on port 8080 and
    exposed via the above base URL (a button will appear on screen to open, or go
@@ -60,6 +64,19 @@ to the "Ports" tab)
 
 Don't forget to stop your code space when you are done!
 For more information on code spaces PLS visit https://code.visualstudio.com/docs/remote/codespaces
+
+## Running locally
+
+To run the project locally, follow the same steps described in the Codespace set up, but for your local environment.
+
+You will need to use Node version v14.18.0+ or v16.0.0+.
+
+Note that if you are using `npm`, you might need to use the `--force` option when installing the modules:
+
+```bash
+npm install --force
+npm run start
+```
 
 ### Debugging tabs on a mobile device
 Some samples might require you to use web browsers on mobile devices. This is the case of the WebAuthn cross device sample.
