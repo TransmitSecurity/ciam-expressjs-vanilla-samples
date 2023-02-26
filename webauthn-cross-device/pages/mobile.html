@@ -8,20 +8,11 @@
       type="text/javascript"
       src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
     ></script>
-    <script type="module" src="./config.js"></script>
+    <script type="module" src="./init.js"></script>
 
     <script>
-      const urlParams = new URLSearchParams(window.location.search)
-      const authSessionId = urlParams.get('aid')
+      let authSessionId = undefined;
       let currentUser = undefined
-
-      function updateElementText(id, text) {
-        try {
-          document.getElementById(id).textContent = text
-        } catch (ex) {
-          console.log(ex)
-        }
-      }
 
       // The first step on any WebAuthn flow would be to initialize the SDK. The below function should be called as soon as the page loads.
       // Note that since this is the authenticating device, we also check whether the device supports WebAuthn, and whether we already have
@@ -30,7 +21,8 @@
       async function init() {
         try {
           const clientId = window.env.VITE_TS_CLIENT_ID
-          updateElementText('clientId', clientId)
+          const authSessionId = window.pageUtils.extractUrlParameter('aid');
+          window.pageUtils.updateElementText('clientId', clientId)
 
           // Initialize the SDK, for more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#1-initialize-the-webauthn-sdk-1
           await window.WebAuthnSdk.init(clientId, {
@@ -55,17 +47,17 @@
             if (currentUser) {
               const elem = document.getElementById('authenticate')
               elem.removeAttribute('hidden')
-              updateElementText('authnBtn', `Login with ${currentUser.username}`)
+              window.pageUtils.updateElementText('authnBtn', `Login with ${currentUser.username}`)
             }
           } else {
             // WebAuthn is not supported
-            updateElementText(
+            window.pageUtils.updateElementText(
               'status',
               `WebAuthn is not supported on this device, try scanning with a different one`,
             )
           }
         } catch (ex) {
-          updateElementText('status', `Error during init: ${ex}`)
+          window.pageUtils.updateElementText('status', `Error during init: ${ex}`)
         }
       }
 
@@ -93,10 +85,10 @@
           // For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-4-register-credentials
           await window.WebAuthnSdk.prepareWebauthnRegistration(username, username, authSessionId)
           const authCode = await window.WebAuthnSdk.executeWebauthnRegistration()
-          updateElementText('status', `Completed with auth code: ${authCode}`)
+          window.pageUtils.updateElementText('status', `Completed with auth code: ${authCode}`)
           console.log(authCode)
         } catch (ex) {
-          updateElementText('status', `Error during registration: ${ex}`)
+          window.pageUtils.updateElementText('status', `Error during registration: ${ex}`)
         }
       }
 
@@ -106,10 +98,10 @@
         try {
           await window.WebAuthnSdk.prepareWebauthnAuthentication(currentUser.username)
           const authCode = await window.WebAuthnSdk.executeWebauthnAuthentication()
-          updateElementText('status', `Completed with auth code: ${authCode}`)
+          window.pageUtils.updateElementText('status', `Completed with auth code: ${authCode}`)
           console.log(authCode)
         } catch (ex) {
-          updateElementText('status', `Error during authentication: ${ex}`)
+          window.pageUtils.updateElementText('status', `Error during authentication: ${ex}`)
         }
       }
     </script>

@@ -6,32 +6,25 @@
       type="text/javascript"
       src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
     ></script>
-    <script type="module" src="./config.js"></script>
+    <script type="module" src="./init.js"></script>
     <script>
-      function updateElementText(id, text) {
-        try {
-          document.getElementById(id).textContent = text
-        } catch (ex) {
-          console.log(ex)
-        }
-      }
 
       // The first step on any WebAuthn flow would be to initialize the SDK. The below function should be called as soon as the page loads.
       // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#1-initialize-the-webauthn-sdk
       async function init() {
         try {
           const clientId = window.env.VITE_TS_CLIENT_ID
-          updateElementText('clientId', clientId)
+          window.pageUtils.updateElementText('clientId', clientId)
           await window.WebAuthnSdk.init(clientId, {
             serverPath: 'https://webauthn.identity.security',
           })
-          updateElementText('status', `SDK Init done`)
+          window.pageUtils.updateElementText('status', `SDK Init done`)
 
           // enable button
           const elem = document.getElementById('start')
           elem.removeAttribute('disabled')
         } catch (ex) {
-          updateElementText('status', `Error during init: ${ex}`)
+          window.pageUtils.updateElementText('status', `Error during init: ${ex}`)
         }
       }
 
@@ -41,7 +34,7 @@
       // Triggered when the auth device calls attach()
       async function onDeviceAttach() {
         // set the status text
-        updateElementText('status', `Mobile device connected`)
+        window.pageUtils.updateElementText('status', `Mobile device connected`)
 
         // disable button, to prevent multiple clicks once a device is attached
         const button = document.getElementById('start')
@@ -65,12 +58,12 @@
         console.log(error)
         // Log the error and display a message to the user / navigate to an error page.
         // set the status text
-        updateElementText('status', `Error: ${error}`)
+        window.pageUtils.updateElementText('status', `Error: ${error}`)
       }
 
       async function completeSession(code) {
         // set the status text
-        // updateElementText('status', `Completed with auth code: ${code}`);
+        // window.pageUtils.updateElementText('status', `Completed with auth code: ${code}`);
         exchangeAndDisplayIDToken(code)
 
         // Get user tokens using the received code as described below
@@ -100,13 +93,13 @@
             `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=200x200`,
           )
 
-          updateElementText(
+          window.pageUtils.updateElementText(
             'url',
             `You can also copy the following link and open in ANOTHER browser:  ${url}`,
           )
-          updateElementText('status', 'Polling')
+          window.pageUtils.updateElementText('status', 'Polling')
         } else {
-          updateElementText(
+          window.pageUtils.updateElementText(
             'status',
             `Something may be wrong with your webauthn config. PLS Check https://portal.identity.security/authentication/webAuthN?app=<%= appId%>`,
           )
@@ -132,10 +125,10 @@
           const idtoken = data?.id_token
           const tokenJson = JSON.parse(window.atob(idtoken.split('.')[1]))
           const username = tokenJson.webauthn_username
-          updateElementText('status', `Complete flow for user ${username}`)
-          updateElementText('rawToken', JSON.stringify(tokenJson))
+          window.pageUtils.updateElementText('status', `Complete flow for user ${username}`)
+          window.pageUtils.updateElementText('rawToken', JSON.stringify(tokenJson))
         } catch (ex) {
-          updateElementText('status', `Error during token exchange for code ${authCode}: ${ex}`)
+          window.pageUtils.updateElementText('status', `Error during token exchange for code ${authCode}: ${ex}`)
         }
       }
     </script>
