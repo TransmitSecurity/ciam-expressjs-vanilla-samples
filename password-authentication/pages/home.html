@@ -1,0 +1,97 @@
+<html>
+  <head>
+    <title>Home</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <script
+      type="text/javascript"
+      src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
+    ></script>
+    <script type="module" src="./config.js"></script>
+
+    <script>
+      let accessToken = ''
+
+      function updateElementText(id, text) {
+        try {
+          document.getElementById(id).textContent = text;
+        } catch (ex) {
+          console.log(ex);
+        }
+      }
+
+      function getCookie(name) {
+        const nameEQ = name + '=';
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+          if (c.indexOf(nameEQ) == 0)
+            return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+      }
+
+      function eraseCookie(name) {
+        document.cookie =
+          name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      }
+
+      async function logout() {
+        try {
+          const response = await fetch('/logout', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`
+            },
+          });
+
+          const data = await response.json();
+          // You can get the number of sessions that were terminated with
+          // data.result.sessions_count
+          console.log(data);
+
+          // Delete the cookies storing the session tokens
+          eraseCookie('accessToken')
+          eraseCookie('refreshToken')
+          eraseCookie('idToken')
+
+          // Redirect the user to the login page
+          window.location.replace('/login')
+            
+        } catch (ex) {
+          updateElementText(
+            'status',
+            `Error during logout: ${ex}`
+          );
+        }
+      }
+
+      async function init() {
+        const clientId = window.env.VITE_TS_CLIENT_ID
+        updateElementText('clientId', clientId)
+
+        // Check if cookies are present
+        accessToken = getCookie('accessToken')
+        const refreshToken = getCookie('refreshToken')
+        const idTokenCookie = getCookie('idToken')
+
+        // If a cookie is missing redirect to login
+        if (!accessToken || !refreshToken || !idTokenCookie) {
+          window.location.replace('/login');
+        }
+        
+        // Otherwise print a welcome message
+        const idToken = JSON.parse(idTokenCookie)
+        updateElementText('username', idToken.username)
+      }
+
+    </script>
+  </head>
+
+  <body onload="init()">
+    <h1>Welcome <span id="username"></span></h1>
+    <span id="clientId"></span>
+    <br /><br />
+    <button onclick="logout()">Logout</button>
+  </body>
+</html>
