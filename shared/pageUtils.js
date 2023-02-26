@@ -1,4 +1,4 @@
-
+// client side functions and shared utilities
 
 export const pageUtils = {
   updateElementText: function(id, text) {
