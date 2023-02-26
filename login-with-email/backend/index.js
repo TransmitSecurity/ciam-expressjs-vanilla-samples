@@ -1,6 +1,7 @@
-const express = require('express');
-const axios = require('axios');
-const qs = require('qs');
+import express  from 'express';
+import axios from 'axios';
+import qs  from 'qs';
+import {backendUtils} from '../../shared/backendUtils.js'
 const router = express.Router();
 
 let accessToken = null;
@@ -8,7 +9,7 @@ let email = null;
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.render('index', {title: 'Express'});
+    res.redirect('/pages/email-otp.html')
 });
 
 router.post("/complete/:code?", async function (req, res) {
@@ -71,7 +72,7 @@ router.post("/email-otp", async function (req, res) {
 });
 
 async function startEmailOtpFlow() {
-    const accessTokenResponse = await getAccessToken();
+    const accessTokenResponse = await backendUtils.getClientCredentialsToken();
 
     if (accessTokenResponse) {
         accessToken = accessTokenResponse;
@@ -90,40 +91,6 @@ async function startEmailOtpFlow() {
     return null;
 }
 
-async function getAccessToken() {
-    const url = 'https://api.userid.security/oidc/token';
-    const clientId = process.env.TS_CLIENT_ID;
-    const clientSecret = process.env.TS_CLIENT_SECRET;
-    const requestUrlEncodedParams = qs.stringify({
-        'grant_type': 'client_credentials',
-        'client_id': clientId,
-        'client_secret': clientSecret
-    });
-    const headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-    };
-    const config = {
-        method: 'post',
-        url,
-        headers,
-        data: requestUrlEncodedParams
-    };
-
-    try {
-        const response = await axios(config)
-        const accessToken = response?.data?.access_token;
-
-        if (accessToken) {
-            console.log('The access-token request succeeded.', accessToken);
-            return accessToken;
-        }
-
-    } catch (e) {
-        console.error('There was a problem with the access token request', {e})
-    }
-
-    return null;
-}
 
 async function sendEmailOTP() {
     const url = 'https://api.userid.security/v1/auth/otp/email';
@@ -180,4 +147,4 @@ async function validateOTP(otpCode) {
     return null
 }
 
-module.exports = router;
+export const indexRouter = router
