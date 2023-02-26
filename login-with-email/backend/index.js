@@ -1,7 +1,6 @@
 import express  from 'express';
 import axios from 'axios';
-import qs  from 'qs';
-import {backendUtils} from '../../shared/backendUtils.js'
+import fetch  from 'node-fetch';
 const router = express.Router();
 
 let accessToken = null;
@@ -72,7 +71,7 @@ router.post("/email-otp", async function (req, res) {
 });
 
 async function startEmailOtpFlow() {
-    const accessTokenResponse = await backendUtils.getClientCredentialsToken();
+    const accessTokenResponse = await getClientCredentialsToken();
 
     if (accessTokenResponse) {
         accessToken = accessTokenResponse;
@@ -90,6 +89,32 @@ async function startEmailOtpFlow() {
 
     return null;
 }
+
+async function getClientCredentialsToken() {
+    const url = 'https://api.userid.security/oidc/token'
+    const params = new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_id: process.env.VITE_TS_CLIENT_ID,
+      client_secret: process.env.TS_CLIENT_SECRET,
+    })
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
+    }
+  
+    try {
+      console.log("about to call " + JSON.stringify(options))
+      const resp = await fetch(url, options)
+      const data = await resp.json()
+      console.log(resp.headers, resp.status, data)
+      return data?.access_token
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
 
 async function sendEmailOTP() {
