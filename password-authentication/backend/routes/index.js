@@ -15,10 +15,10 @@ router.get(['/', '/home'], async function (req, res) {
 });
 
 // Render verification page
-router.get('/verify', async function (req, res) {
+router.get('/complete', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   const params = new URLSearchParams(req.query)
-  res.redirect(`/pages/verify.html?${params.toString()}`);
+  res.redirect(`/pages/complete.html?${params.toString()}`);
 });
 
 
@@ -61,7 +61,7 @@ router.post('/signup', async function (req, res) {
   res.send(result)
 });
 
-// The following endpoint is used by views/verify.ejs when a flow is completed, for token exchange
+// The following endpoint is used by views/complete.html when a flow is completed, for token exchange
 // SECURITY NOTES: Normally the ID token SHOULD NOT reach the UI, however this is a sample app and we want to display it for clarity.
 // For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-6-get-user-tokens
 router.post('/fetch-tokens', async function (req, res) {
