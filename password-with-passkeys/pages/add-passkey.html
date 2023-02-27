@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script
+      type="text/javascript"
+      src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
+    ></script>
+    <script type="module" src="./init.js"></script>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const username = urlParams.get("username");
+
+      async function init() {
+        const clientId = window.env.VITE_TS_CLIENT_ID;
+        window.pageUtils.updateElementText("username", username);
+
+        // Initialize the SDK, for more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#1-initialize-the-webauthn-sdk-1
+        await window.WebAuthnSdk.init(clientId, {
+          serverPath: "https://webauthn.identity.security",
+        });
+      }
+
+      const onRegister = async () => {
+        const startSessionJson = await (
+          await fetch("/passkey/start-authorized-session", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username,
+            }),
+          })
+        ).json();
+
+        await window.WebAuthnSdk.prepareWebauthnRegistration(
+          username,
+          username,
+          startSessionJson.auth_session_id
+        );
+
+        console.log("Executing WenAuthN Registration");
+        const code = await window.WebAuthnSdk.executeWebauthnRegistration();
+
+        const exchangeCodeJson = await (
+          await fetch("/passkey/exchange-code", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              code,
+            }),
+          })
+        ).json();
+
+        console.log(`Access token response: ${exchangeCodeJson}`);
+      };
+
+      async function exchangeAndDisplayIDToken(authCode) {
+        try {
+          const response = await fetch("/desktop/fetch-tokens", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              authCode: authCode,
+            }),
+          });
+
+          // ruff'n'tuff parsing of the token... usually happens server side of course, to be improved for the sample code.
+          const data = await response.json();
+          const idtoken = data?.id_token;
+          const tokenJson = JSON.parse(window.atob(idtoken.split(".")[1]));
+          const username = tokenJson.webauthn_username;
+          window.pageUtils.updateElementText(
+            "status",
+            `Complete flow for user ${username}`
+          );
+          window.pageUtils.updateElementText(
+            "rawToken",
+            JSON.stringify(tokenJson)
+          );
+        } catch (ex) {
+          window.pageUtils.updateElementText(
+            "status",
+            `Error during token exchange for code ${authCode}: ${ex}`
+          );
+        }
+      }
+    </script>
+  </head>
+  <body onload="init()">
+    <div class="page">
+      <header>
+        <img src="/acme-logo.svg" />
+      </header>
+      <main>
+        <div class="content column gap centered">
+          <div class="column centered">
+            <div>Hello,</div>
+            <div id="username"></div>
+          </div>
+          <img class="icon" src="/shield.svg" />
+          <div class="title">Your’e signed in</div>
+          <button class="full-width" onclick="onRegister()">Add passkey</button>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

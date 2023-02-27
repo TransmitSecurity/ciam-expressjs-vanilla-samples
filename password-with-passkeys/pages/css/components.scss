@@ -1,0 +1,96 @@
+@import "variables";
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+
+  header {
+    display: flex;
+    align-items: center;
+    height: $header-height;
+    padding: 0 $padding;
+  }
+
+  main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    width: 100%;
+    background-color: lightgrey;
+
+    .content {
+      width: $content-width;
+      padding: $padding;
+      background-color: white;
+      border-radius: $border-radius;
+    }
+  }
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+
+  &.gap {
+    gap: $gap;
+  }
+
+  &.gap-small {
+    gap: $gap-small;
+  }
+
+  &.centered {
+    align-items: center;
+  }
+}
+
+input {
+  padding: 17px 12px;
+  border: $border;
+  border-radius: $border-radius;
+
+  &:focus-visible {
+    outline: $primary auto 1px;
+  }
+}
+
+button {
+  width: fit-content;
+  padding: 18px 12px;
+  border: none;
+  border-radius: $border-radius;
+  background-color: $primary;
+  color: $contrast;
+  cursor: pointer;
+
+  &.full-width {
+    width: 100%;
+  }
+}
+
+a {
+  color: $primary;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.separator {
+  border-bottom: $border;
+  border-color: $border-color;
+  margin: $gap 0;
+}
+
+img {
+  &.icon {
+    width: $icon-width;
+    height: $icon-Height;
+  }
+}

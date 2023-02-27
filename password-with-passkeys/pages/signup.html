@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
+    <script>
+      function onSignup() {
+        const username = document.querySelector("#username").value;
+
+        window.location.href = `/pages/add-passkey.html?username=${username}`;
+      }
+    </script>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <img src="/acme-logo.svg" />
+      </header>
+      <main>
+        <div class="content column gap">
+          <div class="title">Welcome</div>
+          <input type="text" id="username" placeholder="Enter username" />
+          <input type="password" id="password" placeholder="Enter password" />
+          <input
+            type="password"
+            id="confirmPassword"
+            placeholder="Confirm password"
+          />
+          <button class="full-width" onclick="onSignup()">Sign up</button>
+          <div class="separator"></div>
+          <div class="text">
+            already have an account? <a href="/">Sign in</a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

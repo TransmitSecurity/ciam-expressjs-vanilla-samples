@@ -4,10 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 8080",
-    "build": "vite build",
-    "preview": "vite preview",
-    "start": "PORT=8080 node build/server.js"
+    "start": "vite --port 8080"
   },
   "devDependencies": {
     "sass": "1.58.3",
@@ -15,8 +12,9 @@
     "vite-plugin-mix": "0.4.0"
   },
   "dependencies": {
+    "dotenv": "16.0.3",
     "express": "4.18.2",
     "node-fetch": "3.3.0"
   },
-  "packageManager": "yarn@1.22.15"
+  "packageManager": "yarn@1.22.19"
 }
