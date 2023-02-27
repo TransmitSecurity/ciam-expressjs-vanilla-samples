@@ -8,7 +8,7 @@ const mix = mixPlugin.default
 export default defineConfig({
   plugins: [
     mix({
-      handler: './app.js',
+      handler: './backend/app.js',
     }),
   ],
 })

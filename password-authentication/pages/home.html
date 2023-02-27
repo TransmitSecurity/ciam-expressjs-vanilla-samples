@@ -9,7 +9,7 @@
     <script type="module" src="./config.js"></script>
 
     <script>
-      let accessToken = ''
+      const accessToken = ''
 
       function updateElementText(id, text) {
         try {
@@ -19,21 +19,24 @@
         }
       }
 
-      function getCookie(name) {
-        const nameEQ = name + '=';
-        const ca = document.cookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-          let c = ca[i];
-          while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-          if (c.indexOf(nameEQ) == 0)
-            return c.substring(nameEQ.length, c.length);
-        }
-        return null;
-      }
+      async function userInfo() {
+        try {
+          const response = await fetch('/me', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`
+            },
+            credentials: 'include'
+          });
 
-      function eraseCookie(name) {
-        document.cookie =
-          name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+          const data = await response.json();
+          return data.idToken
+        } catch (ex) {
+          updateElementText(
+            'status',
+            `Error during session check: ${ex}`
+          );
+        }
       }
 
       async function logout() {
@@ -50,11 +53,6 @@
           // data.result.sessions_count
           console.log(data);
 
-          // Delete the cookies storing the session tokens
-          eraseCookie('accessToken')
-          eraseCookie('refreshToken')
-          eraseCookie('idToken')
-
           // Redirect the user to the login page
           window.location.replace('/login')
             
@@ -70,19 +68,16 @@
         const clientId = window.env.VITE_TS_CLIENT_ID
         updateElementText('clientId', clientId)
 
-        // Check if cookies are present
-        accessToken = getCookie('accessToken')
-        const refreshToken = getCookie('refreshToken')
-        const idTokenCookie = getCookie('idToken')
+        // Check if the user is authenticated
+        const userData = await userInfo()
 
-        // If a cookie is missing redirect to login
-        if (!accessToken || !refreshToken || !idTokenCookie) {
+        // If not, redirect to login page
+        if (!userData) {
           window.location.replace('/login');
         }
         
         // Otherwise print a welcome message
-        const idToken = JSON.parse(idTokenCookie)
-        updateElementText('username', idToken.username)
+        updateElementText('username', userData.username)
       }
 
     </script>
