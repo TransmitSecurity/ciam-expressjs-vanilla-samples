@@ -17,7 +17,7 @@ export async function loginPassword(username, password) {
   const data = {
     username,
     password,
-    client_id: process.env.TS_CLIENT_ID,
+    client_id: process.env.VITE_TS_CLIENT_ID,
     redirect_uri: process.env.TS_REDIRECT_URI,
     claims: {
       id_token: {
@@ -123,7 +123,7 @@ async function getResetTokenByOldPassword(username, password, clientToken) {
   const data = {
     username,
     password,
-    client_id: process.env.TS_CLIENT_ID,
+    client_id: process.env.VITE_TS_CLIENT_ID,
   };
 
   const response = await fetch(

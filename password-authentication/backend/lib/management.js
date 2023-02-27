@@ -8,7 +8,7 @@ import fetch from 'node-fetch';
 export async function getClientToken() {
   const url = `${userBaseUrl}/oidc/token`;
   const params = {
-    client_id: process.env.TS_CLIENT_ID,
+    client_id: process.env.VITE_TS_CLIENT_ID,
     client_secret: process.env.TS_CLIENT_SECRET,
     grant_type: 'client_credentials',
   };
@@ -36,7 +36,7 @@ export async function getUserTokens(authCode) {
   const params = new URLSearchParams({
     grant_type: 'authorization_code',
     code: authCode,
-    client_id: process.env.TS_CLIENT_ID,
+    client_id: process.env.VITE_TS_CLIENT_ID,
     client_secret: process.env.TS_CLIENT_SECRET,
     redirect_uri: process.env.TS_REDIRECT_URI,
   });
