@@ -1,6 +1,6 @@
-const express = require('express');
-const axios = require('axios');
-const qs = require('qs');
+import express  from 'express';
+import axios from 'axios';
+import fetch  from 'node-fetch';
 const router = express.Router();
 
 let accessToken = null;
@@ -8,7 +8,7 @@ let email = null;
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.render('index', {title: 'Express'});
+    res.redirect('/pages/email-otp.html')
 });
 
 router.post("/complete/:code?", async function (req, res) {
@@ -71,7 +71,7 @@ router.post("/email-otp", async function (req, res) {
 });
 
 async function startEmailOtpFlow() {
-    const accessTokenResponse = await getAccessToken();
+    const accessTokenResponse = await getClientCredentialsToken();
 
     if (accessTokenResponse) {
         accessToken = accessTokenResponse;
@@ -90,40 +90,32 @@ async function startEmailOtpFlow() {
     return null;
 }
 
-async function getAccessToken() {
-    const url = 'https://api.userid.security/oidc/token';
-    const clientId = process.env.TS_CLIENT_ID;
-    const clientSecret = process.env.TS_CLIENT_SECRET;
-    const requestUrlEncodedParams = qs.stringify({
-        'grant_type': 'client_credentials',
-        'client_id': clientId,
-        'client_secret': clientSecret
-    });
-    const headers = {
+async function getClientCredentialsToken() {
+    const url = 'https://api.userid.security/oidc/token'
+    const params = new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_id: process.env.VITE_TS_CLIENT_ID,
+      client_secret: process.env.TS_CLIENT_SECRET,
+    })
+    const options = {
+      method: 'POST',
+      headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-    };
-    const config = {
-        method: 'post',
-        url,
-        headers,
-        data: requestUrlEncodedParams
-    };
-
-    try {
-        const response = await axios(config)
-        const accessToken = response?.data?.access_token;
-
-        if (accessToken) {
-            console.log('The access-token request succeeded.', accessToken);
-            return accessToken;
-        }
-
-    } catch (e) {
-        console.error('There was a problem with the access token request', {e})
+      },
+      body: params.toString(),
     }
+  
+    try {
+      console.log("about to call " + JSON.stringify(options))
+      const resp = await fetch(url, options)
+      const data = await resp.json()
+      console.log(resp.headers, resp.status, data)
+      return data?.access_token
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
-    return null;
-}
 
 async function sendEmailOTP() {
     const url = 'https://api.userid.security/v1/auth/otp/email';
@@ -180,4 +172,4 @@ async function validateOTP(otpCode) {
     return null
 }
 
-module.exports = router;
+export const indexRouter = router
