@@ -16,20 +16,20 @@ router.post("/complete/:code?", async function (req, res) {
     console.log('received body is', req?.body)
     
     if (!otpCode || !email || !accessToken) {
-        res.send({
-            message: 'Received OTP is empty or there was no previos call to send email on this session',
+        res.status(400).send({
+            message: 'Received OTP is empty or there was no previos call to send email on this session'
         });
     } else {
         try {
             const validateOtpResponse = await validateOTP(email, otpCode, accessToken)
-            res.send({
+            res.status(validateOtpResponse.status).send({
                 received_email: email,
                 received_otp: otpCode,
                 response: validateOtpResponse
             });
 
         } catch (error) {
-            res.send({
+            res.status(400).send({
                 received_email: email,
                 received_otp: otpCode,
                 error
@@ -141,19 +141,13 @@ async function validateOTP(email, otpCode, accessToken) {
         })
       };
 
-    try {
-        console.log("about to call " + JSON.stringify(options))
-        const resp = await fetch(url, options)
-        const data = await resp.json()
-        if (data) {
-          console.log('The validate-otp request succeeded', data)
-          return data;
-        }  
-    } catch (e) {
-        console.error('There was a problem with the validate-otp request', {error: e})
-    }
-
-    return null
+      // try / catch performed at the calling level, and transformed to a response
+      console.log("about to call " + JSON.stringify(options))
+      const resp = await fetch(url, options);
+      const status = resp.status;
+      const data = await resp.json();
+      console.log("response is ", {status, data});
+      return {status, data};
 }
 
 export const indexRouter = router
