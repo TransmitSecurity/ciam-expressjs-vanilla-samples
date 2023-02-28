@@ -7,6 +7,40 @@ router.get('/', function (req, res, next) {
     res.redirect('/pages/email-otp.html')
 });
 
+router.post("/email-otp", async function (req, res) {
+  const email = req?.body?.email;
+
+  if (!email) {
+      res.send({
+          message: 'Received email is empty',
+      });
+  } else {
+      try {
+          // fetch access token, and save both token and email on session, for the OTP call later
+          const accessToken = await getClientCredentialsToken();
+          req.session.accessToken = accessToken;
+          req.session.email = email;
+          req.session.save();
+
+          // send the OTP email
+          const emailOtpResponse = await sendEmailOTP(email, accessToken);
+          res.send({
+              received_email: email,
+              message: JSON.stringify(emailOtpResponse),
+              status: 200
+          });
+
+      } catch (error) {
+          console.log(error);
+          res.send({
+              received_email: req.body.email,
+              message: 'Error in the email-otp flow',
+              error
+          });
+      }
+  }
+});
+
 router.post("/complete/:code?", async function (req, res) {
 
     ///${encodeURIComponent(otpCode)}`
@@ -32,40 +66,6 @@ router.post("/complete/:code?", async function (req, res) {
             res.status(400).send({
                 received_email: email,
                 received_otp: otpCode,
-                error
-            });
-        }
-    }
-});
-
-router.post("/email-otp", async function (req, res) {
-    const email = req?.body?.email;
-
-    if (!email) {
-        res.send({
-            message: 'Received email is empty',
-        });
-    } else {
-        try {
-            // fetch access token, and save both token and email on session, for the OTP call later
-            const accessToken = await getClientCredentialsToken();
-            req.session.accessToken = accessToken;
-            req.session.email = email;
-            req.session.save();
-
-            // send the OTP email
-            const emailOtpResponse = await sendEmailOTP(email, accessToken);
-            res.send({
-                received_email: email,
-                message: JSON.stringify(emailOtpResponse),
-                status: 200
-            });
-
-        } catch (error) {
-            console.log(error);
-            res.send({
-                received_email: req.body.email,
-                message: 'Error in the email-otp flow',
                 error
             });
         }
