@@ -1,10 +1,6 @@
 import express  from 'express';
-import axios from 'axios';
 import fetch  from 'node-fetch';
 const router = express.Router();
-
-let accessToken = null;
-let email = null;
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -14,16 +10,18 @@ router.get('/', function (req, res, next) {
 router.post("/complete/:code?", async function (req, res) {
 
     ///${encodeURIComponent(otpCode)}`
+    const email = req.session.email;
     const otpCode = req?.body?.otpCode;
+    const accessToken = req.session.accessToken;
     console.log('received body is', req?.body)
     
-    if (!otpCode) {
+    if (!otpCode || !email || !accessToken) {
         res.send({
-            message: 'Received OTP is empty',
+            message: 'Received OTP is empty or there was no previos call to send email on this session',
         });
     } else {
         try {
-            const validateOtpResponse = await validateOTP(otpCode)
+            const validateOtpResponse = await validateOTP(email, otpCode, accessToken)
             res.send({
                 received_email: email,
                 received_otp: otpCode,
@@ -38,14 +36,10 @@ router.post("/complete/:code?", async function (req, res) {
             });
         }
     }
-
-    /*const code = req.params.code;
-    console.log(`The code is: ${code}`);
-    res.send({code});*/
 });
 
 router.post("/email-otp", async function (req, res) {
-    email = req?.body?.email;
+    const email = req?.body?.email;
 
     if (!email) {
         res.send({
@@ -53,14 +47,22 @@ router.post("/email-otp", async function (req, res) {
         });
     } else {
         try {
-            const emailOtpResponse = await startEmailOtpFlow()
+            // fetch access token, and save both token and email on session, for the OTP call later
+            const accessToken = await getClientCredentialsToken();
+            req.session.accessToken = accessToken;
+            req.session.email = email;
+            req.session.save();
+
+            // send the OTP email
+            const emailOtpResponse = await sendEmailOTP(email, accessToken);
             res.send({
-                received_email: req.body.email,
-                message: emailOtpResponse?.message,
-                status: emailOtpResponse?.status
+                received_email: email,
+                message: JSON.stringify(emailOtpResponse),
+                status: 200
             });
 
         } catch (error) {
+            console.log(error);
             res.send({
                 received_email: req.body.email,
                 message: 'Error in the email-otp flow',
@@ -69,26 +71,6 @@ router.post("/email-otp", async function (req, res) {
         }
     }
 });
-
-async function startEmailOtpFlow() {
-    const accessTokenResponse = await getClientCredentialsToken();
-
-    if (accessTokenResponse) {
-        accessToken = accessTokenResponse;
-
-        const emailOtpResponse = await sendEmailOTP();
-
-        if (emailOtpResponse) {
-
-            return {
-                message: emailOtpResponse.message,
-                status: 200
-            }
-        }
-    }
-
-    return null;
-}
 
 async function getClientCredentialsToken() {
     const url = 'https://api.userid.security/oidc/token'
@@ -117,54 +99,56 @@ async function getClientCredentialsToken() {
   }
 
 
-async function sendEmailOTP() {
-    const url = 'https://api.userid.security/v1/auth/otp/email';
-    const data = {
-        email,
+async function sendEmailOTP(email, accessToken) {
+    const url = 'https://api.userid.security/v1/auth/otp/email'
+    const options = {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
         redirect_uri: process.env.TS_REDIRECT_URI,
         create_new_user: true,
-    };
-    const config = {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": 'application/json',
-        },
-    };
-
+      })
+    }
+  
     try {
-        const emailOtpResponse = await axios.post(url, data, config);
-
-        if (emailOtpResponse?.data) {
-            console.log('The email-otp request succeeded', emailOtpResponse.data)
-            return emailOtpResponse.data;
-        }
+      console.log("about to call " + JSON.stringify(options))
+      const resp = await fetch(url, options)
+      const data = await resp.json()
+      if (data) {
+        console.log('The email-otp request succeeded', data)
+        return data;
+      }
     } catch (e) {
         console.error('There was a problem with the email-otp request', {error: e})
     }
-
-    return null
 }
 
-async function validateOTP(otpCode) {
+async function validateOTP(email, otpCode, accessToken) {
     const url = 'https://api.userid.security/v1/auth/otp/email/validation';
-    const data = {
-        email,
-        passcode: otpCode,
-    };
-    const config = {
+    const options = {
+        method: 'POST',
         headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
         },
-    };
+        body: JSON.stringify({
+            email: email,
+            passcode: otpCode,
+        })
+      };
 
     try {
-        const validateOtpResponse = await axios.post(url, data, config);
-
-        if (validateOtpResponse?.data) {
-            console.log('The validate-otp request succeeded', validateOtpResponse.data)
-            return validateOtpResponse.data;
-        }
+        console.log("about to call " + JSON.stringify(options))
+        const resp = await fetch(url, options)
+        const data = await resp.json()
+        if (data) {
+          console.log('The validate-otp request succeeded', data)
+          return data;
+        }  
     } catch (e) {
         console.error('There was a problem with the validate-otp request', {error: e})
     }
