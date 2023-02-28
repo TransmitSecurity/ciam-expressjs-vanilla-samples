@@ -1,27 +1,31 @@
 async function sendEmailOtp(email, handleResponse) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/email-otp');
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(JSON.stringify({email}));
+    const response = await fetch('/email-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+        }),
+      });
 
-    xhr.onload = function () {
-        const emailOtpResponse = JSON.parse(xhr.responseText);
-        handleResponse(emailOtpResponse)
-    };
+    const data = await response.json()
+    console.log("Response from /email-otp", data)
+    handleResponse(data);
 }
 
 async function verifyOtp(otpCode, handleResponse) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/complete');
-    xhr.setRequestHeader("Content-Type", "application/json");
-    console.log('The OTP validation request', otpCode);
-    console.log('The OTP validation request', JSON.stringify({otpCode}));
+    const response = await fetch('/complete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            otpCode: otpCode,
+        }),
+      });
 
-    xhr.send(JSON.stringify({otpCode}));
-
-    xhr.onload = function () {
-        const validateOtpResponse = JSON.parse(xhr.responseText);
-        console.log('The OTP validation response', xhr.responseText);
-        handleResponse(validateOtpResponse)
-    };
+    const data = await response.json()
+    console.log("Response from /complete", data)
+    handleResponse(data);
 }
