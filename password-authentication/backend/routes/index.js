@@ -31,9 +31,10 @@ router.get('/login', async function (req, res) {
 // Logout user
 router.post('/logout', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
+  const accessToken = req.session.tokens.accessToken;
   req.session.tokens = undefined
   req.session.save()
-  const result = await logout(req.header('Authorization'));
+  const result = await logout(accessToken);
   res.send(result);
 });
 

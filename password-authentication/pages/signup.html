@@ -2,7 +2,6 @@
   <head>
     <title>Signup </title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
-    <script type="text/javascript"  src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"></script>
     <script type="module" src="./config.js"></script>
 
     <script>
@@ -12,8 +11,8 @@
         } catch(ex) { console.log(ex); }
       }
 
-      // This functions is triggered the flow is complete, and we can exchange the code for an ID token
-      // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-3-register-credentials
+      // This functions is triggered the users input their username and password for signup. It is sent for a backend validation and registration.
+      // For more information see https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-4-register-password
       async function signup() {
         event.preventDefault();
         try {
