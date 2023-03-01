@@ -1,62 +1,61 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/dev-x-style.css">
-</head>
-<body onload="loadPage()">
-<div id="emailDiv">
-    <h3>Enter your email</h3>
-    <input id="emailInput" type="text" size="40">
-    <button id="sendEmailButton" onclick="sendOTP()">Send Email OTP</button>
-</div>
-<div id="otpDiv">
-    <h3 id="otpHeader"></h3>
-    <input id="otpInput" type="text" size="20">
-    <button id="loginButton" onclick="login()">Login</button>
-</div>
-<script type='application/javascript' src="/javascripts/email-otp.js"></script>
-<script>
-    const emailInput = document.getElementById('emailInput');
-    const otpInput = document.getElementById('otpInput');
-    const otpHeader = document.getElementById('otpHeader');
-    const otpDiv = document.getElementById('otpDiv');
-    const emailDiv = document.getElementById('emailDiv');
+  <head>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/dev-x-style.css" />
+  </head>
+  <body onload="loadPage()">
+    <div id="emailDiv">
+      <h3>Enter your email</h3>
+      <input id="emailInput" type="text" size="40" />
+      <button id="sendEmailButton" onclick="sendOTP()">Send Email OTP</button>
+    </div>
+    <div id="otpDiv">
+      <h3 id="otpHeader"></h3>
+      <input id="otpInput" type="text" size="20" />
+      <button id="loginButton" onclick="login()">Login</button>
+    </div>
+    <script type="application/javascript" src="/javascripts/email-otp.js"></script>
+    <script>
+      const emailInput = document.getElementById('emailInput')
+      const otpInput = document.getElementById('otpInput')
+      const otpHeader = document.getElementById('otpHeader')
+      const otpDiv = document.getElementById('otpDiv')
+      const emailDiv = document.getElementById('emailDiv')
 
-    function loadPage() {
-        emailDiv.hidden = false;
-        otpDiv.hidden = true;
-    }
+      function loadPage() {
+        emailDiv.hidden = false
+        otpDiv.hidden = true
+      }
 
-    async function sendOTP() {
+      async function sendOTP() {
         // TODO - Hila Partuk: 20/02/2023 Add FE validation for the email value
         await sendEmailOtp(emailInput.value, handleEmailOtpResponse)
-    }
+      }
 
-    async function login() {
-        // TODO - Hila Partuk: 20/02/2023 Add FE validation for the OTP value 
+      async function login() {
+        // TODO - Hila Partuk: 20/02/2023 Add FE validation for the OTP value
         await verifyOtp(otpInput.value, handleVerifyOtpResponse)
-    }
+      }
 
-    const handleEmailOtpResponse = (emailOtpResponse) => {
+      const handleEmailOtpResponse = emailOtpResponse => {
         console.log('emailOtpResponse', emailOtpResponse)
 
         if (emailOtpResponse?.status === 200) {
-            emailDiv.hidden = true
-            otpDiv.hidden = false
+          emailDiv.hidden = true
+          otpDiv.hidden = false
 
-            otpHeader.textContent = `Enter the OTP sent to ${emailInput.value}`
+          otpHeader.textContent = `Enter the OTP sent to ${emailInput.value}`
         }
-    }
+      }
 
-    const handleVerifyOtpResponse = (verifyOtpResponse) => {
+      const handleVerifyOtpResponse = verifyOtpResponse => {
         console.log('verifyOtpResponse', verifyOtpResponse)
 
         if (verifyOtpResponse?.status === 200) {
-            // success!!!!!! use the result to redirect to completion page
-            window.location = verifyOtpResponse.data.result;
+          // success!!!!!! use the result to redirect to completion page
+          window.location = verifyOtpResponse.data.result
         }
-    }
-
-</script>
-</body>
+      }
+    </script>
+  </body>
 </html>
