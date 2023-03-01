@@ -1,3 +1,4 @@
+import e from 'express';
 import express  from 'express';
 import fetch  from 'node-fetch';
 const router = express.Router();
@@ -59,11 +60,7 @@ router.post("/verify/:code?", async function (req, res) {
     } else {
         try {
             const validateOtpResponse = await validateOTP(email, otpCode, accessToken)
-            res.status(validateOtpResponse.status).send({
-                received_email: email,
-                received_otp: otpCode,
-                response: validateOtpResponse
-            });
+            res.status(validateOtpResponse.status).send({...validateOtpResponse.data});
 
         } catch (error) {
             res.status(400).send({
@@ -73,6 +70,14 @@ router.post("/verify/:code?", async function (req, res) {
             });
         }
     }
+});
+
+router.get('/complete', function (req, res, next) {
+  if (req.query.code) {
+    res.send(`Login completed with code: ${req.query.code}`);
+  } else {
+    res.send(`Login completed with error: ${req.query.error}`);
+  }
 });
 
 async function getClientCredentialsToken() {

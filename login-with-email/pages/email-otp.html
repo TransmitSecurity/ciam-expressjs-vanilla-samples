@@ -52,7 +52,8 @@
         console.log('verifyOtpResponse', verifyOtpResponse)
 
         if (verifyOtpResponse?.status === 200) {
-            // success!!!!!!
+            // success!!!!!! use the result to redirect to completion page
+            window.location = verifyOtpResponse.data.result;
         }
     }
 
