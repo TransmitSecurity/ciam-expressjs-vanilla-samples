@@ -17,22 +17,25 @@ router.post("/email-otp", async function (req, res) {
   } else {
       try {
           // fetch access token, and save both token and email on session, for the OTP call later
-          const accessToken = await getClientCredentialsToken();
-          req.session.accessToken = accessToken;
-          req.session.email = email;
-          req.session.save();
+          const accessTokenResponse = await getClientCredentialsToken();
+          if (accessTokenResponse.status == 200) {
+            req.session.accessToken = accessTokenResponse.data.access_token;
+            req.session.email = email;
+            req.session.save();
+          } else {
+            res.status(accessTokenResponse.status).send(accessTokenResponse);
+          }
 
           // send the OTP email
-          const emailOtpResponse = await sendEmailOTP(email, accessToken);
-          res.send({
+          const emailOtpResponse = await sendEmailOTP(email, req.session.accessToken);
+          res.status(emailOtpResponse.status).send({
               received_email: email,
-              message: JSON.stringify(emailOtpResponse),
-              status: 200
+              response: JSON.stringify(emailOtpResponse)
           });
 
       } catch (error) {
           console.log(error);
-          res.send({
+          res.status(400).send({
               received_email: req.body.email,
               message: 'Error in the email-otp flow',
               error
@@ -41,7 +44,7 @@ router.post("/email-otp", async function (req, res) {
   }
 });
 
-router.post("/complete/:code?", async function (req, res) {
+router.post("/verify/:code?", async function (req, res) {
 
     ///${encodeURIComponent(otpCode)}`
     const email = req.session.email;
@@ -87,15 +90,13 @@ async function getClientCredentialsToken() {
       body: params.toString(),
     }
   
-    try {
-      console.log("about to call " + JSON.stringify(options))
-      const resp = await fetch(url, options)
-      const data = await resp.json()
-      console.log(resp.headers, resp.status, data)
-      return data?.access_token
-    } catch (e) {
-      console.log(e)
-    }
+    // try / catch performed at the calling level, and transformed to a response
+    console.log("about to call " + JSON.stringify(options))
+    const resp = await fetch(url, options)
+    const status = resp.status;
+    const data = await resp.json()
+    console.log("response is ", {status, data});
+    return {status, data};
   }
 
 
@@ -114,17 +115,13 @@ async function sendEmailOTP(email, accessToken) {
       })
     }
   
-    try {
-      console.log("about to call " + JSON.stringify(options))
-      const resp = await fetch(url, options)
-      const data = await resp.json()
-      if (data) {
-        console.log('The email-otp request succeeded', data)
-        return data;
-      }
-    } catch (e) {
-        console.error('There was a problem with the email-otp request', {error: e})
-    }
+    // try / catch performed at the calling level, and transformed to a response
+    console.log("about to call " + JSON.stringify(options))
+    const resp = await fetch(url, options)
+    const status = resp.status;
+    const data = await resp.json()
+    console.log("response is ", {status, data});
+    return {status, data};
 }
 
 async function validateOTP(email, otpCode, accessToken) {
