@@ -9,13 +9,13 @@ app.use(express.json())
 // This is a simplistic session mechanism, only to store access token and email between calls
 // not designed to be used in production
 app.use(
-    session({
-      secret: 'randomsecret!',
-      resave: false,
-      saveUninitialized: false,
-      cookie: { secure: false },
-    }),
-  )
+  session({
+    secret: 'randomsecret!',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false },
+  }),
+)
 
 app.use('/', indexRouter)
 
