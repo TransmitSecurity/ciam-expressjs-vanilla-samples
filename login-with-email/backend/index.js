@@ -2,7 +2,9 @@ import express from 'express'
 import fetch from 'node-fetch'
 const router = express.Router()
 
-let accessToken = null;
+// In a production server, you would cache the access token, and regenerate whenever it expires.
+// The below emulates this 'cache' with a static variable for simplicity.
+let accessToken = null
 
 // GET login page
 router.get('/', function (req, res, next) {
@@ -27,8 +29,7 @@ router.post('/email-otp', async function (req, res) {
 
       accessToken = accessTokenResponse?.data?.access_token
 
-      if (accessTokenResponse.status !== 200 ||
-          !accessToken) {
+      if (accessTokenResponse.status !== 200 || !accessToken) {
         res.status(accessTokenResponse.status).send(accessTokenResponse)
       }
 
@@ -53,7 +54,6 @@ router.post('/email-otp', async function (req, res) {
 // It uses an API to validate the OTP code entered by the user
 // For more information see hhttps://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-4-validate-email-otp
 router.post('/verify', async function (req, res) {
-  
   const email = req.body?.email
   const otpCode = req?.body?.otpCode
   console.log('received body is', req?.body)
@@ -63,16 +63,16 @@ router.post('/verify', async function (req, res) {
       message: 'Received OTP is empty or there was no previous call to send email',
     })
   } else {
-      try {
-          const validateOtpResponse = await validateOTP(email, otpCode)
-          res.status(validateOtpResponse.status).send({...validateOtpResponse.data})
-      } catch (error) {
-          res.status(400).send({
-              received_email: email,
-              received_otp: otpCode,
-              error,
-          })
-      }
+    try {
+      const validateOtpResponse = await validateOTP(email, otpCode)
+      res.status(validateOtpResponse.status).send({ ...validateOtpResponse.data })
+    } catch (error) {
+      res.status(400).send({
+        received_email: email,
+        received_otp: otpCode,
+        error,
+      })
+    }
   }
 })
 
