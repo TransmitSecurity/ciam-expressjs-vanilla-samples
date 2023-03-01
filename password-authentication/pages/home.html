@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <title>Home</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <script
+      type="text/javascript"
+      src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
+    ></script>
+    <script type="module" src="./config.js"></script>
+
+    <script>
+      const accessToken = ''
+
+      function updateElementText(id, text) {
+        try {
+          document.getElementById(id).textContent = text;
+        } catch (ex) {
+          console.log(ex);
+        }
+      }
+
+      async function userInfo() {
+        try {
+          const response = await fetch('/me', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`
+            },
+            credentials: 'include'
+          });
+
+          const data = await response.json();
+          return data.idToken
+        } catch (ex) {
+          updateElementText(
+            'status',
+            `Error during session check: ${ex}`
+          );
+        }
+      }
+
+      async function logout() {
+        try {
+          const response = await fetch('/logout', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`
+            },
+          });
+
+          const data = await response.json();
+          // You can get the number of sessions that were terminated with
+          // data.result.sessions_count
+          console.log(data);
+
+          // Redirect the user to the login page
+          window.location.replace('/login')
+            
+        } catch (ex) {
+          updateElementText(
+            'status',
+            `Error during logout: ${ex}`
+          );
+        }
+      }
+
+      async function init() {
+        const clientId = window.env.VITE_TS_CLIENT_ID
+        updateElementText('clientId', clientId)
+
+        // Check if the user is authenticated
+        const userData = await userInfo()
+
+        // If not, redirect to login page
+        if (!userData) {
+          window.location.replace('/login');
+        }
+        
+        // Otherwise print a welcome message
+        updateElementText('username', userData.username)
+      }
+
+    </script>
+  </head>
+
+  <body onload="init()">
+    <h1>Welcome <span id="username"></span></h1>
+    <span id="clientId"></span>
+    <br /><br />
+    <button onclick="logout()">Logout</button>
+  </body>
+</html>

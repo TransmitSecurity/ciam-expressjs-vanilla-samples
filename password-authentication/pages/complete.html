@@ -1,0 +1,81 @@
+<html>
+  <head>
+    <title>Home</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <script
+      type="text/javascript"
+      src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
+    ></script>
+    <script type="module" src="./config.js"></script>
+
+    <script>
+      function updateElementText(id, text) {
+        try {
+          document.getElementById(id).textContent = text;
+        } catch (ex) {
+          console.log(ex);
+        }
+      }
+
+      async function init() {
+        const clientId = window.env.VITE_TS_CLIENT_ID
+        updateElementText('clientId', clientId)
+
+        // Check if code is present in the query parameters
+        const queryParams = new URLSearchParams(window.location.search);
+        const code = queryParams.get('code');
+
+        console.log('Code', code)
+
+        // If not redirect to login
+        if (!code) {
+          window.location.replace('/login');
+        }
+
+        // If the code is there, exchange it
+        exchangeAndDisplayIDToken(code);
+      }
+
+      // This functions is triggered the flow is complete, and we can exchange the code for an ID token
+      // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-3-register-credentials
+      async function exchangeAndDisplayIDToken(authCode) {
+        try {
+          const response = await fetch('/fetch-tokens', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              authCode: authCode,
+            }),
+          });
+
+          if (response.status === 200) {
+            // Redirect the user to their home page if the token exchange was successful
+            window.location.replace('/home')
+          } else {
+            updateElementText(
+              'status',
+              `Error during token exchange for code ${authCode}`
+            );
+          }
+        } catch (ex) {
+          updateElementText(
+            'status',
+            `Error during token exchange for code ${authCode}: ${ex}`
+          );
+        }
+      }
+    </script>
+  </head>
+
+  <body onload="init()">
+    <h1>Verification</h1>
+    <span id="clientId"></span>
+    <br /><br />
+    <br /><br />
+    <span id="status"></span>
+    <br /><br />
+    <span id="rawToken"></span>
+  </body>
+</html>
