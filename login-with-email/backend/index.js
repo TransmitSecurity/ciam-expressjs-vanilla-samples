@@ -2,11 +2,14 @@ import express from 'express'
 import fetch from 'node-fetch'
 const router = express.Router()
 
-/* GET home page. */
+// GET login page
 router.get('/', function (req, res, next) {
   res.redirect('/pages/email-otp.html')
 })
 
+// The following endpoint is used by pages/email-otp.html during a login flow
+// It uses an API to send and email with the OTP code to the user
+// For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp
 router.post('/email-otp', async function (req, res) {
   const email = req?.body?.email
 
@@ -16,9 +19,11 @@ router.post('/email-otp', async function (req, res) {
     })
   } else {
     try {
-      // fetch access token, and save both token and email on session, for the OTP call later
+      // fetch access token
+      // For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
       const accessTokenResponse = await getClientCredentialsToken()
       if (accessTokenResponse.status == 200) {
+        // Save both token and email on a temp session, used during the OTP validation call later
         req.session.accessToken = accessTokenResponse.data.access_token
         req.session.email = email
         req.session.save()
@@ -43,6 +48,9 @@ router.post('/email-otp', async function (req, res) {
   }
 })
 
+// The following endpoint is used by pages/email-otp.html during a login flow
+// It uses an API to validate the OTP code entered by the user
+// For more information see hhttps://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-4-validate-email-otp
 router.post('/verify/:code?', async function (req, res) {
   ///${encodeURIComponent(otpCode)}`
   const email = req.session.email
@@ -68,6 +76,9 @@ router.post('/verify/:code?', async function (req, res) {
   }
 })
 
+// The following endpoint is the OIDC completion endpoint, called by pages/email-otp.html to finalize the login flow
+// Typically this would perform a token exchange and set a session as described in https://developer.transmitsecurity.com/guides/user/how_sessions_work/
+// For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-5-obtain-user-token
 router.get('/complete', function (req, res, next) {
   if (req.query.code) {
     res.send(`Login completed with code: ${req.query.code}`)
@@ -76,6 +87,7 @@ router.get('/complete', function (req, res, next) {
   }
 })
 
+// For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
 async function getClientCredentialsToken() {
   const url = 'https://api.userid.security/oidc/token'
   const params = new URLSearchParams({
@@ -100,6 +112,7 @@ async function getClientCredentialsToken() {
   return { status, data }
 }
 
+// For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp
 async function sendEmailOTP(email, accessToken) {
   const url = 'https://api.userid.security/v1/auth/otp/email'
   const options = {
@@ -124,6 +137,7 @@ async function sendEmailOTP(email, accessToken) {
   return { status, data }
 }
 
+// For more information see hhttps://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-4-validate-email-otp
 async function validateOTP(email, otpCode, accessToken) {
   const url = 'https://api.userid.security/v1/auth/otp/email/validation'
   const options = {
