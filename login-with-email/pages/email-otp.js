@@ -15,13 +15,14 @@ async function sendEmailOtp(email, handleResponse) {
   handleResponse({ status, data })
 }
 
-async function verifyOtp(otpCode, handleResponse) {
+async function verifyOtp(email, otpCode, handleResponse) {
   const response = await fetch('/verify', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
+      email: email,
       otpCode: otpCode,
     }),
   })

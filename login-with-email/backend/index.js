@@ -2,6 +2,8 @@ import express from 'express'
 import fetch from 'node-fetch'
 const router = express.Router()
 
+let accessToken = null;
+
 // GET login page
 router.get('/', function (req, res, next) {
   res.redirect('/pages/email-otp.html')
@@ -22,17 +24,16 @@ router.post('/email-otp', async function (req, res) {
       // fetch access token
       // For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
       const accessTokenResponse = await getClientCredentialsToken()
-      if (accessTokenResponse.status == 200) {
-        // Save both token and email on a temp session, used during the OTP validation call later
-        req.session.accessToken = accessTokenResponse.data.access_token
-        req.session.email = email
-        req.session.save()
+      
+      if (accessTokenResponse.status == 200 &&
+          accessTokenResponse?.data?.access_token) {
+        accessToken = accessTokenResponse?.data?.access_token
       } else {
         res.status(accessTokenResponse.status).send(accessTokenResponse)
       }
 
       // send the OTP email
-      const emailOtpResponse = await sendEmailOTP(email, req.session.accessToken)
+      const emailOtpResponse = await sendEmailOTP(email)
       res.status(emailOtpResponse.status).send({
         received_email: email,
         response: JSON.stringify(emailOtpResponse),
@@ -51,28 +52,27 @@ router.post('/email-otp', async function (req, res) {
 // The following endpoint is used by pages/email-otp.html during a login flow
 // It uses an API to validate the OTP code entered by the user
 // For more information see hhttps://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-4-validate-email-otp
-router.post('/verify/:code?', async function (req, res) {
-  ///${encodeURIComponent(otpCode)}`
-  const email = req.session.email
+router.post('/verify', async function (req, res) {
+  
+  const email = req.body?.email
   const otpCode = req?.body?.otpCode
-  const accessToken = req.session.accessToken
   console.log('received body is', req?.body)
 
   if (!otpCode || !email || !accessToken) {
     res.status(400).send({
-      message: 'Received OTP is empty or there was no previos call to send email on this session',
+      message: 'Received OTP is empty or there was no previous call to send email',
     })
   } else {
-    try {
-      const validateOtpResponse = await validateOTP(email, otpCode, accessToken)
-      res.status(validateOtpResponse.status).send({ ...validateOtpResponse.data })
-    } catch (error) {
-      res.status(400).send({
-        received_email: email,
-        received_otp: otpCode,
-        error,
-      })
-    }
+      try {
+          const validateOtpResponse = await validateOTP(email, otpCode)
+          res.status(validateOtpResponse.status).send({...validateOtpResponse.data})
+      } catch (error) {
+          res.status(400).send({
+              received_email: email,
+              received_otp: otpCode,
+              error,
+          })
+      }
   }
 })
 
@@ -113,7 +113,7 @@ async function getClientCredentialsToken() {
 }
 
 // For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp
-async function sendEmailOTP(email, accessToken) {
+async function sendEmailOTP(email) {
   const url = 'https://api.userid.security/v1/auth/otp/email'
   const options = {
     method: 'POST',
@@ -138,7 +138,7 @@ async function sendEmailOTP(email, accessToken) {
 }
 
 // For more information see hhttps://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-4-validate-email-otp
-async function validateOTP(email, otpCode, accessToken) {
+async function validateOTP(email, otpCode) {
   const url = 'https://api.userid.security/v1/auth/otp/email/validation'
   const options = {
     method: 'POST',
