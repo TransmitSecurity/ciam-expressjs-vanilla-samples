@@ -12,8 +12,8 @@
         } catch(ex) { console.log(ex); }
       }
 
-      // This functions is triggered the flow is complete, and we can exchange the code for an ID token
-      // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-3-register-credentials
+      // This functions is triggered the users input their username and password. It is sent for a backend validation.
+      // For more information see https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-5-authenticate-user
       async function login() {
         event.preventDefault();
         try {

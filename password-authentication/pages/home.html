@@ -9,7 +9,6 @@
     <script type="module" src="./config.js"></script>
 
     <script>
-      const accessToken = ''
 
       function updateElementText(id, text) {
         try {
@@ -23,13 +22,11 @@
         try {
           const response = await fetch('/me', {
             method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${accessToken}`
-            },
             credentials: 'include'
           });
 
           const data = await response.json();
+          console.log('Response from /me endpoint: ', data);
           return data.idToken
         } catch (ex) {
           updateElementText(
@@ -42,16 +39,13 @@
       async function logout() {
         try {
           const response = await fetch('/logout', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${accessToken}`
-            },
+            method: 'POST'
           });
 
           const data = await response.json();
           // You can get the number of sessions that were terminated with
           // data.result.sessions_count
-          console.log(data);
+          console.log('Response from /logout endpoint: ', data);
 
           // Redirect the user to the login page
           window.location.replace('/login')
