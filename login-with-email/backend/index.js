@@ -24,11 +24,11 @@ router.post('/email-otp', async function (req, res) {
       // fetch access token
       // For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
       const accessTokenResponse = await getClientCredentialsToken()
-      
-      if (accessTokenResponse.status == 200 &&
-          accessTokenResponse?.data?.access_token) {
-        accessToken = accessTokenResponse?.data?.access_token
-      } else {
+
+      accessToken = accessTokenResponse?.data?.access_token
+
+      if (accessTokenResponse.status !== 200 ||
+          !accessToken) {
         res.status(accessTokenResponse.status).send(accessTokenResponse)
       }
 
