@@ -2,6 +2,8 @@ import express from 'express'
 import fetch from 'node-fetch'
 const router = express.Router()
 
+// In a production server, you would cache the access token, 
+// and regenerate whenever it expires. This parameter emulates this 'cache'
 let accessToken = null;
 
 // GET login page
