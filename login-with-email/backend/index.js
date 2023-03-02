@@ -7,7 +7,7 @@ const router = express.Router()
 let accessToken = null;
 
 // GET login page
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
   res.redirect('/pages/email-otp.html')
 })
 
@@ -42,7 +42,7 @@ router.post('/email-otp', async function (req, res) {
       })
     } catch (error) {
       console.log(error)
-      res.status(400).send({
+      res.status(500).send({
         received_email: req.body.email,
         message: 'Error in the email-otp flow',
         error,
@@ -69,7 +69,7 @@ router.post('/verify', async function (req, res) {
           const validateOtpResponse = await validateOTP(email, otpCode)
           res.status(validateOtpResponse.status).send({...validateOtpResponse.data})
       } catch (error) {
-          res.status(400).send({
+      res.status(500).send({
               received_email: email,
               received_otp: otpCode,
               error,
@@ -81,7 +81,7 @@ router.post('/verify', async function (req, res) {
 // The following endpoint is the OIDC completion endpoint, called by pages/email-otp.html to finalize the login flow
 // Typically this would perform a token exchange and set a session as described in https://developer.transmitsecurity.com/guides/user/how_sessions_work/
 // For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-5-obtain-user-token
-router.get('/complete', function (req, res, next) {
+router.get('/complete', function (req, res) {
   if (req.query.code) {
     res.send(`Login completed with code: ${req.query.code}`)
   } else {
