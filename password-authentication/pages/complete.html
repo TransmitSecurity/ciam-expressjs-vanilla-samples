@@ -6,9 +6,9 @@
     <script>
       function updateElementText(id, text) {
         try {
-          document.getElementById(id).textContent = text;
+          document.getElementById(id).textContent = text
         } catch (ex) {
-          console.log(ex);
+          console.log(ex)
         }
       }
 
@@ -17,18 +17,18 @@
         updateElementText('clientId', clientId)
 
         // Check if code is present in the query parameters
-        const queryParams = new URLSearchParams(window.location.search);
-        const code = queryParams.get('code');
+        const queryParams = new URLSearchParams(window.location.search)
+        const code = queryParams.get('code')
 
         console.log('Code', code)
 
         // If not redirect to login
         if (!code) {
-          window.location.replace('/login');
+          window.location.replace('/login')
         }
 
         // If the code is there, exchange it
-        exchangeAuthorizationCode(code);
+        exchangeAuthorizationCode(code)
       }
 
       // This functions is triggered the flow is complete, and we can exchange the code for an ID token
@@ -43,22 +43,16 @@
             body: JSON.stringify({
               authCode: authCode,
             }),
-          });
+          })
 
           if (response.status === 200) {
             // Redirect the user to their home page if the token exchange was successful
             window.location.replace('/home')
           } else {
-            updateElementText(
-              'status',
-              `Error during token exchange for code ${authCode}`
-            );
+            updateElementText('status', `Error during token exchange for code ${authCode}`)
           }
         } catch (ex) {
-          updateElementText(
-            'status',
-            `Error during token exchange for code ${authCode}: ${ex}`
-          );
+          updateElementText('status', `Error during token exchange for code ${authCode}: ${ex}`)
         }
       }
     </script>

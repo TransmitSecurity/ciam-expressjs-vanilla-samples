@@ -11,7 +11,7 @@
     <script type="module" src="./init.js"></script>
 
     <script>
-      let authSessionId = undefined;
+      let authSessionId = undefined
       let currentUser = undefined
 
       // The first step on any WebAuthn flow would be to initialize the SDK. The below function should be called as soon as the page loads.
@@ -21,7 +21,7 @@
       async function init() {
         try {
           const clientId = window.env.VITE_TS_CLIENT_ID
-          authSessionId = window.pageUtils.extractUrlParameter('aid');
+          authSessionId = window.pageUtils.extractUrlParameter('aid')
           window.pageUtils.updateElementText('clientId', clientId)
 
           // Initialize the SDK, for more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#1-initialize-the-webauthn-sdk-1

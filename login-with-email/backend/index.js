@@ -4,10 +4,10 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared'
 
 const router = express.Router()
 
-// In a production server, you would cache the access token, 
-// and regenerate whenever it expires. 
+// In a production server, you would cache the access token,
+// and regenerate whenever it expires.
 // This parameter emulates this 'cache' with a static variable for simplicity.
-let accessToken = null;
+let accessToken = null
 
 // GET login page
 router.get('/', function (req, res) {
@@ -92,7 +92,7 @@ router.get('/complete', function (req, res) {
 
 // For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
 async function getClientCredentialsToken() {
-  const url = common.config.apis.token;
+  const url = common.config.apis.token
   const params = new URLSearchParams({
     grant_type: 'client_credentials',
     client_id: process.env.VITE_TS_CLIENT_ID,
@@ -117,7 +117,7 @@ async function getClientCredentialsToken() {
 
 // For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp
 async function sendEmailOTP(email) {
-  const url = common.config.apis.sendOtpEmail;
+  const url = common.config.apis.sendOtpEmail
   const options = {
     method: 'POST',
     headers: {
@@ -142,7 +142,7 @@ async function sendEmailOTP(email) {
 
 // For more information see hhttps://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-4-validate-email-otp
 async function validateOTP(email, otpCode) {
-  const url = common.config.apis.validateOtpEmail;
+  const url = common.config.apis.validateOtpEmail
   const options = {
     method: 'POST',
     headers: {

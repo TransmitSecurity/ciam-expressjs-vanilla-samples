@@ -8,7 +8,6 @@
     ></script>
     <script type="module" src="./init.js"></script>
     <script>
-
       // The first step on any WebAuthn flow would be to initialize the SDK. The below function should be called as soon as the page loads.
       // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#1-initialize-the-webauthn-sdk
       async function init() {
@@ -128,7 +127,10 @@
           window.pageUtils.updateElementText('status', `Complete flow for user ${username}`)
           window.pageUtils.updateElementText('rawToken', JSON.stringify(tokenJson))
         } catch (ex) {
-          window.pageUtils.updateElementText('status', `Error during token exchange for code ${authCode}: ${ex}`)
+          window.pageUtils.updateElementText(
+            'status',
+            `Error during token exchange for code ${authCode}: ${ex}`,
+          )
         }
       }
     </script>
