@@ -1,4 +1,3 @@
-import { getClientToken } from './management'
 import fetch from 'node-fetch'
 import { common } from '@ciam-expressjs-vanilla-samples/shared'
 
@@ -10,7 +9,7 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared'
 export async function loginPassword(username, password) {
   // Retrieve client token, ideally saved and fetched when expired
   // Here we fetch it everytime to keep things simple
-  const clientToken = await getClientToken()
+  const clientToken = await common.tokens.getClientCredsToken()
 
   // Payload
   // We add a claim to get the username in the ID Token
@@ -52,7 +51,7 @@ export async function signupPassword(username, password) {
 
   // Retrieve client token, ideally saved and fetched when expired
   // Here we fetch it everytime to keep things simple
-  const clientToken = await getClientToken()
+  const clientToken = await common.tokens.getClientCredsToken()
 
   // TODO add error handling, omitted for sample clarity
 

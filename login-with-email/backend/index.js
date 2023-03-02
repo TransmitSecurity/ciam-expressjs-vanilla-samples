@@ -28,12 +28,9 @@ router.post('/email-otp', async function (req, res) {
     try {
       // fetch access token
       // For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
-      const accessTokenResponse = await getClientCredentialsToken()
-
-      accessToken = accessTokenResponse?.data?.access_token
-
-      if (accessTokenResponse.status !== 200 || !accessToken) {
-        res.status(accessTokenResponse.status).send(accessTokenResponse)
+      accessToken = await common.tokens.getClientCredsToken()
+      if (!accessToken) {
+        res.status(500).send({error: 'could not fetch access token'})
       }
 
       // send the OTP email
@@ -90,33 +87,9 @@ router.get('/complete', function (req, res) {
   }
 })
 
-// For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
-async function getClientCredentialsToken() {
-  const url = common.config.apis.token
-  const params = new URLSearchParams({
-    grant_type: 'client_credentials',
-    client_id: process.env.VITE_TS_CLIENT_ID,
-    client_secret: process.env.TS_CLIENT_SECRET,
-  })
-  const options = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: params.toString(),
-  }
-
-  // try / catch performed at the calling level, and transformed to a response
-  console.log('about to call ' + JSON.stringify(options))
-  const resp = await fetch(url, options)
-  const status = resp.status
-  const data = await resp.json()
-  console.log('response is ', { status, data })
-  return { status, data }
-}
-
 // For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp
 async function sendEmailOTP(email) {
+  console.log('-----------here-----')
   const url = common.config.apis.sendOtpEmail
   const options = {
     method: 'POST',
