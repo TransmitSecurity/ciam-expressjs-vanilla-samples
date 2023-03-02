@@ -39,7 +39,7 @@ router.post('/email-otp', async function (req, res) {
       })
     } catch (error) {
       console.log(error)
-      res.status(400).send({
+      res.status(500).send({
         received_email: req.body.email,
         message: 'Error in the email-otp flow',
         error,
@@ -67,7 +67,7 @@ router.post('/verify/:code?', async function (req, res) {
       const validateOtpResponse = await validateOTP(email, otpCode, accessToken)
       res.status(validateOtpResponse.status).send({ ...validateOtpResponse.data })
     } catch (error) {
-      res.status(400).send({
+      res.status(500).send({
         received_email: email,
         received_otp: otpCode,
         error,
