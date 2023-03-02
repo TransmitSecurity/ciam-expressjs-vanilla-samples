@@ -1,6 +1,7 @@
-import { userUrl } from './endpoints'
 import { getClientToken } from './management'
 import fetch from 'node-fetch'
+import { common } from '@ciam-expressjs-vanilla-samples/shared'
+
 
 /*
  * Authenticate a user with a username and password thanks to Transmit's APIs
@@ -26,7 +27,7 @@ export async function loginPassword(username, password) {
   }
 
   // Log user
-  const response = await fetch(`${userUrl}/auth/password/login`, {
+  const response = await fetch(common.config.apis.passwordLogin, {
     method: 'post',
     headers: {
       'Content-Type': 'application/json',
@@ -47,7 +48,7 @@ export async function loginPassword(username, password) {
  * See https://developer.transmitsecurity.com/openapi/user/passwords/#operation/registerPassword
  */
 export async function signupPassword(username, password) {
-  const url = `${userUrl}/auth/password/register`
+  const url = common.config.apis.passwordRegister
 
   // Retrieve client token, ideally saved and fetched when expired
   // Here we fetch it everytime to keep things simple
@@ -112,7 +113,7 @@ async function getResetTokenByOldPassword(username, password, clientToken) {
     client_id: process.env.VITE_TS_CLIENT_ID,
   }
 
-  const response = await fetch(`${userUrl}/auth/password/reset/password/validate`, {
+  const response = await fetch(common.config.apis.passwordResetValidate, {
     method: 'post',
     headers: {
       'Content-Type': 'application/json',
@@ -142,7 +143,7 @@ async function resetPassword(resetToken, password, clientToken) {
     redirect_uri: process.env.TS_REDIRECT_URI,
   }
 
-  const response = await fetch(`${userUrl}/auth/password/reset`, {
+  const response = await fetch(common.config.apis.passwordReset, {
     method: 'post',
     headers: {
       'Content-Type': 'application/json',

@@ -86,6 +86,7 @@ npm install --force
 npm run start
 ```
 
+## Additional notes
 ### Debugging tabs on a mobile device
 
 Some samples might require you to use web browsers on mobile devices. This is the case of the
@@ -94,6 +95,14 @@ refer to the following documentations:
 
 - [Remote debug Chrome on Android Devices](https://developer.chrome.com/docs/devtools/remote-debugging/)
 - [Remote debug Safari on iOS Devices](https://webkit.org/web-inspector/enabling-web-inspector/)
+  
+
+### Using the non-default cluster
+
+By default, the samples work with the US production cluster. However if you are working with a tenant that resides on a different cluster, e.g. EU or a staging cluster, consult your Transmit contact person and configure the following:
+
+- `VITE_TS_IDM_API_BASE`
+- `VITE_TS_WEBAUTHN_API_BASE`
 
 ---
 

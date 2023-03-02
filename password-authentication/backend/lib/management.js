@@ -1,12 +1,12 @@
-import { userBaseUrl, userUrl } from './endpoints'
 import fetch from 'node-fetch'
+import { common } from '@ciam-expressjs-vanilla-samples/shared'
 
 /**
  * Obtain a client access token for API authorization
  * See: https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
  */
 export async function getClientToken() {
-  const url = `${userBaseUrl}/oidc/token`
+  const url = common.config.apis.token;
   const params = {
     client_id: process.env.VITE_TS_CLIENT_ID,
     client_secret: process.env.TS_CLIENT_SECRET,
@@ -32,7 +32,7 @@ export async function getClientToken() {
 // The access token is used for authorizing backend to API calls on behalf of the user, the ID token identifies the user.
 // For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-6-get-user-tokens
 export async function getUserTokens(authCode) {
-  const url = `${userBaseUrl}/oidc/token`
+  const url = common.config.apis.token
   const params = new URLSearchParams({
     grant_type: 'authorization_code',
     code: authCode,
@@ -68,7 +68,7 @@ export async function getUserTokens(authCode) {
  * See: https://developer.transmitsecurity.com/guides/user/manage_user_sessions/#step-5-logout-session
  */
 export async function logout(accessToken) {
-  const url = `${userUrl}/auth/logout`
+  const url = common.config.apis.logout
 
   const response = await fetch(url, {
     method: 'POST',

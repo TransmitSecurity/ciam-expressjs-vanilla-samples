@@ -1,5 +1,6 @@
 import express from 'express'
 import fetch from 'node-fetch'
+import { common } from '@ciam-expressjs-vanilla-samples/shared'
 
 const router = express.Router()
 
@@ -23,7 +24,7 @@ router.post('/authorize-session-user', async function (req, res) {
 // A client credential token is used for authorizing backend to API calls using the client ID and client secret.
 // For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
 async function getClientCredentialsToken() {
-  const url = 'https://api.userid.security/oidc/token'
+  const url = common.config.apis.token
   const params = new URLSearchParams({
     grant_type: 'client_credentials',
     client_id: process.env.VITE_TS_CLIENT_ID,
@@ -52,7 +53,7 @@ async function getClientCredentialsToken() {
 // that are obtained via user authentication, e.g. password login or email OTP.
 // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-3-register-credentials
 async function authorizeAuthnSession(accessToken, authSessionId, username) {
-  const url = 'https://webauthn.identity.security/v1/auth-session/authorize'
+  const url = common.config.apis.webauthnAuthorize
   const options = {
     method: 'POST',
     headers: {

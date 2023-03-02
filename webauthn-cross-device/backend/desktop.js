@@ -1,5 +1,7 @@
 import express from 'express'
 import fetch from 'node-fetch'
+import { common } from '@ciam-expressjs-vanilla-samples/shared'
+
 const router = express.Router()
 
 // The following endpoint is used by views/desktop.ejs when a flow is completed, for token exchange
@@ -20,7 +22,7 @@ router.post('/fetch-tokens', async function (req, res) {
 // The access token is used for authorizing backend to API calls on behalf of the user, the ID token identifies the user.
 // For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-6-get-user-tokens
 async function getUserTokens(authCode) {
-  const url = 'https://api.userid.security/oidc/token'
+  const url = common.config.apis.token
   const params = new URLSearchParams({
     grant_type: 'authorization_code',
     code: authCode,
