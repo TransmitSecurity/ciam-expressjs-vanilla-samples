@@ -3,7 +3,7 @@ import fetch from 'node-fetch'
 const router = express.Router()
 
 // GET login page
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
   res.redirect('/pages/email-otp.html')
 })
 
@@ -79,7 +79,7 @@ router.post('/verify/:code?', async function (req, res) {
 // The following endpoint is the OIDC completion endpoint, called by pages/email-otp.html to finalize the login flow
 // Typically this would perform a token exchange and set a session as described in https://developer.transmitsecurity.com/guides/user/how_sessions_work/
 // For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-5-obtain-user-token
-router.get('/complete', function (req, res, next) {
+router.get('/complete', function (req, res) {
   if (req.query.code) {
     res.send(`Login completed with code: ${req.query.code}`)
   } else {
