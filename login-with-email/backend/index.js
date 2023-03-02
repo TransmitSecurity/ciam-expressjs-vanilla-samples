@@ -1,5 +1,7 @@
 import express from 'express'
 import fetch from 'node-fetch'
+import { common } from '@ciam-expressjs-vanilla-samples/shared'
+
 const router = express.Router()
 
 // GET login page
@@ -89,7 +91,7 @@ router.get('/complete', function (req, res) {
 
 // For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
 async function getClientCredentialsToken() {
-  const url = 'https://api.userid.security/oidc/token'
+  const url = common.config.apis.token;
   const params = new URLSearchParams({
     grant_type: 'client_credentials',
     client_id: process.env.VITE_TS_CLIENT_ID,
@@ -114,7 +116,7 @@ async function getClientCredentialsToken() {
 
 // For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp
 async function sendEmailOTP(email, accessToken) {
-  const url = 'https://api.userid.security/v1/auth/otp/email'
+  const url = common.config.apis.sendOtpEmail;
   const options = {
     method: 'POST',
     headers: {
@@ -139,7 +141,7 @@ async function sendEmailOTP(email, accessToken) {
 
 // For more information see hhttps://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-4-validate-email-otp
 async function validateOTP(email, otpCode, accessToken) {
-  const url = 'https://api.userid.security/v1/auth/otp/email/validation'
+  const url = common.config.apis.validateOtpEmail;
   const options = {
     method: 'POST',
     headers: {
