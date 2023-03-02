@@ -1,6 +1,6 @@
 {
-  "name": "login-with-email",
-  "version": "0.0.0",
+  "name": "@ciam-expressjs-vanilla-samples/login-with-email",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "vite --debug --host --port 8080",

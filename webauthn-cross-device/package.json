@@ -1,5 +1,5 @@
 {
-  "name": "cross-device-flow-demo",
+  "name": "@ciam-expressjs-vanilla-samples/cross-device-flow-demo",
   "version": "1.0.0",
   "description": "",
   "type": "module",

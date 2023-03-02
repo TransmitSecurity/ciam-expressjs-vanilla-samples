@@ -1,0 +1,16 @@
+{
+    "name": "ciam-expressjs-vanilla-samples",
+    "version": "1.0.0",
+    "main": "m.js",
+    "license": "MIT",
+    "private": true,
+    "workspaces": [
+      "login-with-email",
+      "password-authentication",
+      "webauthn-cross-device",
+      "shared"
+    ],
+    "scripts": {
+      "start": "yarn --cwd $SAMPLE start"
+    }
+  }
