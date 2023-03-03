@@ -1,5 +1,7 @@
 import express from 'express'
 import fetch from 'node-fetch'
+import escape from 'escape-html'
+
 const router = express.Router()
 
 // In a production server, you would cache the access token, 
@@ -82,9 +84,9 @@ router.post('/verify', async function (req, res) {
 // For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-5-obtain-user-token
 router.get('/complete', function (req, res) {
   if (req.query.code) {
-    res.send(`Login completed with code: ${req.query.code}`)
+    res.send(`Login completed with code: ${escape(req.query.code)}`)
   } else {
-    res.send(`Login completed with error: ${req.query.error}`)
+    res.send(`Login completed with error: ${escape(req.query.error)}`)
   }
 })
 
