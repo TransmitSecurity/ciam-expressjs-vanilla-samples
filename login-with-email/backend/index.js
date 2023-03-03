@@ -89,7 +89,6 @@ router.get('/complete', function (req, res) {
 
 // For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp
 async function sendEmailOTP(email) {
-  console.log('-----------here-----')
   const url = common.config.apis.sendOtpEmail
   const options = {
     method: 'POST',
