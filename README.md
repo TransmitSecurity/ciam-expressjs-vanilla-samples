@@ -29,41 +29,29 @@ The video describes the following steps:
 
 - (0:10) Launch code spaces via the `<> Code` button
 - (0:22) Create a `.env` file at the root of the project, and copy the content of `sample.env` into it.
-- (0:29) Copy the URL of the code space - and paste it into the `.env` file as the value for `TS_REDIRECT_RI`. Add `/complete` at the end, and add `-8080.preview.app` before the `github.dev` suffix - this is the base URL where the sample apps will launch, and is used for the configuration
-  of callbacks and webauthn. For example
+- (0:29) Copy the URL of the codespace - and paste it into the `.env` file as the value for `TS_REDIRECT_URI`. Add `/complete` at the end, and add `-8080.preview.app` before the `github.dev` suffix. Copy this value to be used in the following steps. For example
 
-  - `https://ts-ron-legendary-waddle-rx7774944x4cwwrv.github.dev` will be edited to
+  - `https://ts-ron-legendary-waddle-rx7774944x4cwwrv.github.dev` will be modified to
   `https://ts-ron-legendary-waddle-rx7774944x4cwwrv-8080.preview.app.github.dev/complete`.
 
 ### Set up the Transmit tenant
 
 - (0:47) Go to your tenant pages on the [Transmit portal](https://portal.identity.security/), and
   create a new app
-- The app should allow you to register new users - make sure the following radio button is checked:
-  <img width="130" alt="image" src="https://user-images.githubusercontent.com/75998795/220659359-4892c0d2-8000-493b-8648-2e2e123e5464.png">
-
-- (0:56) Use the redirect URL you copied into the redirect URI box.
-- (1:02) Click "Add" to save, this also creates a client ID and a client secret
-
-#### WebAuthn configuration
-
-You can skip this section is you do not intend to use webauthn
-
-- (1:04) **IF** the sample also includes WebAuthn - go to the authentication tab and configure the
-  WebAuthn method for your newly created app, using the above redirect URL as origin (remove the `/complete` suffix), and the domain as
-  the RPID.
+  - (0:58) The app should allow you to register new users - make sure the "Public sign-up" is set to "Allow registration".
+- (1:04) Use the redirect URI you copied into the redirect URI box.
+- (1:08) Click "Add" to save, this also creates a client ID and a client secret
+- (1:10) Go to the authentication tab and configure the WebAuthn method for your newly created app, using the above redirect URI as the origin (remove the `/complete` suffix), and the domain as the RPID.
 
 ### Complete Codespace configuration
 
-- (1:16) Now, go back to the application page update your `.env` file:
-  - `VITE_TS_CLIENT_ID` should contain your client id
-  - `TS_CLIENT_SECRET` should contain your client secret
-  - `TS_APP_ID` should contain you application ID
-  - `TS_REDIRECT_URI` should contain the redirect URI you set in your tenant (the base URL with the
-    suffix `/complete`)
-- (1:35) Build the sample from the root directory `yarn`
-- (1:46) Launch the sample using `yarn start`. The sample will launch on port 8080 and exposed via
-  the above base URL (a button will appear on screen to open, or go to the "Ports" tab)
+- (1:26) Now, go back to the application page update your `.env` file:
+  - `VITE_TS_CLIENT_ID` should contain your Client ID
+  - `TS_CLIENT_SECRET` should contain your Client secret
+  - `TS_APP_ID` should contain you Application ID
+  - `TS_REDIRECT_URI` should already be configures as seen above
+- (1:52) Build the sample from the root directory `yarn`
+- (1:59) Launch the sample using `SAMPLE=<directory-name> yarn start` where `<directory-name>` is the directory of the sample you want to run. The sample will launch on port 8080 and a button will appear to launch the UI on a separate tab. If a button does not appear, go to the "Ports" tab and expose 8080 explicitly.
 
 Don't forget to stop your code space when you are done! For more information on code spaces PLS
 visit https://code.visualstudio.com/docs/remote/codespaces
