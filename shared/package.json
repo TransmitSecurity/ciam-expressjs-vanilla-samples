@@ -1,0 +1,9 @@
+{
+  "name": "@ciam-expressjs-vanilla-samples/shared",
+  "version": "1.0.0",
+  "main": "exports.js",
+  "license": "MIT",
+  "dependencies": {
+    "uuid": "^9.0.0"
+  }
+}

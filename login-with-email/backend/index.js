@@ -1,13 +1,14 @@
 import express from 'express'
 import fetch from 'node-fetch'
 import escape from 'escape-html'
+import { common } from '@ciam-expressjs-vanilla-samples/shared'
 
 const router = express.Router()
 
-// In a production server, you would cache the access token, 
-// and regenerate whenever it expires. 
+// In a production server, you would cache the access token,
+// and regenerate whenever it expires.
 // This parameter emulates this 'cache' with a static variable for simplicity.
-let accessToken = null;
+let accessToken = null
 
 // GET login page
 router.get('/', function (req, res) {
@@ -28,12 +29,9 @@ router.post('/email-otp', async function (req, res) {
     try {
       // fetch access token
       // For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
-      const accessTokenResponse = await getClientCredentialsToken()
-
-      accessToken = accessTokenResponse?.data?.access_token
-
-      if (accessTokenResponse.status !== 200 || !accessToken) {
-        res.status(accessTokenResponse.status).send(accessTokenResponse)
+      accessToken = await common.tokens.getClientCredsToken()
+      if (!accessToken) {
+        res.status(500).send({error: 'could not fetch access token'})
       }
 
       // send the OTP email
@@ -90,34 +88,9 @@ router.get('/complete', function (req, res) {
   }
 })
 
-// For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
-async function getClientCredentialsToken() {
-  const url = 'https://api.userid.security/oidc/token'
-  const params = new URLSearchParams({
-    grant_type: 'client_credentials',
-    client_id: process.env.VITE_TS_CLIENT_ID,
-    client_secret: process.env.TS_CLIENT_SECRET,
-  })
-  const options = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: params.toString(),
-  }
-
-  // try / catch performed at the calling level, and transformed to a response
-  console.log('about to call ' + JSON.stringify(options))
-  const resp = await fetch(url, options)
-  const status = resp.status
-  const data = await resp.json()
-  console.log('response is ', { status, data })
-  return { status, data }
-}
-
 // For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp
 async function sendEmailOTP(email) {
-  const url = 'https://api.userid.security/v1/auth/otp/email'
+  const url = common.config.apis.sendOtpEmail
   const options = {
     method: 'POST',
     headers: {
@@ -142,7 +115,7 @@ async function sendEmailOTP(email) {
 
 // For more information see hhttps://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-4-validate-email-otp
 async function validateOTP(email, otpCode) {
-  const url = 'https://api.userid.security/v1/auth/otp/email/validation'
+  const url = common.config.apis.validateOtpEmail
   const options = {
     method: 'POST',
     headers: {

@@ -1,6 +1,6 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px 'Lucida Grande', Helvetica, Arial, sans-serif;
 }
 
 a {
@@ -18,7 +18,7 @@ button {
 @media only screen and (max-width: 600px) {
   body {
     padding: 30px;
-    font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
+    font: 18px 'Lucida Grande', Helvetica, Arial, sans-serif;
     overflow: clip;
     text-overflow: ellipsis;
   }
@@ -26,7 +26,7 @@ button {
   button {
     width: 100%;
     height: 50px;
-    font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
+    font: 18px 'Lucida Grande', Helvetica, Arial, sans-serif;
   }
 
   input {
@@ -40,7 +40,7 @@ button {
     color: gray;
     width: 100%;
     text-align: center;
-    line-height: .1em;
+    line-height: 0.1em;
     margin: 0 auto;
     margin-top: 20px;
     margin-bottom: 20px;

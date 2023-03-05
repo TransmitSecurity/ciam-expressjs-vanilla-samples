@@ -1,6 +1,9 @@
+.env
+node_modules
 */.env
 */node_modules
 */dist
 */build
 .idea
+TODOS.md
 
