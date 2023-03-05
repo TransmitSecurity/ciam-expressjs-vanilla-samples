@@ -1,7 +1,6 @@
 {
   "name": "ciam-expressjs-vanilla-samples",
   "version": "1.0.0",
-  "main": "m.js",
   "license": "MIT",
   "private": true,
   "workspaces": [
