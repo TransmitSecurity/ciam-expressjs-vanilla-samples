@@ -61,14 +61,13 @@ visit https://code.visualstudio.com/docs/remote/codespaces
 To run the project locally, follow the same steps described in the Codespace set up, but for your
 local environment.
 
-You will need to use Node version v14.18.0+ or v16.0.0+.
-
-Note that if you are using `npm`, you might need to use the `--force` option when installing the
-modules:
+- You will need to use Node version v14.18.0+ or v16.0.0+.
+- Your redirect URI should be `http://localhost:8080/complete`, similar change for the webauthn origin and RPID
+- Note that if you are using `npm`, you might need to use the `--force` option when installing the modules:
 
 ```bash
 npm install --force
-npm run start
+SAMPLE=<directory-name> npm run start
 ```
 
 ## Additional notes
