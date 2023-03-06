@@ -27,12 +27,14 @@ The video describes the following steps:
 
 ### Start Codespaces
 
-- (0:10) Launch code spaces via the `<> Code` button
-- (0:22) Create a `.env` file at the root of the project, and copy the content of `sample.env` into it.
-- (0:29) Copy the URL of the codespace - and paste it into the `.env` file as the value for `TS_REDIRECT_URI`. Add `/complete` at the end, and add `-8080.preview.app` before the `github.dev` suffix. Copy this value to be used in the following steps. For example
+- (0:10) Launch code spaces via the `<> Code` button. If you do not see this button, click [this link](https://github.com/TransmitSecurity/ciam-expressjs-vanilla-samples) to get back to the repo root.
+- (0:22) Create a `.env` file at the root of the project, and copy the content of `sample.env` into it. Adding a file is done by clicking the +file icon at the top if the left hand file explorer, as the video shows.
+- (0:29) Copy the URL of the codespace - and paste it into the new `.env` file as the value for `TS_REDIRECT_URI`. Add `/complete` at the end (make sure you only have a single slash here `/complete`), and add `-8080.preview.app` before the `github.dev` suffix. For example:
 
-  - `https://ts-ron-legendary-waddle-rx7774944x4cwwrv.github.dev` will be modified to
+  `https://ts-ron-legendary-waddle-rx7774944x4cwwrv.github.dev` will be edited to become
   `https://ts-ron-legendary-waddle-rx7774944x4cwwrv-8080.preview.app.github.dev/complete`.
+  
+- Copy the above value to be used in the next steps
 
 ### Set up the Transmit tenant
 
@@ -51,7 +53,7 @@ The video describes the following steps:
   - `TS_APP_ID` should contain you Application ID
   - `TS_REDIRECT_URI` should already be configures as seen above
 - (1:52) Build the sample from the root directory `yarn`
-- (1:59) Launch the sample using `SAMPLE=<directory-name> yarn start` where `<directory-name>` is the directory of the sample you want to run. The sample will launch on port 8080 and a button will appear to launch the UI on a separate tab. If a button does not appear, go to the "Ports" tab and expose 8080 explicitly.
+- (1:59) Launch the sample using `SAMPLE=<directory-name> yarn start` where `<directory-name>` is the directory of the sample you want to run. The sample will launch on port 8080 and a button will appear to launch the UI on a separate tab. If a button does not appear, go to the "Ports" tab and expose 8080 explicitly, as seen in the video
 
 Don't forget to stop your code space when you are done! For more information on code spaces PLS
 visit https://code.visualstudio.com/docs/remote/codespaces
