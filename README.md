@@ -7,7 +7,7 @@ This repository contains sample web apps corresponding to the
 
 Each directory contains a STANDALONE sample app that can be configured with your tenant data. 
 All samples are independant from the other samples, except from minimal shared code under the `shared` directory.
-All samples are configured to use you tenant via a `.env` file that you need to create at the root of the project as seen below.
+All samples are configured to use your Transmit tenant via a `.env` file that you need to create at the root of the project as seen below.
 
 You can either launch sample apps directly from the browser using GitHub Codespaces, or clone and
 run from your local machine. See below instructions for both flavors.
