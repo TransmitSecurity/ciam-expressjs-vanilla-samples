@@ -1,30 +1,48 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
   </head>
   <body onload="loadPage()">
-    <div id="phoneDiv">
-      <h3>Enter your phone number</h3>
-      <input id="phoneInput" type="text" size="40" placeholder="+212013345678"/>
-      <button id="sendPhoneButton" onclick="sendOTP()">Send SMS OTP</button>
-    </div>
-    <div id="otpDiv">
-      <h3 id="otpHeader"></h3>
-      <input id="otpInput" type="text" size="20" />
-      <button id="loginButton" onclick="login()">Login</button>
+    <div class="page">
+      <header>
+        <img src="/acme-logo.svg" />
+      </header>
+      <main>
+        <div class="content column gap">
+          <div id="phoneDiv" class="column gap">
+            <h3>Enter your phone number</h3>
+            <input id="phoneInput" type="text" size="40" placeholder="+212013345678"/>
+            <button id="sendPhoneButton" onclick="sendOTP()" class="full-width">Send SMS OTP</button>
+          </div>
+          <div id="otpDiv" class="column gap">
+            <h3>Enter the OTP code</h3>
+            <input id="otpInput" type="text" size="20" />
+            <button id="loginButton" onclick="login()" class="full-width">Login</button>
+            <div id="otpText" class="text"></div>
+          </div>
+        </div>
+      </main>
     </div>
     <script type="application/javascript" src="sms-otp.js"></script>
     <script>
       const phoneInput = document.getElementById('phoneInput')
       const otpInput = document.getElementById('otpInput')
-      const otpHeader = document.getElementById('otpHeader')
+      const otpText = document.getElementById('otpText')
       const otpDiv = document.getElementById('otpDiv')
       const phoneDiv = document.getElementById('phoneDiv')
 
       function loadPage() {
-        phoneDiv.hidden = false
-        otpDiv.hidden = true
+        otpDiv.classList.add("hidden")
       }
 
       async function sendOTP() {
@@ -41,10 +59,10 @@
         console.log('Phone Otp Response', smsOtpResponse)
 
         if (smsOtpResponse?.status === 200) {
-          phoneDiv.hidden = true
-          otpDiv.hidden = false
+          phoneDiv.classList.add("hidden")
+          otpDiv.classList.remove("hidden")
 
-          otpHeader.textContent = `Enter the OTP sent to ${phoneInput.value}`
+          otpText.textContent = `We sent a code to ${phoneInput.value}`
         }
       }
 
@@ -57,5 +75,6 @@
         }
       }
     </script>
+
   </body>
 </html>
