@@ -7,7 +7,7 @@ Set up this example using the instruction in the [main README file](../README.md
 
 ## Sample user experience
 
-- Open a browser tab on <domain:port>/ - redirects to an email input login page
+- Open a browser tab on <domain:port>/ - redirects to an phone input login page
 - Enter your phone number and click the button - the page changes to OTP input
 - Check your phone for an SMS and copy the code
 - Enter the code and click the button

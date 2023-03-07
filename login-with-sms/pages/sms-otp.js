@@ -11,7 +11,7 @@ async function sendSmsOtp(phone, handleResponse) {
 
   const status = response.status
   const data = await response.json()
-  console.log('Response from /email-otp', { status, data })
+  console.log('Response from /sms-otp', { status, data })
   handleResponse({ status, data })
 }
 
