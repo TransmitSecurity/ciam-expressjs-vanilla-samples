@@ -5,6 +5,10 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared'
 
 const router = express.Router()
 
+/**
+ * For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp
+ * **/
+
 // In a production server, you would cache the access token,
 // and regenerate whenever it expires.
 // This parameter emulates this 'cache' with a static variable for simplicity.
@@ -15,9 +19,6 @@ router.get('/', function (req, res) {
   res.redirect('/pages/email-otp.html')
 })
 
-// The following endpoint is used by pages/sms-otp.html during a login flow
-// It uses an API to send and email with the OTP code to the user
-// For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp
 router.post('/email-otp', async function (req, res) {
   const email = req?.body?.email
 
@@ -51,9 +52,6 @@ router.post('/email-otp', async function (req, res) {
   }
 })
 
-// The following endpoint is used by pages/sms-otp.html during a login flow
-// It uses an API to validate the OTP code entered by the user
-// For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-4-validate-email-otp
 router.post('/verify', async function (req, res) {
   const email = req.body?.email
   const otpCode = req?.body?.otpCode
@@ -77,9 +75,6 @@ router.post('/verify', async function (req, res) {
   }
 })
 
-// The following endpoint is the OIDC completion endpoint, called by pages/sms-otp.html to finalize the login flow
-// Typically this would perform a token exchange and set a session as described in https://developer.transmitsecurity.com/guides/user/how_sessions_work/
-// For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-5-obtain-user-token
 router.get('/complete', function (req, res) {
   if (req.query.code) {
     res.send(`Login completed with code: ${escape(req.query.code)}`)
@@ -88,7 +83,6 @@ router.get('/complete', function (req, res) {
   }
 })
 
-// For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-3-send-email-otp
 async function sendEmailOTP(email) {
   const url = common.config.apis.sendOtpEmail
   const options = {
@@ -113,7 +107,6 @@ async function sendEmailOTP(email) {
   return { status, data }
 }
 
-// For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp/#step-4-validate-email-otp
 async function validateOTP(email, otpCode) {
   const url = common.config.apis.validateOtpEmail
   const options = {
