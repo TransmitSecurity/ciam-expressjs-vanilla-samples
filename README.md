@@ -31,7 +31,7 @@ The video describes the following steps:
 - (0:22) Create a `.env` file at the root of the project, and copy the content of `sample.env` into it. Adding a file is done by clicking the +file icon at the top if the left hand file explorer, as the video shows.
 - (0:29) Copy the URL of the codespace - and paste it into the new `.env` file as the value for `TS_REDIRECT_URI`. Add `/complete` at the end (make sure you only have a single slash here `/complete`), and add `-8080.preview.app` before the `github.dev` suffix. For example:
 
-  `https://ts-ron-legendary-waddle-rx7774944x4cwwrv.github.dev` will be edited to become
+  `https://ts-ron-legendary-waddle-rx7774944x4cwwrv.github.dev` will be edited to 
   `https://ts-ron-legendary-waddle-rx7774944x4cwwrv-8080.preview.app.github.dev/complete`.
   
 - Copy the above value to be used in the next steps
