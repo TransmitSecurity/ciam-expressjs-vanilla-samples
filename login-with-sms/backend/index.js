@@ -6,7 +6,7 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared'
 const router = express.Router()
 
 /**
- * For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp
+ * For more information see https://developer.transmitsecurity.com/guides/user/auth_sms_otp
  * **/
 
 // In a production server, you would cache the access token,
@@ -16,15 +16,15 @@ let accessToken = null
 
 // GET login page
 router.get('/', function (req, res) {
-  res.redirect('/pages/email-otp.html')
+  res.redirect('/pages/sms-otp.html')
 })
 
-router.post('/email-otp', async function (req, res) {
-  const email = req?.body?.email
+router.post('/sms-otp', async function (req, res) {
+  const phone = req?.body?.phone
 
-  if (!email) {
+  if (!phone) {
     res.send({
-      message: 'Received email is empty',
+      message: 'Received phone is empty',
     })
   } else {
     try {
@@ -35,17 +35,17 @@ router.post('/email-otp', async function (req, res) {
         res.status(500).send({error: 'could not fetch access token'})
       }
 
-      // send the OTP email
-      const emailOtpResponse = await sendEmailOTP(email)
-      res.status(emailOtpResponse.status).send({
-        received_email: email,
-        response: JSON.stringify(emailOtpResponse),
+      // send the OTP SMS
+      const smsOtpResponse = await sendSmsOTP(phone)
+      res.status(smsOtpResponse.status).send({
+        received_phone: phone,
+        response: JSON.stringify(smsOtpResponse),
       })
     } catch (error) {
       console.log(error)
       res.status(500).send({
-        received_email: req.body.email,
-        message: 'Error in the email-otp flow',
+        received_phone: phone,
+        message: 'Error in the sms-otp flow',
         error,
       })
     }
@@ -53,21 +53,21 @@ router.post('/email-otp', async function (req, res) {
 })
 
 router.post('/verify', async function (req, res) {
-  const email = req.body?.email
+  const phone = req.body?.phone
   const otpCode = req?.body?.otpCode
   console.log('received body is', req?.body)
 
-  if (!otpCode || !email || !accessToken) {
+  if (!otpCode || !phone || !accessToken) {
     res.status(400).send({
-      message: 'Received OTP is empty or there was no previous call to send email',
+      message: 'Received OTP is empty or there was no previous call to send SMS',
     })
   } else {
     try {
-      const validateOtpResponse = await validateOTP(email, otpCode)
+      const validateOtpResponse = await validateOTP(phone, otpCode)
       res.status(validateOtpResponse.status).send({ ...validateOtpResponse.data })
     } catch (error) {
       res.status(500).send({
-        received_email: email,
+        received_phone: phone,
         received_otp: otpCode,
         error,
       })
@@ -83,8 +83,8 @@ router.get('/complete', function (req, res) {
   }
 })
 
-async function sendEmailOTP(email) {
-  const url = common.config.apis.sendOtpEmail
+async function sendSmsOTP(phone) {
+  const url = common.config.apis.sendOtpSMS
   const options = {
     method: 'POST',
     headers: {
@@ -92,7 +92,7 @@ async function sendEmailOTP(email) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      email: email,
+      phone_number: phone,
       redirect_uri: process.env.TS_REDIRECT_URI,
       create_new_user: true,
     }),
@@ -107,8 +107,8 @@ async function sendEmailOTP(email) {
   return { status, data }
 }
 
-async function validateOTP(email, otpCode) {
-  const url = common.config.apis.validateOtpEmail
+async function validateOTP(phone, otpCode) {
+  const url = common.config.apis.validateOtpSMS
   const options = {
     method: 'POST',
     headers: {
@@ -116,7 +116,7 @@ async function validateOTP(email, otpCode) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      email: email,
+      phone_number: phone,
       passcode: otpCode,
     }),
   }

@@ -19,6 +19,9 @@ export const config = {
     sendOtpEmail: `${idmApiBaseUrl()}/v1/auth/otp/email`,
     validateOtpEmail: `${idmApiBaseUrl()}/v1/auth/otp/email/validation`,
 
+    sendOtpSMS: `${idmApiBaseUrl()}/v1/auth/otp/sms`,
+    validateOtpSMS: `${idmApiBaseUrl()}/v1/auth/otp/sms/validation`,
+
     webauthnAuthorize: `${webauthnApiBaseUrl()}/v1/auth-session/authorize`
   },
 }

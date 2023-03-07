@@ -5,6 +5,7 @@
   "private": true,
   "workspaces": [
     "login-with-email",
+    "login-with-sms",
     "password-authentication",
     "webauthn-cross-device",
     "shared"
