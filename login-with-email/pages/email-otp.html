@@ -1,30 +1,49 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
   </head>
   <body onload="loadPage()">
-    <div id="emailDiv">
-      <h3>Enter your email</h3>
-      <input id="emailInput" type="text" size="40" />
-      <button id="sendEmailButton" onclick="sendOTP()">Send Email OTP</button>
-    </div>
-    <div id="otpDiv">
-      <h3 id="otpHeader"></h3>
-      <input id="otpInput" type="text" size="20" />
-      <button id="loginButton" onclick="login()">Login</button>
+    <div class="page">
+      <header>
+        <img src="/acme-logo.svg" />
+      </header>
+      <main>
+        <div class="content column gap">
+          <div id="emailDiv" class="column gap">
+            <h3>Enter your email</h3>
+            <input id="emailInput" type="text" size="40" placeholder="you@example.com"/>
+            <button id="sendEmailButton" onclick="sendOTP()" class="full-width">Send Email OTP</button>
+          </div>
+          <div id="otpDiv" class="column gap">
+            <h3>Enter the OTP code</h3>
+            <input id="otpInput" type="text" size="20" />
+            <button id="loginButton" onclick="login()" class="full-width">Login</button>
+            <div id="otpText" class="text"></div>
+          </div>
+        </div>
+      </main>
     </div>
     <script type="application/javascript" src="./email-otp.js"></script>
     <script>
       const emailInput = document.getElementById('emailInput')
       const otpInput = document.getElementById('otpInput')
-      const otpHeader = document.getElementById('otpHeader')
+      const otpText = document.getElementById('otpText')
       const otpDiv = document.getElementById('otpDiv')
       const emailDiv = document.getElementById('emailDiv')
 
       function loadPage() {
-        emailDiv.hidden = false
-        otpDiv.hidden = true
+        emailDiv.classList.remove("hidden")
+        otpDiv.classList.add("hidden")
       }
 
       async function sendOTP() {
@@ -41,10 +60,10 @@
         console.log('Email Otp Response', emailOtpResponse)
 
         if (emailOtpResponse?.status === 200) {
-          emailDiv.hidden = true
-          otpDiv.hidden = false
+          emailDiv.classList.add("hidden")
+          otpDiv.classList.remove("hidden")
 
-          otpHeader.textContent = `Enter the OTP sent to ${emailInput.value}`
+          otpText.textContent = `We sent a code to ${emailInput.value}`
         }
       }
 

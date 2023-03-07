@@ -25,9 +25,10 @@
             <button id="sendPhoneButton" onclick="sendOTP()" class="full-width">Send SMS OTP</button>
           </div>
           <div id="otpDiv" class="column gap">
-            <h3 id="otpHeader"></h3>
+            <h3>Enter the OTP code</h3>
             <input id="otpInput" type="text" size="20" />
             <button id="loginButton" onclick="login()" class="full-width">Login</button>
+            <div id="otpText" class="text"></div>
           </div>
         </div>
       </main>
@@ -36,7 +37,7 @@
     <script>
       const phoneInput = document.getElementById('phoneInput')
       const otpInput = document.getElementById('otpInput')
-      const otpHeader = document.getElementById('otpHeader')
+      const otpText = document.getElementById('otpText')
       const otpDiv = document.getElementById('otpDiv')
       const phoneDiv = document.getElementById('phoneDiv')
 
@@ -61,7 +62,7 @@
           phoneDiv.classList.add("hidden")
           otpDiv.classList.remove("hidden")
 
-          otpHeader.textContent = `Enter the OTP sent to ${phoneInput.value}`
+          otpText.textContent = `We sent a code to ${phoneInput.value}`
         }
       }
 
