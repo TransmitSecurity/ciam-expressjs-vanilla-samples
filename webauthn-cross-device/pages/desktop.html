@@ -25,10 +25,9 @@
       <main>
         <div class="content column gap">
           <div id="emailDiv" class="column gap">
-            <h3>Click to start cross device login</h3>
-            <button id="start" onclick="initiateCrossDeviceFlow()" class="full-width disabled" disabled>Login</button>
+            <button id="start" onclick="initiateCrossDeviceFlow()" class="full-width disabled" disabled>Start cross device login</button>
             <img id="qr" class="column centered " src="" />
-            <div id="url" class="text"></div>
+            <div id="url" class="text column gap"></div>
             <div id="status" class="text"></div>
           </div>
         </div>
@@ -125,7 +124,7 @@
 
         window.pageUtils.updateElementText(
           'url',
-          `You can also copy the following link and open in ANOTHER browser:  ${url}`,
+          `Scan the QR or open the following link in a separate browser:  ${url}`,
         )
         window.pageUtils.updateElementText('status', 'Waiting for mobile device to connect')
       } else {
