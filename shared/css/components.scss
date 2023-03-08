@@ -94,3 +94,20 @@ img {
     height: $icon-Height;
   }
 }
+
+.divider {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  color: gray;
+  width: 100%;
+  text-align: center;
+  line-height: 0.1em;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.divider-text {
+  background: white;
+  padding: 0 35px;
+}
