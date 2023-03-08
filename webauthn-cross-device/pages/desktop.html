@@ -36,8 +36,7 @@
 
   </body>
   <script>
-    // The first step on any WebAuthn flow would be to initialize the SDK. The below function should be called as soon as the page loads.
-    // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#1-initialize-the-webauthn-sdk
+    // Initialize page and SDK
     async function init() {
       try {
         const clientId = window.env.VITE_TS_CLIENT_ID
@@ -52,16 +51,17 @@
         elem.removeAttribute('disabled')
         elem.classList.remove("disabled")
       } catch (ex) {
+        console.log(ex)
         window.pageUtils.updateElementText('status', `Error during init: ${ex}`)
       }
     }
 
     // The below functions are used as event handlers for cross device polling events
-    // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#2-start-the-cross-device-flow
 
     // Triggered when the auth device calls attach()
     async function onDeviceAttach() {
       // set the status text
+      console.log('Received event: mobile device connected')
       window.pageUtils.updateElementText('status', `Mobile device connected`)
 
       // disable button, to prevent multiple clicks once a device is attached
@@ -74,17 +74,19 @@
 
     // Triggered at the end of the registration process on the auth device
     async function onCredentialRegister(authCode) {
+      console.log(`Received event: mobile device registered credentials, ${authCode}`)
       return await completeSession(authCode)
     }
 
     // Triggered at the end of the authentication process on the auth device
     async function onCredentialAuthenticate(authCode) {
+      console.log(`Received event: mobile device authenticated, ${authCode}`)
       return await completeSession(authCode)
     }
 
     // Triggered on failure
     async function onFailure(error) {
-      console.log(error)
+      console.log(`Received event: flow error, ${error}`)
       // Log the error and display a message to the user / navigate to an error page.
       // set the status text
       window.pageUtils.updateElementText('status', `Error: ${error}`)
@@ -99,10 +101,7 @@
       return false
     }
 
-    // The first step in a cross device webauthn flow is to create a session that can be passed between the originating (dekstop) device
-    // and the authenticating (mobile) device. This is done using a call to the WebAuthnSdk.startCrossDeviceFlow function, which registers
-    // callbacks for session events (see functions above) and starts polling.
-    // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#2-start-the-cross-device-flow
+    // Start the cross device flow, setup 
     async function initiateCrossDeviceFlow() {
       // Initiate the cross device flow and provide the handlers.
       const controller = await window.WebAuthnSdk.startCrossDeviceFlow({
@@ -136,7 +135,6 @@
     }
 
     // This functions is triggered the flow is complete, and we can exchange the code for an ID token
-    // For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-3-register-credentials
     async function exchangeAndDisplayIDToken(authCode) {
       try {
         const response = await fetch('/desktop/fetch-tokens', {
@@ -157,7 +155,7 @@
         window.pageUtils.updateElementText('status', `Complete flow for user ${username}`)
         console.log('Raw ID Token', tokenJson)
       } catch (ex) {
-        console.log(ex)
+        console.log('Error during flow completion', ex)
         window.pageUtils.updateElementText(
           'status',
           `Error during token exchange for code ${authCode}: ${ex}`,
