@@ -45,6 +45,11 @@
   &.centered {
     align-items: center;
   }
+
+  &.long-text {
+    overflow-wrap: anywhere;
+  }
+
 }
 
 input {
