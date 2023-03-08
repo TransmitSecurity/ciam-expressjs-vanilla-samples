@@ -26,7 +26,7 @@
         <div class="content column gap">
           <div id="emailDiv" class="column gap">
             <h3>Click to start cross device login</h3>
-            <button id="start" onclick="initiateCrossDeviceFlow()" class="full-width">Login</button>
+            <button id="start" onclick="initiateCrossDeviceFlow()" class="full-width disabled" disabled>Login</button>
             <img id="qr" class="column centered " src="" />
             <div id="url" class="text"></div>
             <div id="status" class="text"></div>
@@ -51,6 +51,7 @@
         // enable button
         const elem = document.getElementById('start')
         elem.removeAttribute('disabled')
+        elem.classList.remove("disabled")
       } catch (ex) {
         window.pageUtils.updateElementText('status', `Error during init: ${ex}`)
       }
@@ -67,6 +68,7 @@
       // disable button, to prevent multiple clicks once a device is attached
       const button = document.getElementById('start')
       button.disabled = true
+      button.classList.add("disabled")
 
       return true // Return true to keep polling
     }
