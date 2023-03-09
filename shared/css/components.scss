@@ -1,4 +1,4 @@
-@import "variables";
+@import 'variables';
 
 .page {
   display: flex;
@@ -9,6 +9,7 @@
   header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     height: $header-height;
     padding: 0 $padding;
   }
@@ -49,7 +50,6 @@
   &.long-text {
     overflow-wrap: anywhere;
   }
-
 }
 
 input {
@@ -75,7 +75,8 @@ button {
     width: 100%;
   }
 
-  &.disabled {
+  &.disabled,
+  &:disabled {
     background-color: #cccccc;
     color: #666666;
     pointer-events: none;
