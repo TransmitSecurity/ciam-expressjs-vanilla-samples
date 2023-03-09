@@ -1,9 +1,9 @@
 function idmApiBaseUrl() {
-  return process.env.VITE_TS_IDM_API_BASE || 'https://api.userid.security'
+  return process.env.VITE_TS_IDM_API_BASE || 'https://api.userid.security';
 }
 
 function webauthnApiBaseUrl() {
-  return process.env.VITE_TS_WEBAUTHN_API_BASE || 'https://webauthn.identity.security'
+  return process.env.VITE_TS_WEBAUTHN_API_BASE || 'https://webauthn.identity.security';
 }
 
 export const config = {
@@ -22,6 +22,6 @@ export const config = {
     sendOtpSMS: `${idmApiBaseUrl()}/v1/auth/otp/sms`,
     validateOtpSMS: `${idmApiBaseUrl()}/v1/auth/otp/sms/validation`,
 
-    webauthnAuthorize: `${webauthnApiBaseUrl()}/v1/auth-session/authorize`
+    webauthnAuthorize: `${webauthnApiBaseUrl()}/v1/auth-session/authorize`,
   },
-}
+};

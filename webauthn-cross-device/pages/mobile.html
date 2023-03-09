@@ -26,14 +26,18 @@
       <main>
         <div class="content column gap">
           <div id="authenticate" class="column gap" hidden>
-            <button id="authnBtn" onclick="doAuthentication()" class="full-width">Authenticate</button>
+            <button id="authnBtn" onclick="doAuthentication()" class="full-width">
+              Authenticate
+            </button>
             <div class="divider">
               <span class="divider-text">or</span>
             </div>
-            </div>
+          </div>
           <div id="register" class="column gap">
             <input id="usnInput" type="text" size="40" placeholder="Username" />
-            <button id="regBtn" onclick="doRegistration()" class="full-width">Register a new user</button>
+            <button id="regBtn" onclick="doRegistration()" class="full-width">
+              Register a new user
+            </button>
           </div>
           <div id="status" class="text"></div>
         </div>
@@ -41,55 +45,55 @@
     </div>
   </body>
   <script>
-    let authSessionId = undefined
-    let currentUser = undefined
+    let authSessionId = undefined;
+    let currentUser = undefined;
 
     // initialize page and SDK
     async function init() {
       try {
-        const clientId = window.env.VITE_TS_CLIENT_ID
-        authSessionId = window.pageUtils.extractUrlParameter('aid')
-        const authElem = document.getElementById('authenticate')
-        authElem.classList.add("hidden")
+        const clientId = window.env.VITE_TS_CLIENT_ID;
+        authSessionId = window.pageUtils.extractUrlParameter('aid');
+        const authElem = document.getElementById('authenticate');
+        authElem.classList.add('hidden');
 
         await window.WebAuthnSdk.init(clientId, {
           serverPath: 'https://webauthn.identity.security',
-        })
-        window.pageUtils.updateElementText('status', `SDK Init done for client ID ${clientId}`)
+        });
+        window.pageUtils.updateElementText('status', `SDK Init done for client ID ${clientId}`);
 
         // Check if WebAuthn is supported for this device. if not - no real need to continue.
-        const isBiometricsSupported = await window.WebAuthnSdk.isPlatformAuthenticatorSupported()
+        const isBiometricsSupported = await window.WebAuthnSdk.isPlatformAuthenticatorSupported();
         if (isBiometricsSupported) {
           // Mark the device as attached. This will trigger an event on the originating desktop device.
-          const bindingInfo = await window.WebAuthnSdk.attachDevice(authSessionId)
+          const bindingInfo = await window.WebAuthnSdk.attachDevice(authSessionId);
 
           // The below is an example business logic to show authentication iff we have a user that previously registered
           // Registration for a different user always remains open in this sample app
-          console.log(JSON.stringify(bindingInfo))
+          console.log(JSON.stringify(bindingInfo));
           currentUser = (await window.WebAuthnSdk.getDeviceUsers()).find(u => {
-            return u.isCurrent
-          })
-          console.log(currentUser)
+            return u.isCurrent;
+          });
+          console.log(currentUser);
           if (currentUser) {
-            authElem.classList.remove("hidden")
-            window.pageUtils.updateElementText('authnBtn', `Login with ${currentUser.username}`)
+            authElem.classList.remove('hidden');
+            window.pageUtils.updateElementText('authnBtn', `Login with ${currentUser.username}`);
           }
         } else {
           // WebAuthn is not supported
           window.pageUtils.updateElementText(
             'status',
             `WebAuthn is not supported on this device, try scanning with a different one`,
-          )
+          );
         }
       } catch (ex) {
-        window.pageUtils.updateElementText('status', `Error during init: ${ex}`)
+        window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
       }
     }
 
     // Triggered on registration click
     async function doRegistration() {
       try {
-        const username = document.getElementById('usnInput').value
+        const username = document.getElementById('usnInput').value;
 
         // Send the authSessionID to the backend, to set it as allowed for webauthn registration. By default auth-sessions are only allowed for authentication.
         await fetch('/mobile/authorize-session-user', {
@@ -101,27 +105,27 @@
             username: username,
             authSessionId: authSessionId,
           }),
-        })
+        });
 
         // Execute the registration API calls
-        await window.WebAuthnSdk.prepareWebauthnRegistration(username, username, authSessionId)
-        const authCode = await window.WebAuthnSdk.executeWebauthnRegistration()
-        window.pageUtils.updateElementText('status', `Completed with auth code: ${authCode}`)
-        console.log(authCode)
+        await window.WebAuthnSdk.prepareWebauthnRegistration(username, username, authSessionId);
+        const authCode = await window.WebAuthnSdk.executeWebauthnRegistration();
+        window.pageUtils.updateElementText('status', `Completed with auth code: ${authCode}`);
+        console.log(authCode);
       } catch (ex) {
-        window.pageUtils.updateElementText('status', `Error during registration: ${ex}`)
+        window.pageUtils.updateElementText('status', `Error during registration: ${ex}`);
       }
     }
 
     // triggered on authentication click
     async function doAuthentication() {
       try {
-        await window.WebAuthnSdk.prepareWebauthnAuthentication(currentUser.username)
-        const authCode = await window.WebAuthnSdk.executeWebauthnAuthentication()
-        window.pageUtils.updateElementText('status', `Completed with auth code: ${authCode}`)
-        console.log(authCode)
+        await window.WebAuthnSdk.prepareWebauthnAuthentication(currentUser.username);
+        const authCode = await window.WebAuthnSdk.executeWebauthnAuthentication();
+        window.pageUtils.updateElementText('status', `Completed with auth code: ${authCode}`);
+        console.log(authCode);
       } catch (ex) {
-        window.pageUtils.updateElementText('status', `Error during authentication: ${ex}`)
+        window.pageUtils.updateElementText('status', `Error during authentication: ${ex}`);
       }
     }
   </script>

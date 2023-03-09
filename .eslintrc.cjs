@@ -32,5 +32,17 @@ module.exports = {
         'max-lines-per-function': ['off'],
       },
     },
+    {
+      files: ['**/*-otp.html'],
+      rules: {
+        'no-undef': ['off'],
+      },
+    },
+    {
+      files: ['**/*-otp.js'],
+      rules: {
+        'no-unused-vars': ['off'],
+      },
+    },
   ],
-}
+};

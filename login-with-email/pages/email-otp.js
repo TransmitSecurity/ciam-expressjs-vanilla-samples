@@ -7,12 +7,12 @@ async function sendEmailOtp(email, handleResponse) {
     body: JSON.stringify({
       email: email,
     }),
-  })
+  });
 
-  const status = response.status
-  const data = await response.json()
-  console.log('Response from /email-otp', { status, data })
-  handleResponse({ status, data })
+  const status = response.status;
+  const data = await response.json();
+  console.log('Response from /email-otp', { status, data });
+  handleResponse({ status, data });
 }
 
 async function verifyOtp(email, otpCode, handleResponse) {
@@ -25,10 +25,10 @@ async function verifyOtp(email, otpCode, handleResponse) {
       email: email,
       otpCode: otpCode,
     }),
-  })
+  });
 
-  const status = response.status
-  const data = await response.json()
-  console.log('Response from /verify', { status, data })
-  handleResponse({ status, data })
+  const status = response.status;
+  const data = await response.json();
+  console.log('Response from /verify', { status, data });
+  handleResponse({ status, data });
 }

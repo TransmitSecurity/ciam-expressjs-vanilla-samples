@@ -1,4 +1,4 @@
-@import "variables";
+@import 'variables';
 
 .page {
   display: flex;
@@ -49,7 +49,6 @@
   &.long-text {
     overflow-wrap: anywhere;
   }
-
 }
 
 input {
