@@ -1,15 +1,15 @@
-import express, { json, urlencoded } from 'express'
-import session from 'express-session'
-import logger from 'morgan'
-import crypto from 'crypto'
+import express, { json, urlencoded } from 'express';
+import session from 'express-session';
+import logger from 'morgan';
+import crypto from 'crypto';
 
-import router from './routes/index'
+import router from './routes/index';
 
-const app = express()
+const app = express();
 
-app.use(logger('dev'))
-app.use(json())
-app.use(urlencoded({ extended: false }))
+app.use(logger('dev'));
+app.use(json());
+app.use(urlencoded({ extended: false }));
 
 // This is a simplistic session mechanism
 // not designed to be used in production
@@ -21,8 +21,8 @@ app.use(
     saveUninitialized: false,
     cookie: { secure: false },
   }),
-)
+);
 
-app.use('/', router)
+app.use('/', router);
 
-export const handler = app
+export const handler = app;

@@ -7,12 +7,12 @@ async function sendSmsOtp(phone, handleResponse) {
     body: JSON.stringify({
       phone: phone,
     }),
-  })
+  });
 
-  const status = response.status
-  const data = await response.json()
-  console.log('Response from /sms-otp', { status, data })
-  handleResponse({ status, data })
+  const status = response.status;
+  const data = await response.json();
+  console.log('Response from /sms-otp', { status, data });
+  handleResponse({ status, data });
 }
 
 async function verifyOtp(phone, otpCode, handleResponse) {
@@ -25,10 +25,10 @@ async function verifyOtp(phone, otpCode, handleResponse) {
       phone: phone,
       otpCode: otpCode,
     }),
-  })
+  });
 
-  const status = response.status
-  const data = await response.json()
-  console.log('Response from /verify', { status, data })
-  handleResponse({ status, data })
+  const status = response.status;
+  const data = await response.json();
+  console.log('Response from /verify', { status, data });
+  handleResponse({ status, data });
 }

@@ -11,6 +11,13 @@
     "webauthn-cross-device",
     "shared"
   ],
+  "devDependencies": {
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-import": "^2.27.5",
+    "prettier": "^2.8.4"
+  },
   "scripts": {
     "start": "yarn --cwd $SAMPLE start",
     "lint": "eslint \"**/*.{js,html}\"",

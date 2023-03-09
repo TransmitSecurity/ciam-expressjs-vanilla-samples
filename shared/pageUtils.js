@@ -3,17 +3,17 @@
 export const pageUtils = {
   updateElementText: function (id, text) {
     try {
-      document.getElementById(id).textContent = text
+      document.getElementById(id).textContent = text;
     } catch (ex) {
-      console.log(ex)
+      console.log(ex);
     }
   },
   extractUrlParameter: function (name) {
     try {
-      const urlParams = new URLSearchParams(window.location.search)
-      return urlParams.get(name)
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
     } catch (ex) {
-      console.log(ex)
+      console.log(ex);
     }
   },
   parseJwt: function (token) {
@@ -47,4 +47,4 @@ export const pageUtils = {
       console.log(ex)
     }
   },
-}
+};
