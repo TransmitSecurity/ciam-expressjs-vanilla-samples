@@ -2,6 +2,8 @@
 // are used in multiple samples.
 
 import { pageUtils } from '../../shared/pageUtils.js'
+import "../../shared/css/style.scss";
+
 
 window.env = import.meta.env
 window.pageUtils = pageUtils

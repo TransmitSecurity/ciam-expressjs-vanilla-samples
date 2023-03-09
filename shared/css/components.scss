@@ -45,6 +45,11 @@
   &.centered {
     align-items: center;
   }
+
+  &.long-text {
+    overflow-wrap: anywhere;
+  }
+
 }
 
 input {
@@ -68,6 +73,12 @@ button {
 
   &.full-width {
     width: 100%;
+  }
+
+  &.disabled {
+    background-color: #cccccc;
+    color: #666666;
+    pointer-events: none;
   }
 }
 
@@ -93,4 +104,21 @@ img {
     width: $icon-width;
     height: $icon-Height;
   }
+}
+
+.divider {
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  color: gray;
+  width: 100%;
+  text-align: center;
+  line-height: 0.1em;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.divider-text {
+  background: white;
+  padding: 0 35px;
 }

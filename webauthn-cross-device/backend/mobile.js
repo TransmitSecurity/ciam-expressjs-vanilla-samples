@@ -4,8 +4,9 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared'
 
 const router = express.Router()
 
-// The following endpoint uses an API to elevate a cross device session to allow credential registration
-// For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-3-register-credentials
+// Endpoint for proxying auth-session-id and authorizing it for webauthn registration
+// The input access token in this sample app is a client credentials token which we generate ad-hoc, however could also use access tokens
+// that are obtained via user authentication, e.g. password login or email OTP.
 router.post('/authorize-session-user', async function (req, res) {
   try {
     console.log(JSON.stringify(req.body))
@@ -23,10 +24,7 @@ router.post('/authorize-session-user', async function (req, res) {
 })
 
 
-// This function wraps and API call for elevating the auth-session and allows using it for registration.
-// The input access token in this sample app is a client credentials token, however could also use access tokens
-// that are obtained via user authentication, e.g. password login or email OTP.
-// For more information see https://developer.transmitsecurity.com/guides/webauthn/cross_device_flows/#step-3-register-credentials
+// Here we wrap the API call for elevating the auth-session and allows using it for registration.
 async function authorizeAuthnSession(accessToken, authSessionId, username) {
   const url = common.config.apis.webauthnAuthorize
   const options = {
