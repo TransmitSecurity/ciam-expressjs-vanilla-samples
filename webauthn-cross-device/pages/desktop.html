@@ -25,8 +25,9 @@
       <main>
         <div class="content column gap">
           <div id="emailDiv" class="column gap">
-            <button id="start" onclick="initiateCrossDeviceFlow()" class="full-width disabled" disabled>Start cross device login</button>
+            <h3>Sign in using another device</h3>
             <img id="qr" class="column centered " src="" />
+            <button id="start" onclick="initiateCrossDeviceFlow()" class="full-width disabled" disabled>Show QR</button>
             <div id="url" class="text column long-text"></div>
             <div id="status" class="text"></div>
           </div>
@@ -44,7 +45,7 @@
         await window.WebAuthnSdk.init(clientId, {
           serverPath: 'https://webauthn.identity.security',
         })
-        window.pageUtils.updateElementText('status', `SDK Init done for client ID ${clientId}`)
+        window.pageUtils.updateElementText('status', `SDK Init done`); // for client ID ${clientId}`)
 
         // enable button
         const elem = document.getElementById('start')
@@ -63,11 +64,6 @@
       // set the status text
       console.log('Received event: mobile device connected')
       window.pageUtils.updateElementText('status', `Mobile device connected`)
-
-      // disable button, to prevent multiple clicks once a device is attached
-      const button = document.getElementById('start')
-      button.disabled = true
-      button.classList.add("disabled")
 
       return true // Return true to keep polling
     }
@@ -126,6 +122,10 @@
           `Scan the QR or open the following link in a separate browser:  ${url}`,
         )
         window.pageUtils.updateElementText('status', 'Waiting for mobile device to connect')
+        // disable button, to prevent multiple clicks once a device is attached
+        const button = document.getElementById('start')
+        button.hidden = true
+        button.classList.add("hidden")
       } else {
         window.pageUtils.updateElementText(
           'status',
