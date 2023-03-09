@@ -45,7 +45,7 @@
         await window.WebAuthnSdk.init(clientId, {
           serverPath: 'https://webauthn.identity.security',
         })
-        window.pageUtils.updateElementText('status', `SDK Init done`); // for client ID ${clientId}`)
+        window.pageUtils.updateElementText('status', `SDK Init done`);
 
         // enable button
         const elem = document.getElementById('start')
@@ -90,10 +90,10 @@
 
     async function completeSession(code) {
       // set the status text
-      // window.pageUtils.updateElementText('status', `Completed with auth code: ${code}`);
+      // Get user tokens using the received code as described below
       exchangeAndDisplayIDToken(code)
 
-      // Get user tokens using the received code as described below
+      // stop event loop
       return false
     }
 
