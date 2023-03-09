@@ -6,4 +6,5 @@ node_modules
 */build
 .idea
 TODOS.md
+yarn-error.log
 
