@@ -11,18 +11,13 @@ router.post('/authorize-session-user', async function (req, res) {
   try {
     console.log(JSON.stringify(req.body))
     const accessToken = await common.tokens.getClientCredsToken()
-    await authorizeAuthnSession(
-      accessToken,
-      req.body.authSessionId,
-      req.body.username,
-    )
+    await authorizeAuthnSession(accessToken, req.body.authSessionId, req.body.username)
     res.send({ status: 'ok' })
-  } catch(e) {
+  } catch (e) {
     console.log('Error while calling /authorize-session-user', e)
-    res.status(500).send({error: e})
+    res.status(500).send({ error: e })
   }
 })
-
 
 // Here we wrap the API call for elevating the auth-session and allows using it for registration.
 async function authorizeAuthnSession(accessToken, authSessionId, username) {

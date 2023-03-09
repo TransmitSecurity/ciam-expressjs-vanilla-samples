@@ -21,8 +21,10 @@
         <div class="content column gap">
           <div id="phoneDiv" class="column gap">
             <h3>Sign in using SMS OTP</h3>
-            <input id="phoneInput" type="text" size="40" placeholder="Enter your phone number"/>
-            <button id="sendPhoneButton" onclick="sendOTP()" class="full-width">Send SMS OTP</button>
+            <input id="phoneInput" type="text" size="40" placeholder="Enter your phone number" />
+            <button id="sendPhoneButton" onclick="sendOTP()" class="full-width">
+              Send SMS OTP
+            </button>
           </div>
           <div id="otpDiv" class="column gap">
             <h3>Enter the OTP code</h3>
@@ -42,7 +44,7 @@
       const phoneDiv = document.getElementById('phoneDiv')
 
       function loadPage() {
-        otpDiv.classList.add("hidden")
+        otpDiv.classList.add('hidden')
       }
 
       async function sendOTP() {
@@ -59,8 +61,8 @@
         console.log('Phone Otp Response', smsOtpResponse)
 
         if (smsOtpResponse?.status === 200) {
-          phoneDiv.classList.add("hidden")
-          otpDiv.classList.remove("hidden")
+          phoneDiv.classList.add('hidden')
+          otpDiv.classList.remove('hidden')
 
           otpText.textContent = `We sent a code to ${phoneInput.value}`
         }
@@ -75,6 +77,5 @@
         }
       }
     </script>
-
   </body>
 </html>

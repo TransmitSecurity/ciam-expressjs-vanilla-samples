@@ -26,14 +26,18 @@
       <main>
         <div class="content column gap">
           <div id="authenticate" class="column gap" hidden>
-            <button id="authnBtn" onclick="doAuthentication()" class="full-width">Authenticate</button>
+            <button id="authnBtn" onclick="doAuthentication()" class="full-width">
+              Authenticate
+            </button>
             <div class="divider">
               <span class="divider-text">or</span>
             </div>
-            </div>
+          </div>
           <div id="register" class="column gap">
             <input id="usnInput" type="text" size="40" placeholder="Username" />
-            <button id="regBtn" onclick="doRegistration()" class="full-width">Register a new user</button>
+            <button id="regBtn" onclick="doRegistration()" class="full-width">
+              Register a new user
+            </button>
           </div>
           <div id="status" class="text"></div>
         </div>
@@ -50,7 +54,7 @@
         const clientId = window.env.VITE_TS_CLIENT_ID
         authSessionId = window.pageUtils.extractUrlParameter('aid')
         const authElem = document.getElementById('authenticate')
-        authElem.classList.add("hidden")
+        authElem.classList.add('hidden')
 
         await window.WebAuthnSdk.init(clientId, {
           serverPath: 'https://webauthn.identity.security',
@@ -71,7 +75,7 @@
           })
           console.log(currentUser)
           if (currentUser) {
-            authElem.classList.remove("hidden")
+            authElem.classList.remove('hidden')
             window.pageUtils.updateElementText('authnBtn', `Login with ${currentUser.username}`)
           }
         } else {

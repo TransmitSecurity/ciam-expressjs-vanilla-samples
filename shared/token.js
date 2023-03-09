@@ -6,7 +6,7 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared'
  * See: https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
  */
 async function getClientCredsToken() {
-  const url = common.config.apis.token;
+  const url = common.config.apis.token
   const params = {
     client_id: process.env.VITE_TS_CLIENT_ID,
     client_secret: process.env.TS_CLIENT_SECRET,
@@ -59,8 +59,7 @@ export async function getUserTokens(authCode) {
   return data
 }
 
-
 export const tokenRequest = {
   getClientCredsToken: getClientCredsToken,
-  getUserTokens: getUserTokens
+  getUserTokens: getUserTokens,
 }

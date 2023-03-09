@@ -26,15 +26,21 @@
         <div class="content column gap">
           <div id="emailDiv" class="column gap">
             <h3>Sign in using another device</h3>
-            <img id="qr" class="column centered " src="" />
-            <button id="start" onclick="initiateCrossDeviceFlow()" class="full-width disabled" disabled>Show QR</button>
+            <img id="qr" class="column centered" src="" />
+            <button
+              id="start"
+              onclick="initiateCrossDeviceFlow()"
+              class="full-width disabled"
+              disabled
+            >
+              Show QR
+            </button>
             <div id="url" class="text column long-text"></div>
             <div id="status" class="text"></div>
           </div>
         </div>
       </main>
     </div>
-
   </body>
   <script>
     // Initialize page and SDK
@@ -45,12 +51,12 @@
         await window.WebAuthnSdk.init(clientId, {
           serverPath: 'https://webauthn.identity.security',
         })
-        window.pageUtils.updateElementText('status', `SDK Init done`); // for client ID ${clientId}`)
+        window.pageUtils.updateElementText('status', `SDK Init done`) // for client ID ${clientId}`)
 
         // enable button
         const elem = document.getElementById('start')
         elem.removeAttribute('disabled')
-        elem.classList.remove("disabled")
+        elem.classList.remove('disabled')
       } catch (ex) {
         console.log(ex)
         window.pageUtils.updateElementText('status', `Error during init: ${ex}`)
@@ -97,7 +103,7 @@
       return false
     }
 
-    // Start the cross device flow, setup 
+    // Start the cross device flow, setup
     async function initiateCrossDeviceFlow() {
       // Initiate the cross device flow and provide the handlers.
       const controller = await window.WebAuthnSdk.startCrossDeviceFlow({
@@ -125,7 +131,7 @@
         // disable button, to prevent multiple clicks once a device is attached
         const button = document.getElementById('start')
         button.hidden = true
-        button.classList.add("hidden")
+        button.classList.add('hidden')
       } else {
         window.pageUtils.updateElementText(
           'status',

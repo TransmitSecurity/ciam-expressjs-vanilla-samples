@@ -1,7 +1,6 @@
 import fetch from 'node-fetch'
 import { common } from '@ciam-expressjs-vanilla-samples/shared'
 
-
 /*
  * Authenticate a user with a username and password thanks to Transmit's APIs
  * See https://developer.transmitsecurity.com/openapi/user/passwords/#operation/login

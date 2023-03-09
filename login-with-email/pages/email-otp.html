@@ -21,8 +21,10 @@
         <div class="content column gap">
           <div id="emailDiv" class="column gap">
             <h3>Enter your email</h3>
-            <input id="emailInput" type="text" size="40" placeholder="you@example.com"/>
-            <button id="sendEmailButton" onclick="sendOTP()" class="full-width">Send Email OTP</button>
+            <input id="emailInput" type="text" size="40" placeholder="you@example.com" />
+            <button id="sendEmailButton" onclick="sendOTP()" class="full-width">
+              Send Email OTP
+            </button>
           </div>
           <div id="otpDiv" class="column gap">
             <h3>Enter the OTP code</h3>
@@ -42,8 +44,8 @@
       const emailDiv = document.getElementById('emailDiv')
 
       function loadPage() {
-        emailDiv.classList.remove("hidden")
-        otpDiv.classList.add("hidden")
+        emailDiv.classList.remove('hidden')
+        otpDiv.classList.add('hidden')
       }
 
       async function sendOTP() {
@@ -60,8 +62,8 @@
         console.log('Email Otp Response', emailOtpResponse)
 
         if (emailOtpResponse?.status === 200) {
-          emailDiv.classList.add("hidden")
-          otpDiv.classList.remove("hidden")
+          emailDiv.classList.add('hidden')
+          otpDiv.classList.remove('hidden')
 
           otpText.textContent = `We sent a code to ${emailInput.value}`
         }
