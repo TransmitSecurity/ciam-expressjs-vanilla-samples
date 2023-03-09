@@ -1,1 +1,1 @@
-window.env = import.meta.env
+window.env = import.meta.env;

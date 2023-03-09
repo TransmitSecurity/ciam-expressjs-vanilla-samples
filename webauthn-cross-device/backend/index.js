@@ -1,9 +1,9 @@
-import express from 'express'
-const router = express.Router()
+import express from 'express';
+const router = express.Router();
 
 /* GET home page. */
 router.get('/', function (req, res) {
-  res.redirect('/pages/desktop.html')
-})
+  res.redirect('/pages/desktop.html');
+});
 
-export const indexRouter = router
+export const indexRouter = router;

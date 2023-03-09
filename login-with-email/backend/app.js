@@ -1,10 +1,10 @@
-import express from 'express'
+import express from 'express';
 
-import { indexRouter } from './index.js'
+import { indexRouter } from './index.js';
 
-const app = express()
-app.use(express.json())
+const app = express();
+app.use(express.json());
 
-app.use('/', indexRouter)
+app.use('/', indexRouter);
 
-export const handler = app
+export const handler = app;

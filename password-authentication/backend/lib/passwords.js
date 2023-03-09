@@ -1,5 +1,5 @@
-import fetch from 'node-fetch'
-import { common } from '@ciam-expressjs-vanilla-samples/shared'
+import fetch from 'node-fetch';
+import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 /*
  * Authenticate a user with a username and password thanks to Transmit's APIs
@@ -8,7 +8,7 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared'
 export async function loginPassword(username, password) {
   // Retrieve client token, ideally saved and fetched when expired
   // Here we fetch it everytime to keep things simple
-  const clientToken = await common.tokens.getClientCredsToken()
+  const clientToken = await common.tokens.getClientCredsToken();
 
   // Payload
   // We add a claim to get the username in the ID Token
@@ -22,7 +22,7 @@ export async function loginPassword(username, password) {
         username: null,
       },
     },
-  }
+  };
 
   // Log user
   const response = await fetch(common.config.apis.passwordLogin, {
@@ -32,13 +32,13 @@ export async function loginPassword(username, password) {
       Authorization: `Bearer ${clientToken}`,
     },
     body: JSON.stringify(data),
-  })
-  const jsonResponse = await response.json()
+  });
+  const jsonResponse = await response.json();
   return {
     status: response.status,
     response: jsonResponse,
     error: response.status !== 200,
-  }
+  };
 }
 
 /*
@@ -46,11 +46,11 @@ export async function loginPassword(username, password) {
  * See https://developer.transmitsecurity.com/openapi/user/passwords/#operation/registerPassword
  */
 export async function signupPassword(username, password) {
-  const url = common.config.apis.passwordRegister
+  const url = common.config.apis.passwordRegister;
 
   // Retrieve client token, ideally saved and fetched when expired
   // Here we fetch it everytime to keep things simple
-  const clientToken = await common.tokens.getClientCredsToken()
+  const clientToken = await common.tokens.getClientCredsToken();
 
   // TODO add error handling, omitted for sample clarity
 
@@ -58,7 +58,7 @@ export async function signupPassword(username, password) {
   const credentials = {
     username,
     password,
-  }
+  };
 
   // Create user
   const response = await fetch(url, {
@@ -68,8 +68,8 @@ export async function signupPassword(username, password) {
       Authorization: `Bearer ${clientToken}`,
     },
     body: JSON.stringify(credentials),
-  })
-  const jsonResponse = await response.json()
+  });
+  const jsonResponse = await response.json();
 
   if (response.status !== 200) {
     // Fail here if there was an error
@@ -77,11 +77,11 @@ export async function signupPassword(username, password) {
       status: response.status,
       response: jsonResponse,
       error: response.status !== 200,
-    }
+    };
   } else {
     // A new user is always created with a temporary password
     // To make the password permanent, we reset it to the same password
-    return await resetByOldPassword(username, password, password, clientToken)
+    return await resetByOldPassword(username, password, password, clientToken);
   }
 }
 
@@ -91,14 +91,14 @@ export async function signupPassword(username, password) {
 async function resetByOldPassword(username, oldPassword, newPassword, clientToken) {
   // Reset the password to the same password
   // Get the reset token first
-  const resetTokenResult = await getResetTokenByOldPassword(username, oldPassword, clientToken)
+  const resetTokenResult = await getResetTokenByOldPassword(username, oldPassword, clientToken);
 
   if (resetTokenResult.status !== 200) {
-    return resetTokenResult
+    return resetTokenResult;
   }
 
   // Now use the token to perform the reset
-  return await resetPassword(resetTokenResult.response.result, newPassword, clientToken)
+  return await resetPassword(resetTokenResult.response.result, newPassword, clientToken);
 }
 
 /**
@@ -109,7 +109,7 @@ async function getResetTokenByOldPassword(username, password, clientToken) {
     username,
     password,
     client_id: process.env.VITE_TS_CLIENT_ID,
-  }
+  };
 
   const response = await fetch(common.config.apis.passwordResetValidate, {
     method: 'post',
@@ -118,15 +118,15 @@ async function getResetTokenByOldPassword(username, password, clientToken) {
       Authorization: `Bearer ${clientToken}`,
     },
     body: JSON.stringify(data),
-  })
+  });
 
-  const jsonResponse = await response.json()
+  const jsonResponse = await response.json();
 
   return {
     status: response.status,
     response: jsonResponse,
     error: response.status == 200 ? null : jsonResponse.message,
-  }
+  };
 }
 
 /**
@@ -139,7 +139,7 @@ async function resetPassword(resetToken, password, clientToken) {
     reset_token: resetToken,
     new_password: password,
     redirect_uri: process.env.TS_REDIRECT_URI,
-  }
+  };
 
   const response = await fetch(common.config.apis.passwordReset, {
     method: 'post',
@@ -148,12 +148,12 @@ async function resetPassword(resetToken, password, clientToken) {
       Authorization: `Bearer ${clientToken}`,
     },
     body: JSON.stringify(data),
-  })
-  const jsonResponse = await response.json()
+  });
+  const jsonResponse = await response.json();
 
   return {
     status: response.status,
     response: jsonResponse,
     error: response.status == 200 ? null : jsonResponse.message,
-  }
+  };
 }

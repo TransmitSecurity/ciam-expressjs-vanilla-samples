@@ -37,45 +37,45 @@
     </div>
     <script type="application/javascript" src="sms-otp.js"></script>
     <script>
-      const phoneInput = document.getElementById('phoneInput')
-      const otpInput = document.getElementById('otpInput')
-      const otpText = document.getElementById('otpText')
-      const otpDiv = document.getElementById('otpDiv')
-      const phoneDiv = document.getElementById('phoneDiv')
+      const phoneInput = document.getElementById('phoneInput');
+      const otpInput = document.getElementById('otpInput');
+      const otpText = document.getElementById('otpText');
+      const otpDiv = document.getElementById('otpDiv');
+      const phoneDiv = document.getElementById('phoneDiv');
 
       function loadPage() {
-        otpDiv.classList.add('hidden')
+        otpDiv.classList.add('hidden');
       }
 
       async function sendOTP() {
         // TODO - Hila Partuk: 20/02/2023 Add FE validation for the phone value
-        await sendSmsOtp(phoneInput.value, handleSmsOtpResponse)
+        await sendSmsOtp(phoneInput.value, handleSmsOtpResponse);
       }
 
       async function login() {
         // TODO - Hila Partuk: 20/02/2023 Add FE validation for the OTP value
-        await verifyOtp(phoneInput.value, otpInput.value, handleVerifyOtpResponse)
+        await verifyOtp(phoneInput.value, otpInput.value, handleVerifyOtpResponse);
       }
 
       const handleSmsOtpResponse = smsOtpResponse => {
-        console.log('Phone Otp Response', smsOtpResponse)
+        console.log('Phone Otp Response', smsOtpResponse);
 
         if (smsOtpResponse?.status === 200) {
-          phoneDiv.classList.add('hidden')
-          otpDiv.classList.remove('hidden')
+          phoneDiv.classList.add('hidden');
+          otpDiv.classList.remove('hidden');
 
-          otpText.textContent = `We sent a code to ${phoneInput.value}`
+          otpText.textContent = `We sent a code to ${phoneInput.value}`;
         }
-      }
+      };
 
       const handleVerifyOtpResponse = verifyOtpResponse => {
-        console.log('Verify Otp Response', verifyOtpResponse)
+        console.log('Verify Otp Response', verifyOtpResponse);
 
         if (verifyOtpResponse?.status === 200) {
           // success!!!!!! use the result to redirect to completion page
-          window.location = verifyOtpResponse.data.result
+          window.location = verifyOtpResponse.data.result;
         }
-      }
+      };
     </script>
   </body>
 </html>

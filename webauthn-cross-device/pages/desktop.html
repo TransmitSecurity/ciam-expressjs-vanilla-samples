@@ -46,20 +46,20 @@
     // Initialize page and SDK
     async function init() {
       try {
-        const clientId = window.env.VITE_TS_CLIENT_ID
-        window.pageUtils.updateElementText('status', `Starting SDK init for client ID ${clientId}`)
+        const clientId = window.env.VITE_TS_CLIENT_ID;
+        window.pageUtils.updateElementText('status', `Starting SDK init for client ID ${clientId}`);
         await window.WebAuthnSdk.init(clientId, {
           serverPath: 'https://webauthn.identity.security',
-        })
-        window.pageUtils.updateElementText('status', `SDK Init done`)
+        });
+        window.pageUtils.updateElementText('status', `SDK Init done`);
 
         // enable button
-        const elem = document.getElementById('start')
-        elem.removeAttribute('disabled')
-        elem.classList.remove('disabled')
+        const elem = document.getElementById('start');
+        elem.removeAttribute('disabled');
+        elem.classList.remove('disabled');
       } catch (ex) {
-        console.log(ex)
-        window.pageUtils.updateElementText('status', `Error during init: ${ex}`)
+        console.log(ex);
+        window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
       }
     }
 
@@ -68,39 +68,39 @@
     // Triggered when the auth device calls attach()
     async function onDeviceAttach() {
       // set the status text
-      console.log('Received event: mobile device connected')
-      window.pageUtils.updateElementText('status', `Mobile device connected`)
+      console.log('Received event: mobile device connected');
+      window.pageUtils.updateElementText('status', `Mobile device connected`);
 
-      return true // Return true to keep polling
+      return true; // Return true to keep polling
     }
 
     // Triggered at the end of the registration process on the auth device
     async function onCredentialRegister(authCode) {
-      console.log(`Received event: mobile device registered credentials, ${authCode}`)
-      return await completeSession(authCode)
+      console.log(`Received event: mobile device registered credentials, ${authCode}`);
+      return await completeSession(authCode);
     }
 
     // Triggered at the end of the authentication process on the auth device
     async function onCredentialAuthenticate(authCode) {
-      console.log(`Received event: mobile device authenticated, ${authCode}`)
-      return await completeSession(authCode)
+      console.log(`Received event: mobile device authenticated, ${authCode}`);
+      return await completeSession(authCode);
     }
 
     // Triggered on failure
     async function onFailure(error) {
-      console.log(`Received event: flow error, ${error}`)
+      console.log(`Received event: flow error, ${error}`);
       // Log the error and display a message to the user / navigate to an error page.
       // set the status text
-      window.pageUtils.updateElementText('status', `Error: ${error}`)
+      window.pageUtils.updateElementText('status', `Error: ${error}`);
     }
 
     async function completeSession(code) {
       // set the status text
       // Get user tokens using the received code as described below
-      exchangeAndDisplayIDToken(code)
+      exchangeAndDisplayIDToken(code);
 
       // stop event loop
-      return false
+      return false;
     }
 
     // Start the cross device flow, setup
@@ -111,32 +111,32 @@
         onCredentialRegister,
         onCredentialAuthenticate,
         onFailure,
-      })
+      });
 
       if (controller.authSessionId) {
         // Construct the URL of your login page along with the authSessionId param (aid in this example).
         // To use a mobile device, best to display the generated URL using a QR code.
-        const url = `${window.location.origin}/pages/mobile.html?aid=${controller.authSessionId}`
-        const qrElem = document.getElementById('qr')
+        const url = `${window.location.origin}/pages/mobile.html?aid=${controller.authSessionId}`;
+        const qrElem = document.getElementById('qr');
         qrElem.setAttribute(
           'src',
           `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=220x220`,
-        )
+        );
 
         window.pageUtils.updateElementText(
           'url',
           `Scan the QR or open the following link in a separate browser:  ${url}`,
-        )
-        window.pageUtils.updateElementText('status', 'Waiting for mobile device to connect')
+        );
+        window.pageUtils.updateElementText('status', 'Waiting for mobile device to connect');
         // disable button, to prevent multiple clicks once a device is attached
-        const button = document.getElementById('start')
-        button.hidden = true
-        button.classList.add('hidden')
+        const button = document.getElementById('start');
+        button.hidden = true;
+        button.classList.add('hidden');
       } else {
         window.pageUtils.updateElementText(
           'status',
           `Something may be wrong with your app or webauthn config. Please re-check the Transmit portal and .env setup`,
-        )
+        );
       }
     }
 
@@ -151,21 +151,21 @@
           body: JSON.stringify({
             authCode: authCode,
           }),
-        })
+        });
 
         // ruff'n'tuff parsing of the token... usually happens server side of course, to be improved for the sample code.
-        const data = await response.json()
-        const idtoken = data?.id_token
-        const tokenJson = JSON.parse(window.atob(idtoken.split('.')[1]))
-        const username = tokenJson.webauthn_username
-        window.pageUtils.updateElementText('status', `Complete flow for user ${username}`)
-        console.log('Raw ID Token', tokenJson)
+        const data = await response.json();
+        const idtoken = data?.id_token;
+        const tokenJson = JSON.parse(window.atob(idtoken.split('.')[1]));
+        const username = tokenJson.webauthn_username;
+        window.pageUtils.updateElementText('status', `Complete flow for user ${username}`);
+        console.log('Raw ID Token', tokenJson);
       } catch (ex) {
-        console.log('Error during flow completion', ex)
+        console.log('Error during flow completion', ex);
         window.pageUtils.updateElementText(
           'status',
           `Error during token exchange for code ${authCode}: ${ex}`,
-        )
+        );
       }
     }
   </script>
