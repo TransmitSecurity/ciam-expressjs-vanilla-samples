@@ -39,29 +39,29 @@
     <script>
       async function initPage() {
         try {
-          const sdkUsers = await window.WebAuthnSdk.getDeviceUsers()
+          const sdkUsers = await window.WebAuthnSdk.getDeviceUsers();
 
           if (sdkUsers.length) {
-            window.pageUtils.show('page')
+            window.pageUtils.show('page');
           } else {
-            window.location.href = '/pages/otp.html'
-            return
+            window.location.href = '/pages/otp.html';
+            return;
           }
 
           await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
             serverPath: 'https://webauthn.identity.security',
-          })
+          });
 
-          await window.WebAuthnSdk.preparePasskeyAuthentication()
+          await window.WebAuthnSdk.preparePasskeyAuthentication();
 
-          window.pageUtils.enable('passkeyInput')
+          window.pageUtils.enable('passkeyInput');
 
-          const code = await window.WebAuthnSdk.executePasskeyAuthentication()
-          await fetch(`/complete?code=${code}`)
+          const code = await window.WebAuthnSdk.executePasskeyAuthentication();
+          await fetch(`/complete?code=${code}`);
 
-          window.location.href = '/'
+          window.location.href = '/';
         } catch (ex) {
-          window.pageUtils.updateElementText('status', `Error during init: ${ex}`)
+          window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
         }
       }
     </script>

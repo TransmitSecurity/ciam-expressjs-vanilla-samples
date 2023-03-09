@@ -47,41 +47,41 @@
       </main>
     </div>
     <script>
-      const emailInput = document.getElementById('emailInput')
-      const otpInput = document.getElementById('otpInput')
-      const otpText = document.getElementById('otpText')
-      const otpDiv = document.getElementById('otpDiv')
-      const emailDiv = document.getElementById('emailDiv')
+      const emailInput = document.getElementById('emailInput');
+      const otpInput = document.getElementById('otpInput');
+      const otpText = document.getElementById('otpText');
+      const otpDiv = document.getElementById('otpDiv');
+      const emailDiv = document.getElementById('emailDiv');
 
       async function sendOTP() {
         // TODO - Hila Partuk: 20/02/2023 Add FE validation for the email value
-        await sendEmailOtp(emailInput.value, handleEmailOtpResponse)
+        await sendEmailOtp(emailInput.value, handleEmailOtpResponse);
       }
 
       async function login() {
         // TODO - Hila Partuk: 20/02/2023 Add FE validation for the OTP value
-        await verifyOtp(emailInput.value, otpInput.value, handleVerifyOtpResponse)
+        await verifyOtp(emailInput.value, otpInput.value, handleVerifyOtpResponse);
       }
 
       const handleEmailOtpResponse = emailOtpResponse => {
-        console.log('Email Otp Response', emailOtpResponse)
+        console.log('Email Otp Response', emailOtpResponse);
 
         if (emailOtpResponse?.status === 200) {
-          emailDiv.classList.add('hidden')
-          otpDiv.classList.remove('hidden')
+          emailDiv.classList.add('hidden');
+          otpDiv.classList.remove('hidden');
 
-          otpText.textContent = `We sent a code to ${emailInput.value}`
+          otpText.textContent = `We sent a code to ${emailInput.value}`;
         }
-      }
+      };
 
       const handleVerifyOtpResponse = verifyOtpResponse => {
-        console.log('Verify Otp Response', verifyOtpResponse)
+        console.log('Verify Otp Response', verifyOtpResponse);
 
         if (verifyOtpResponse?.status === 200) {
           // success!!!!!! use the result to redirect to completion page
-          window.location = verifyOtpResponse.data.result
+          window.location = verifyOtpResponse.data.result;
         }
-      }
+      };
 
       async function sendEmailOtp(email, handleResponse) {
         const response = await fetch('/otp/email-otp', {
@@ -92,12 +92,12 @@
           body: JSON.stringify({
             email: email,
           }),
-        })
+        });
 
-        const status = response.status
-        const data = await response.json()
-        console.log('Response from /otp/email-otp', { status, data })
-        handleResponse({ status, data })
+        const status = response.status;
+        const data = await response.json();
+        console.log('Response from /otp/email-otp', { status, data });
+        handleResponse({ status, data });
       }
 
       async function verifyOtp(email, otpCode, handleResponse) {
@@ -110,12 +110,12 @@
             email: email,
             otpCode: otpCode,
           }),
-        })
+        });
 
-        const status = response.status
-        const data = await response.json()
-        console.log('Response from /otp/verify', { status, data })
-        handleResponse({ status, data })
+        const status = response.status;
+        const data = await response.json();
+        console.log('Response from /otp/verify', { status, data });
+        handleResponse({ status, data });
       }
     </script>
   </body>

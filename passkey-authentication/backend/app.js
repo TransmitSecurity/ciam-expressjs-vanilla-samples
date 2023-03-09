@@ -1,13 +1,13 @@
-import express from 'express'
+import express from 'express';
 
-import session from 'express-session'
-import crypto from 'crypto'
-import { indexRouter } from './routes'
-import { otpRouter } from './routes/otp'
-import { passkeyRouter } from './routes/passkey'
+import session from 'express-session';
+import crypto from 'crypto';
+import { indexRouter } from './routes';
+import { otpRouter } from './routes/otp';
+import { passkeyRouter } from './routes/passkey';
 
-const app = express()
-app.use(express.json())
+const app = express();
+app.use(express.json());
 
 // This is a simplistic session mechanism
 // not designed to be used in production
@@ -19,10 +19,10 @@ app.use(
     saveUninitialized: false,
     cookie: { secure: false },
   }),
-)
+);
 
-app.use('/', indexRouter)
-app.use('/otp', otpRouter)
-app.use('/passkey', passkeyRouter)
+app.use('/', indexRouter);
+app.use('/otp', otpRouter);
+app.use('/passkey', passkeyRouter);
 
-export const handler = app
+export const handler = app;
