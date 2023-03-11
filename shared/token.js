@@ -59,7 +59,12 @@ export async function getUserTokens(authCode) {
   return data;
 }
 
+export function parseJwt(token) {
+  return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+}
+
 export const tokenRequest = {
   getClientCredsToken: getClientCredsToken,
   getUserTokens: getUserTokens,
+  parseJwt: parseJwt,
 };

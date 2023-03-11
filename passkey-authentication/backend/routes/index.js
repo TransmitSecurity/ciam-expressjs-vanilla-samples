@@ -22,7 +22,7 @@ router.get('/complete', async function (req, res) {
   const tokens = await common.tokens.getUserTokens(params.get('code'));
 
   if (tokens.id_token) {
-    const idToken = window.pageUtils.parseJwt(tokens.id_token);
+    const idToken = common.tokens.parseJwt(tokens.id_token);
     req.session.tokens = {
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,

@@ -16,9 +16,6 @@ export const pageUtils = {
       console.log(ex);
     }
   },
-  parseJwt: function (token) {
-    return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-  },
   hide: function (id) {
     try {
       document.getElementById(id).classList.add('hidden');
