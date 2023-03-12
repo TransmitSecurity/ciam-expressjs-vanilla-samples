@@ -7,4 +7,5 @@ node_modules
 .idea
 TODOS.md
 yarn-error.log
+.husky/
 
