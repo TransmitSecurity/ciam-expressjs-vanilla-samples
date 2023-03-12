@@ -15,6 +15,35 @@
       src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
     ></script>
     <script type="module" src="./init.js"></script>
+    <script>
+      async function initPage() {
+        try {
+          await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
+            serverPath: 'https://webauthn.identity.security',
+          });
+
+          const sdkUsers = await window.WebAuthnSdk.getDeviceUsers();
+
+          if (sdkUsers.length) {
+            window.pageUtils.show('page');
+          } else {
+            window.location.replace('/pages/register.html');
+            return;
+          }
+
+          await window.WebAuthnSdk.preparePasskeyAuthentication();
+
+          window.pageUtils.enable('passkeyInput');
+
+          const code = await window.WebAuthnSdk.executePasskeyAuthentication();
+          await fetch(`/complete?code=${code}`);
+
+          window.location.replace('/');
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
+        }
+      }
+    </script>
   </head>
   <body onload="initPage()">
     <div class="page hidden" id="page">
@@ -32,38 +61,12 @@
             autocomplete="username webauthn"
             disabled
           />
+          <div class="row">
+            Don&apos;t have an account? <a href="/pages/register.html">Sign up</a>
+          </div>
           <div id="status"></div>
         </div>
       </main>
     </div>
-    <script>
-      async function initPage() {
-        try {
-          const sdkUsers = await window.WebAuthnSdk.getDeviceUsers();
-
-          if (sdkUsers.length) {
-            window.pageUtils.show('page');
-          } else {
-            window.location.href = '/pages/otp.html';
-            return;
-          }
-
-          await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
-            serverPath: 'https://webauthn.identity.security',
-          });
-
-          await window.WebAuthnSdk.preparePasskeyAuthentication();
-
-          window.pageUtils.enable('passkeyInput');
-
-          const code = await window.WebAuthnSdk.executePasskeyAuthentication();
-          await fetch(`/complete?code=${code}`);
-
-          window.location.href = '/';
-        } catch (ex) {
-          window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
-        }
-      }
-    </script>
   </body>
 </html>

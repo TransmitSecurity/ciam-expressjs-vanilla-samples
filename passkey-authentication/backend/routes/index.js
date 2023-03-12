@@ -4,17 +4,12 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const router = express.Router();
 
-router.get(['/', '/home'], async function (req, res) {
+router.get(['/'], async function (req, res) {
   if (!req.session?.tokens) {
     res.redirect('/pages/login.html');
   } else {
     res.redirect('/pages/home.html');
   }
-});
-
-// GET login page
-router.get('/login', function (req, res) {
-  res.redirect('/pages/login.html');
 });
 
 router.get('/complete', async function (req, res) {
@@ -31,13 +26,13 @@ router.get('/complete', async function (req, res) {
     req.session.save();
   }
 
-  res.redirect('/home');
+  res.redirect('/pages/home.html');
 });
 
 // Get an authenticated user's saved ID Token or return a not found error
-router.get('/me', async function (req, res) {
+router.get('/user', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
-  console.log('/ME', req.session.tokens);
+  console.log('/user', req.session.tokens);
   if (req.session.tokens) {
     res.status(200).send({
       idToken: req.session.tokens.idToken,

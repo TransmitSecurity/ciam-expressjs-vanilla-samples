@@ -3,7 +3,6 @@ import express from 'express';
 import session from 'express-session';
 import crypto from 'crypto';
 import { indexRouter } from './routes';
-import { otpRouter } from './routes/otp';
 import { passkeyRouter } from './routes/passkey';
 
 const app = express();
@@ -22,7 +21,6 @@ app.use(
 );
 
 app.use('/', indexRouter);
-app.use('/otp', otpRouter);
 app.use('/passkey', passkeyRouter);
 
 export const handler = app;

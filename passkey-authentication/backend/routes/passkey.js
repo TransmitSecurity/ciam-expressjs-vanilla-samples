@@ -4,9 +4,12 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const router = express.Router();
 
-router.get('/start-auth-session', async function (req, res) {
-  const email = req.session.tokens.idToken.email;
-  const accessToken = req.session.tokens.accessToken;
+router.post('/start-auth-session', async function (req, res) {
+  const { username } = req.body;
+
+  // In this sample we are demonstrating Passkey registration for users managed externally.
+  // For more information see https://developer.transmitsecurity.com/guides/webauthn/basic_login_scenarios/
+  const accessToken = await common.tokens.getClientCredsToken();
 
   if (!accessToken) {
     throw new Error('Access token missing from session');
@@ -20,7 +23,7 @@ router.get('/start-auth-session', async function (req, res) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      username: email,
+      username,
       client_id: process.env.VITE_TS_CLIENT_ID,
     }),
   };

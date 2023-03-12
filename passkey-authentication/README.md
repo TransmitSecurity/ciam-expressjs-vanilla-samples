@@ -3,7 +3,8 @@
 This sample follows the following guide:
 https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/
 
-In order to register the passkey the user needs an access token gained from a previous login. In this sample, we use an email OTP login to get the user access token.
+In this sample we are demonstrating Passkey registration for users managed externally.  
+For more information see [Implement login with WebAuthn API](https://developer.transmitsecurity.com/guides/webauthn/basic_login_scenarios/)
 
 Set up this example using the instruction in the [main README file](../README.md)
 
@@ -11,7 +12,6 @@ Set up this example using the instruction in the [main README file](../README.md
 
 - Open a browser tab on <domain:port>/
   - If you already registered a passkey you will be able to select it from the input box
-  - If you didn't you will be redirected to the email OTP page for authentication
-- Once authentication completes you will be redirected to a home page
-  - If you didn't register a passkey yet, click on the `Register passkey`
-- To logout click on the button at the top right corner
+  - If you didn't you will be redirected to the registration page
+- Once registration / authentication completes you will be redirected to a home page
+- To logout click on the button in the top right corner

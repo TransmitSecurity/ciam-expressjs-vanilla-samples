@@ -18,15 +18,15 @@
     <script>
       let userData;
 
-      async function userInfo() {
+      async function getUserData() {
         try {
-          const response = await fetch('/me', {
+          const response = await fetch('/user', {
             method: 'GET',
             credentials: 'include',
           });
 
           const data = await response.json();
-          console.log('Response from /me endpoint: ', data);
+          console.log('Response from /user endpoint: ', data);
           return data.idToken;
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during session check: ${ex}`);
@@ -45,7 +45,7 @@
           console.log('Response from /logout endpoint: ', data);
 
           // Redirect the user to the login page
-          window.location.replace('/login');
+          window.location.replace('/pages/login.html');
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
         }
@@ -53,55 +53,18 @@
 
       async function init() {
         // Check if the user is authenticated
-        userData = await userInfo();
+        userData = await getUserData();
 
         // If not, redirect to login page
         if (!userData) {
-          window.location.replace('/login');
+          window.location.replace('/pages/login.html');
           return;
-        }
-
-        // Check if the user has a passkey on this device
-        const sdkUsers = await window.WebAuthnSdk.getDeviceUsers();
-        const sdkUser = sdkUsers.find(user => {
-          return userData.email === user.username;
-        });
-
-        if (sdkUser) {
-          window.pageUtils.updateElementText('status', 'Passkeys enrolled');
         } else {
-          window.pageUtils.show('sendEmailButton');
+          window.pageUtils.updateElementText('status', 'You are logged in');
         }
 
         // Otherwise print a welcome message
-        window.pageUtils.updateElementText('email', userData.email);
-      }
-
-      async function registerPasskey() {
-        try {
-          const clientId = window.env.VITE_TS_CLIENT_ID;
-
-          await window.WebAuthnSdk.init(clientId, {
-            serverPath: 'https://webauthn.identity.security',
-          });
-
-          const response = await fetch('/passkey/start-auth-session');
-
-          const data = await response.json();
-          const authSessionId = data.auth_session_id;
-          await window.WebAuthnSdk.prepareWebauthnRegistration(
-            userData.email,
-            userData.email,
-            authSessionId,
-          );
-          const code = await window.WebAuthnSdk.executeWebauthnRegistration();
-          await fetch(`/complete?code=${code}`);
-          window.pageUtils.hide('sendEmailButton');
-          window.pageUtils.updateElementText('status', `Passkeys registered successfully`);
-        } catch (ex) {
-          console.log(ex);
-          window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
-        }
+        window.pageUtils.updateElementText('email', userData.webauthn_username);
       }
     </script>
   </head>
@@ -115,9 +78,6 @@
       <main>
         <div class="content column gap">
           <h3>Welcome <span id="email"></span></h3>
-          <button id="sendEmailButton" onclick="registerPasskey()" class="full-width hidden">
-            Register Passkey
-          </button>
           <div id="status"></div>
         </div>
       </main>
