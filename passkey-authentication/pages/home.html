@@ -85,7 +85,7 @@
             serverPath: 'https://webauthn.identity.security',
           });
 
-          const response = await fetch('/start-auth-session');
+          const response = await fetch('/passkey/start-auth-session');
 
           const data = await response.json();
           const authSessionId = data.auth_session_id;

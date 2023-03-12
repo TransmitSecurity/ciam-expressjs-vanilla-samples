@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get(['/', '/home'], async function (req, res) {
   if (!req.session?.tokens) {
-    res.redirect('pages/login.html');
+    res.redirect('/pages/login.html');
   } else {
     res.redirect('/pages/home.html');
   }
