@@ -39,7 +39,7 @@
               Register a new user
             </button>
           </div>
-          <div id="status" class="text"></div>
+          <div id="status" class="column gap"></div>
         </div>
       </main>
     </div>
@@ -47,6 +47,12 @@
   <script>
     let authSessionId = undefined;
     let currentUser = undefined;
+
+    function disableButton(id) {
+      const button = document.getElementById(id);
+      button.enabled = false;
+      button.classList.add('disabled');
+    }
 
     // initialize page and SDK
     async function init() {
@@ -95,6 +101,10 @@
       try {
         const username = document.getElementById('usnInput').value;
 
+        // make sure the button is not clicked again
+        disableButton('regBtn');
+        disableButton('authnBtn');
+
         // Send the authSessionID to the backend, to set it as allowed for webauthn registration. By default auth-sessions are only allowed for authentication.
         await fetch('/mobile/authorize-session-user', {
           method: 'POST',
@@ -110,25 +120,34 @@
         // Execute the registration API calls
         await window.WebAuthnSdk.prepareWebauthnRegistration(username, username, authSessionId);
         const authCode = await window.WebAuthnSdk.executeWebauthnRegistration();
-        window.pageUtils.updateElementText('status', `Completed with auth code: ${authCode}`);
-        console.log(authCode);
+        window.pageUtils.updateElementText(
+          'status',
+          `Completed with auth code (see console log). Please return to the Desktop device page to see flow completion and response.`,
+        );
+        console.log(`Completed with auth code: ${authCode}`);
       } catch (ex) {
         window.pageUtils.updateElementText('status', `Error during registration: ${ex}`);
+        console.log(ex);
       }
     }
 
     // triggered on authentication click
     async function doAuthentication() {
       try {
+        // make sure the button is not clicked again
+        disableButton('regBtn');
+        disableButton('authnBtn');
+
         await window.WebAuthnSdk.prepareWebauthnAuthentication(currentUser.username);
         const authCode = await window.WebAuthnSdk.executeWebauthnAuthentication();
         window.pageUtils.updateElementText(
           'status',
-          `Completed with auth code: ${authCode}. Please return to the Desktop device page to see flow completion and response.`,
+          `Completed with auth code (see console log). Please return to the Desktop device page to see flow completion and response.`,
         );
-        console.log(authCode);
+        console.log(`Completed with auth code ${authCode}`);
       } catch (ex) {
         window.pageUtils.updateElementText('status', `Error during authentication: ${ex}`);
+        console.log(ex);
       }
     }
   </script>
