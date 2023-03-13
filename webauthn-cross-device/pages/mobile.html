@@ -122,7 +122,10 @@
       try {
         await window.WebAuthnSdk.prepareWebauthnAuthentication(currentUser.username);
         const authCode = await window.WebAuthnSdk.executeWebauthnAuthentication();
-        window.pageUtils.updateElementText('status', `Completed with auth code: ${authCode}`);
+        window.pageUtils.updateElementText(
+          'status',
+          `Completed with auth code: ${authCode}. Please return to the Desktop device page to see flow completion and response.`,
+        );
         console.log(authCode);
       } catch (ex) {
         window.pageUtils.updateElementText('status', `Error during authentication: ${ex}`);
