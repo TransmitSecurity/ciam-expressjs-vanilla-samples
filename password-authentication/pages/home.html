@@ -1,18 +1,9 @@
 <html>
   <head>
     <title>Home</title>
-    <link rel="stylesheet" href="/stylesheets/style.css" />
-    <script type="module" src="./config.js"></script>
+    <script type="module" src="./init.js"></script>
 
     <script>
-      function updateElementText(id, text) {
-        try {
-          document.getElementById(id).textContent = text;
-        } catch (ex) {
-          console.log(ex);
-        }
-      }
-
       async function getUserData() {
         try {
           const response = await fetch('/user', {
@@ -24,7 +15,7 @@
           console.log('Response from /user endpoint: ', data);
           return data.result;
         } catch (ex) {
-          updateElementText('status', `Error during session check: ${ex}`);
+          window.pageUtils.updateElementText('status', `Error during session check: ${ex}`);
         }
       }
 
@@ -42,13 +33,13 @@
           // Redirect the user to the login page
           window.location.replace('/pages/login.html');
         } catch (ex) {
-          updateElementText('status', `Error during logout: ${ex}`);
+          window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
         }
       }
 
       async function init() {
         const clientId = window.env.VITE_TS_CLIENT_ID;
-        updateElementText('clientId', clientId);
+        window.pageUtils.updateElementText('clientId', clientId);
 
         // Check if the user is authenticated
         const userData = await getUserData();
@@ -59,15 +50,25 @@
         }
 
         // Otherwise print a welcome message
-        updateElementText('username', userData.username);
+        window.pageUtils.updateElementText('username', userData.username);
       }
     </script>
   </head>
 
   <body onload="init()">
-    <h1>Welcome <span id="username"></span></h1>
-    <span id="clientId"></span>
-    <br /><br />
-    <button onclick="logout()">Logout</button>
+    <div class="page">
+      <header>
+        <img src="/acme-logo.svg" alt="ACME" />
+        <button onclick="logout()">Logout</button>
+      </header>
+      <main>
+        <div class="content column centered gap">
+          <h3>Welcome <span id="username"></span></h3>
+          <img src="/shield.svg" alt="Logged in" />
+          <div>You are logged in!</div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
   </body>
 </html>

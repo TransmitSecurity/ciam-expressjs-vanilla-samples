@@ -1,22 +1,12 @@
 <html>
   <head>
     <title>Signup</title>
-    <link rel="stylesheet" href="/stylesheets/style.css" />
-    <script type="module" src="./config.js"></script>
+    <script type="module" src="./init.js"></script>
 
     <script>
-      function updateElementText(id, text) {
-        try {
-          document.getElementById(id).textContent = text;
-        } catch (ex) {
-          console.log(ex);
-        }
-      }
-
-      // This functions is triggered the users input their username and password for signup. It is sent for a backend validation and registration.
+      // This function is triggered the users input their username and password for signup. It is sent for a backend validation and registration.
       // For more information see https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-4-register-password
       async function signup() {
-        event.preventDefault();
         try {
           const username = document.getElementById('username').value;
           const password = document.getElementById('password').value;
@@ -35,45 +25,40 @@
           const jsonResult = await result.json();
           console.log(jsonResult);
           if (jsonResult.error) {
-            updateElementText('status', jsonResult.response.message);
+            window.pageUtils.updateElementText('status', jsonResult.response.message);
           } else if (!jsonResult.response && !jsonResult.response.url) {
-            updateElementText('status', 'No link found in server response');
+            window.pageUtils.updateElementText('status', 'Redirect URL missing in server response');
           } else {
             // Redirect the user to finish the authentication
             window.location.replace(jsonResult.response.result.url);
           }
         } catch (ex) {
-          updateElementText('status', `Error during signup: ${ex}`);
+          window.pageUtils.updateElementText('status', `Error during signup: ${ex}`);
         }
       }
 
       function init() {
         const clientId = window.env.VITE_TS_CLIENT_ID;
-        updateElementText('clientId', clientId);
+        window.pageUtils.updateElementText('clientId', clientId);
       }
     </script>
   </head>
 
   <body onload="init()">
-    <h1>Signup</h1>
-    <span id="clientId"></span>
-    <br /><br />
-    <form method="post" onsubmit="signup()">
-      <p>
-        <label for="username">Username:</label>
-        <input type="text" name="username" id="username" />
-      </p>
-      <p>
-        <label for="password">Password:</label>
-        <input type="password" name="password" id="password" />
-      </p>
-      <p>
-        <input type="submit" value="Signup" />
-      </p>
-    </form>
-    <div>Have an account? <a href="/pages/login.html">Login.</a></div>
-
-    <br />
-    <span id="status"></span>
+    <div class="page" id="page">
+      <header>
+        <img src="/acme-logo.svg" alt="ACME" />
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3>Welcome</h3>
+          <input type="text" name="username" id="username" placeholder="Enter username" />
+          <input type="password" name="password" id="password" placeholder="Enter password" />
+          <button class="full-width" onclick="signup()">Sign up</button>
+          <div id="status"></div>
+          <div class="row">Already have an account? <a href="/pages/login.html">Sign in</a></div>
+        </div>
+      </main>
+    </div>
   </body>
 </html>
