@@ -24,13 +24,6 @@
 
           const sdkUsers = await window.WebAuthnSdk.getDeviceUsers();
 
-          if (sdkUsers.length) {
-            window.pageUtils.show('page');
-          } else {
-            window.location.replace('/pages/register.html');
-            return;
-          }
-
           await window.WebAuthnSdk.preparePasskeyAuthentication();
 
           window.pageUtils.enable('passkeyInput');
@@ -46,7 +39,7 @@
     </script>
   </head>
   <body onload="initPage()">
-    <div class="page hidden" id="page">
+    <div class="page" id="page">
       <header>
         <img src="/acme-logo.svg" />
       </header>

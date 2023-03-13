@@ -15,3 +15,7 @@ Set up this example using the instruction in the [main README file](../README.md
   - If you didn't you will be redirected to the registration page
 - Once registration / authentication completes you will be redirected to a home page
 - To logout click on the button in the top right corner
+
+## Notes
+
+- You can use the browser's password manager to delete passkeys associated with this page. For example in Chrome, the auto-fill list will contain a "Manage passwords and Passkeys" section.
