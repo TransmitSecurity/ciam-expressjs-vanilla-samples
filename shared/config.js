@@ -23,5 +23,6 @@ export const config = {
     validateOtpSMS: `${idmApiBaseUrl()}/v1/auth/otp/sms/validation`,
 
     webauthnAuthorize: `${webauthnApiBaseUrl()}/v1/auth-session/authorize`,
+    webauthnStartWithAuthorization: `${webauthnApiBaseUrl()}/v1/auth-session/start-with-authorization`,
   },
 };

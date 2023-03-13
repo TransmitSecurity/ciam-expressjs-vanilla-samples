@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script
+      type="text/javascript"
+      src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
+    ></script>
+    <script type="module" src="./init.js"></script>
+    <script>
+      async function initPage() {
+        try {
+          await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
+            serverPath: 'https://webauthn.identity.security',
+          });
+
+          const sdkUsers = await window.WebAuthnSdk.getDeviceUsers();
+
+          await window.WebAuthnSdk.preparePasskeyAuthentication();
+
+          window.pageUtils.enable('passkeyInput');
+
+          const code = await window.WebAuthnSdk.executePasskeyAuthentication();
+          await fetch(`/complete?code=${code}`);
+
+          window.location.replace('/');
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
+        }
+      }
+    </script>
+  </head>
+  <body onload="initPage()">
+    <div class="page" id="page">
+      <header>
+        <img src="/acme-logo.svg" />
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3>Welcome</h3>
+          <input
+            id="passkeyInput"
+            type="text"
+            size="40"
+            placeholder="Select a passkey"
+            autocomplete="username webauthn"
+            disabled
+          />
+          <div class="row">
+            Don&apos;t have an account? <a href="/pages/register.html">Sign up</a>
+          </div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

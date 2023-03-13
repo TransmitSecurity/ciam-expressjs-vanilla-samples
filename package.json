@@ -6,6 +6,7 @@
   "workspaces": [
     "login-with-email",
     "login-with-sms",
+    "passkey-authentication",
     "password-authentication",
     "webauthn-cross-device",
     "shared"

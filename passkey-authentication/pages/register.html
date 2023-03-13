@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script
+      type="text/javascript"
+      src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
+    ></script>
+    <script type="module" src="./init.js"></script>
+    <script>
+      async function registerPasskey() {
+        try {
+          await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
+            serverPath: 'https://webauthn.identity.security',
+          });
+
+          const usernameInput = document.getElementById('username');
+          const username = usernameInput.value;
+
+          if (username) {
+            const sessionResponse = await fetch('/passkey/start-auth-session', {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+              },
+              body: JSON.stringify({ username }),
+            });
+
+            const data = await sessionResponse.json();
+            const authSessionId = data.auth_session_id;
+            await window.WebAuthnSdk.prepareWebauthnRegistration(username, username, authSessionId);
+
+            const code = await window.WebAuthnSdk.executeWebauthnRegistration();
+            await fetch(`/complete?code=${code}`);
+
+            window.location.replace('/');
+          } else {
+            window.pageUtils.updateElementText('status', `Username required`);
+          }
+        } catch (ex) {
+          console.log(ex);
+          window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
+        }
+      }
+    </script>
+  </head>
+  <body onload="initPage()">
+    <div class="page" id="page">
+      <header>
+        <img src="/acme-logo.svg" />
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3>Welcome</h3>
+          <input id="username" type="text" size="40" placeholder="Enter username" />
+          <button id="registerPasskey" onclick="registerPasskey()" class="full-width">
+            Register Passkey
+          </button>
+          <div class="row">Already have an account? <a href="/pages/login.html">Sign in</a></div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
