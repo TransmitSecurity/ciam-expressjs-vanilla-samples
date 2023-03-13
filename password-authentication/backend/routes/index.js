@@ -1,41 +1,33 @@
 import { Router } from 'express';
 import { loginPassword, signupPassword } from '../lib/passwords';
-import { logout } from '../lib/management';
+import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const router = Router();
 
-function parseJwt(token) {
-  return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-}
-
 // Render home page
-router.get(['/', '/home'], async function (req, res) {
+router.get(['/'], async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   res.redirect('/pages/home.html');
 });
 
-// Render verification page
+// The following endpoint is used when redirecting back to the RP site after authentication for token exchange.
+// For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-6-get-user-tokens.
 router.get('/complete', async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
   const params = new URLSearchParams(req.query);
-  res.redirect(`/pages/complete.html?${params.toString()}`);
-});
+  const tokens = await common.tokens.getUserTokens(params.get('code'));
 
-// Render login page
-router.get('/login', async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
-  res.redirect('/pages/login.html');
-});
+  if (tokens.id_token) {
+    const idToken = common.tokens.parseJwt(tokens.id_token);
+    req.session.tokens = {
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+      idToken,
+    };
+    req.session.save();
+  }
 
-// Logout user
-router.post('/logout', async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
-  const accessToken = req.session.tokens.accessToken;
-  req.session.tokens = undefined;
-  req.session.save();
-  const result = await logout(accessToken);
-  res.send(result);
+  res.redirect('/');
 });
 
 // Authenticate a user with a password
@@ -47,12 +39,6 @@ router.post('/login', async function (req, res) {
   res.send(result);
 });
 
-// Render signup page
-router.get('/signup', async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
-  res.redirect('/pages/signup.html');
-});
-
 // Create a user with a username and password
 router.post('/signup', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
@@ -62,37 +48,11 @@ router.post('/signup', async function (req, res) {
   res.send(result);
 });
 
-// The following endpoint is used by views/complete.html when a flow is completed, for token exchange
-// SECURITY NOTES: Normally the ID token SHOULD NOT reach the UI, however this is a sample app and we want to display it for clarity.
-// For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-6-get-user-tokens
-router.post('/fetch-tokens', async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
-  console.log(JSON.stringify(req.body));
-  const tokens = await common.tokens.getUserTokens(req.body.authCode);
-
-  // Here we the session, this will automatically set a cookie on the user's browser
-  // Transmit does not recommend using the access token directly from the front-end
-  // See: https://developer.transmitsecurity.com/guides/user/manage_user_sessions/#step-3-store-session
-  // For cookies security recommendations, see: https://developer.transmitsecurity.com/guides/user/how_sessions_work/#session-cookie
-  if (tokens.id_token) {
-    // TODO: verify tokens signature
-    const idToken = parseJwt(tokens.id_token);
-    req.session.tokens = {
-      accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token,
-      idToken,
-    };
-    req.session.save();
-    res.status(200).send({});
-  } else {
-    res.status(400).send({ error: 'An error occurred' });
-  }
-});
-
 // Get an authenticated user's saved ID Token or return a not found error
-router.get('/me', async function (req, res) {
+// SECURITY NOTES: Normally the ID token SHOULD NOT reach the UI, we send and display it here for clarity.
+router.get('/user', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
-  console.log('/ME', req.session.tokens);
+  console.log('/user', req.session.tokens);
   if (req.session.tokens) {
     res.status(200).send({
       idToken: req.session.tokens.idToken,
@@ -102,6 +62,27 @@ router.get('/me', async function (req, res) {
       idToken: null,
     });
   }
+});
+
+// Logout user
+router.post('/logout', async function (req, res) {
+  const accessToken = req.session.tokens.accessToken;
+  const url = common.config.apis.logout;
+
+  req.session.tokens = undefined;
+  req.session.save();
+
+  const data = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const json = await data.json();
+  console.log('Logout', json);
+
+  res.send(json);
 });
 
 export default router;

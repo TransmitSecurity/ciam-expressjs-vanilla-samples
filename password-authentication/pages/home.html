@@ -13,15 +13,15 @@
         }
       }
 
-      async function userInfo() {
+      async function getUserData() {
         try {
-          const response = await fetch('/me', {
+          const response = await fetch('/user', {
             method: 'GET',
             credentials: 'include',
           });
 
           const data = await response.json();
-          console.log('Response from /me endpoint: ', data);
+          console.log('Response from /user endpoint: ', data);
           return data.idToken;
         } catch (ex) {
           updateElementText('status', `Error during session check: ${ex}`);
@@ -40,7 +40,7 @@
           console.log('Response from /logout endpoint: ', data);
 
           // Redirect the user to the login page
-          window.location.replace('/login');
+          window.location.replace('/pages/login.html');
         } catch (ex) {
           updateElementText('status', `Error during logout: ${ex}`);
         }
@@ -51,11 +51,11 @@
         updateElementText('clientId', clientId);
 
         // Check if the user is authenticated
-        const userData = await userInfo();
+        const userData = await getUserData();
 
         // If not, redirect to login page
         if (!userData) {
-          window.location.replace('/login');
+          window.location.replace('/pages/login.html');
         }
 
         // Otherwise print a welcome message
