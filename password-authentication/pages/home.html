@@ -15,7 +15,7 @@
           console.log('Response from /user endpoint: ', data);
           return data.result;
         } catch (ex) {
-          window.pageUtils.updateElementText('status', `Error during session check: ${ex}`);
+          console.log('Unauthorized');
         }
       }
 
