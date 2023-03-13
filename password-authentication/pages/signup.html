@@ -40,7 +40,7 @@
             updateElementText('status', 'No link found in server response');
           } else {
             // Redirect the user to finish the authentication
-            window.location.replace(jsonResult.response.url);
+            window.location.replace(jsonResult.response.result.url);
           }
         } catch (ex) {
           updateElementText('status', `Error during signup: ${ex}`);
@@ -71,7 +71,7 @@
         <input type="submit" value="Signup" />
       </p>
     </form>
-    <div>Have an account? <a href="/login">Login.</a></div>
+    <div>Have an account? <a href="/pages/login.html">Login.</a></div>
 
     <br />
     <span id="status"></span>
