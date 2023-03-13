@@ -22,8 +22,6 @@
             serverPath: 'https://webauthn.identity.security',
           });
 
-          const sdkUsers = await window.WebAuthnSdk.getDeviceUsers();
-
           await window.WebAuthnSdk.preparePasskeyAuthentication();
 
           window.pageUtils.enable('passkeyInput');
@@ -41,7 +39,7 @@
   <body onload="initPage()">
     <div class="page" id="page">
       <header>
-        <img src="/acme-logo.svg" />
+        <img src="/acme-logo.svg" alt="ACME" />
       </header>
       <main>
         <div class="content column gap">

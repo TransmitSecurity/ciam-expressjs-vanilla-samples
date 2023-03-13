@@ -59,8 +59,6 @@
         if (!userData) {
           window.location.replace('/pages/login.html');
           return;
-        } else {
-          window.pageUtils.updateElementText('status', 'You are logged in');
         }
 
         // Otherwise print a welcome message
@@ -72,12 +70,14 @@
   <body onload="init()">
     <div class="page">
       <header>
-        <img src="/acme-logo.svg" />
+        <img src="/acme-logo.svg" alt="ACME" />
         <button onclick="logout()">Logout</button>
       </header>
       <main>
-        <div class="content column gap">
+        <div class="content column centered gap">
           <h3>Welcome <span id="email"></span></h3>
+          <img src="/shield.svg" alt="Logged in" />
+          <div>You are logged in!</div>
           <div id="status"></div>
         </div>
       </main>
