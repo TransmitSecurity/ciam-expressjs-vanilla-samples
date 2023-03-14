@@ -1,22 +1,20 @@
 <html>
   <head>
-    <title>Login</title>
-    <link rel="stylesheet" href="/stylesheets/style.css" />
-    <script type="module" src="./config.js"></script>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME Login</title>
+    <script type="module" src="./init.js"></script>
 
     <script>
-      function updateElementText(id, text) {
-        try {
-          document.getElementById(id).textContent = text;
-        } catch (ex) {
-          console.log(ex);
-        }
-      }
-
-      // This functions is triggered the users input their username and password. It is sent for a backend validation.
+      // This function is triggered the users input their username and password. It is sent for a backend validation.
       // For more information see https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-5-authenticate-user
       async function login() {
-        event.preventDefault();
         try {
           const username = document.getElementById('username').value;
           const password = document.getElementById('password').value;
@@ -35,46 +33,38 @@
           const jsonResult = await result.json();
           console.log(jsonResult);
           if (jsonResult.error) {
-            updateElementText('status', jsonResult.response.message);
+            window.pageUtils.updateElementText('status', jsonResult.response.message);
           } else if (!jsonResult.response.result && !jsonResult.response.result.url) {
-            updateElementText('status', 'No link found in server response');
+            window.pageUtils.updateElementText('status', 'No link found in server response');
           } else {
             // Redirect the user to finish the authentication
             console.log(`Redirecting to ${jsonResult.response.result.url}`);
             window.location.replace(jsonResult.response.result.url);
           }
         } catch (ex) {
-          updateElementText('status', `Error during login: ${ex}`);
+          window.pageUtils.updateElementText('status', `Error during login: ${ex}`);
         }
-      }
-
-      function init() {
-        const clientId = window.env.VITE_TS_CLIENT_ID;
-        updateElementText('clientId', clientId);
       }
     </script>
   </head>
 
-  <body onload="init()">
-    <h1>Login</h1>
-    <span id="clientId"></span>
-    <br /><br />
-    <form method="post" action="/login" onsubmit="login()">
-      <p>
-        <label for="username">Username:</label>
-        <input type="text" name="username" id="username" />
-      </p>
-      <p>
-        <label for="password">Password:</label>
-        <input type="password" name="password" id="password" />
-      </p>
-      <p>
-        <input type="submit" value="Login" />
-      </p>
-    </form>
-    <div>No account? <a href="/signup">Signup.</a></div>
-
-    <br />
-    <span id="status"></span>
+  <body>
+    <div class="page" id="page">
+      <header>
+        <img src="/acme-logo.svg" alt="ACME" />
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3>Welcome</h3>
+          <input type="text" name="username" id="username" placeholder="Enter username" />
+          <input type="password" name="password" id="password" placeholder="Enter password" />
+          <button class="full-width" onclick="login()">Login</button>
+          <div id="status"></div>
+          <div class="row">
+            Don&apos;t have an account? <a href="/pages/signup.html">Sign up</a>
+          </div>
+        </div>
+      </main>
+    </div>
   </body>
 </html>

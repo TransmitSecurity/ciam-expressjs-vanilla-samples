@@ -1,30 +1,29 @@
 <html>
   <head>
-    <title>Home</title>
-    <link rel="stylesheet" href="/stylesheets/style.css" />
-    <script type="module" src="./config.js"></script>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
 
     <script>
-      function updateElementText(id, text) {
+      async function getUserData() {
         try {
-          document.getElementById(id).textContent = text;
-        } catch (ex) {
-          console.log(ex);
-        }
-      }
-
-      async function userInfo() {
-        try {
-          const response = await fetch('/me', {
+          const response = await fetch('/user', {
             method: 'GET',
             credentials: 'include',
           });
 
           const data = await response.json();
-          console.log('Response from /me endpoint: ', data);
-          return data.idToken;
+          console.log('Response from /user endpoint: ', data);
+          return data.result;
         } catch (ex) {
-          updateElementText('status', `Error during session check: ${ex}`);
+          console.log('Unauthorized');
         }
       }
 
@@ -40,34 +39,41 @@
           console.log('Response from /logout endpoint: ', data);
 
           // Redirect the user to the login page
-          window.location.replace('/login');
+          window.location.replace('/pages/login.html');
         } catch (ex) {
-          updateElementText('status', `Error during logout: ${ex}`);
+          window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
         }
       }
 
       async function init() {
-        const clientId = window.env.VITE_TS_CLIENT_ID;
-        updateElementText('clientId', clientId);
-
         // Check if the user is authenticated
-        const userData = await userInfo();
+        const userData = await getUserData();
 
         // If not, redirect to login page
         if (!userData) {
-          window.location.replace('/login');
+          window.location.replace('/pages/login.html');
         }
 
         // Otherwise print a welcome message
-        updateElementText('username', userData.username);
+        window.pageUtils.updateElementText('username', userData.username);
       }
     </script>
   </head>
 
   <body onload="init()">
-    <h1>Welcome <span id="username"></span></h1>
-    <span id="clientId"></span>
-    <br /><br />
-    <button onclick="logout()">Logout</button>
+    <div class="page">
+      <header>
+        <img src="/acme-logo.svg" alt="ACME" />
+        <button onclick="logout()">Logout</button>
+      </header>
+      <main>
+        <div class="content column centered gap">
+          <h3>Welcome <span id="username"></span></h3>
+          <img src="/shield.svg" alt="Logged in" />
+          <div>You are logged in!</div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
   </body>
 </html>
