@@ -46,9 +46,6 @@
       }
 
       async function init() {
-        const clientId = window.env.VITE_TS_CLIENT_ID;
-        window.pageUtils.updateElementText('clientId', clientId);
-
         // Check if the user is authenticated
         const userData = await getUserData();
 

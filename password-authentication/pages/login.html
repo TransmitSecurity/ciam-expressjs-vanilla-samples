@@ -45,15 +45,10 @@
           window.pageUtils.updateElementText('status', `Error during login: ${ex}`);
         }
       }
-
-      function init() {
-        const clientId = window.env.VITE_TS_CLIENT_ID;
-        window.pageUtils.updateElementText('clientId', clientId);
-      }
     </script>
   </head>
 
-  <body onload="init()">
+  <body>
     <div class="page" id="page">
       <header>
         <img src="/acme-logo.svg" alt="ACME" />
