@@ -36,7 +36,7 @@
               Show QR
             </button>
             <div id="url" class="text column long-text"></div>
-            <div id="status" class="text"></div>
+            <div id="status" class="column gap"></div>
           </div>
         </div>
       </main>
@@ -54,9 +54,7 @@
         window.pageUtils.updateElementText('status', `SDK Init done`);
 
         // enable button
-        const elem = document.getElementById('start');
-        elem.removeAttribute('disabled');
-        elem.classList.remove('disabled');
+        window.pageUtils.enable('start');
       } catch (ex) {
         console.log(ex);
         window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
@@ -128,10 +126,8 @@
           `Scan the QR or open the following link in a separate browser:  ${url}`,
         );
         window.pageUtils.updateElementText('status', 'Waiting for mobile device to connect');
-        // disable button, to prevent multiple clicks once a device is attached
-        const button = document.getElementById('start');
-        button.hidden = true;
-        button.classList.add('hidden');
+        // hide the button, to prevent multiple clicks once a device is attached
+        window.pageUtils.hide('start');
       } else {
         window.pageUtils.updateElementText(
           'status',
