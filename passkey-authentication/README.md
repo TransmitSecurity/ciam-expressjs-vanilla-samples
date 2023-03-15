@@ -4,7 +4,8 @@ This sample follows the following guide:
 https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/
 
 In this sample we are demonstrating Passkey registration for users managed externally.  
-For more information see [Implement login with WebAuthn API](https://developer.transmitsecurity.com/guides/webauthn/basic_login_scenarios/)
+For more information see
+[Implement login with WebAuthn API](https://developer.transmitsecurity.com/guides/webauthn/basic_login_scenarios/)
 
 Set up this example using the instruction in the [main README file](../README.md)
 
@@ -18,4 +19,5 @@ Set up this example using the instruction in the [main README file](../README.md
 
 ## Notes
 
-- You can use the browser's password manager to delete passkeys associated with this page. For example in Chrome, the auto-fill list will contain a "Manage passwords and Passkeys" section.
+- You can use the browser's password manager to delete passkeys associated with this page. For
+  example in Chrome, the auto-fill list will contain a "Manage passwords and Passkeys" section.

@@ -48,19 +48,13 @@
     let authSessionId = undefined;
     let currentUser = undefined;
 
-    function disableButton(id) {
-      const button = document.getElementById(id);
-      button.enabled = false;
-      button.classList.add('disabled');
-    }
-
     // initialize page and SDK
     async function init() {
       try {
         const clientId = window.env.VITE_TS_CLIENT_ID;
         authSessionId = window.pageUtils.extractUrlParameter('aid');
-        const authElem = document.getElementById('authenticate');
-        authElem.classList.add('hidden');
+
+        window.pageUtils.hide('authenticate');
 
         await window.WebAuthnSdk.init(clientId, {
           serverPath: 'https://webauthn.identity.security',
@@ -81,7 +75,7 @@
           });
           console.log(currentUser);
           if (currentUser) {
-            authElem.classList.remove('hidden');
+            window.pageUtils.show('authenticate');
             window.pageUtils.updateElementText('authnBtn', `Login with ${currentUser.username}`);
           }
         } else {
@@ -102,8 +96,8 @@
         const username = document.getElementById('usnInput').value;
 
         // make sure the button is not clicked again
-        disableButton('regBtn');
-        disableButton('authnBtn');
+        window.pageUtils.disable('regBtn');
+        window.pageUtils.disable('authnBtn');
 
         // Send the authSessionID to the backend, to set it as allowed for webauthn registration. By default auth-sessions are only allowed for authentication.
         await fetch('/mobile/authorize-session-user', {
@@ -135,8 +129,8 @@
     async function doAuthentication() {
       try {
         // make sure the button is not clicked again
-        disableButton('regBtn');
-        disableButton('authnBtn');
+        window.pageUtils.disable('regBtn');
+        window.pageUtils.disable('authnBtn');
 
         await window.WebAuthnSdk.prepareWebauthnAuthentication(currentUser.username);
         const authCode = await window.WebAuthnSdk.executeWebauthnAuthentication();

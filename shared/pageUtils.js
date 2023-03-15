@@ -32,14 +32,18 @@ export const pageUtils = {
   },
   enable: function (id) {
     try {
-      document.getElementById(id).removeAttribute('disabled');
+      const elem = document.getElementById(id);
+      elem.removeAttribute('disabled');
+      elem.classList.remove('disabled');
     } catch (ex) {
       console.log(ex);
     }
   },
   disable: function (id) {
     try {
-      document.getElementById(id).setAttribute('disabled', 'true');
+      const elem = document.getElementById(id);
+      elem.setAttribute('disabled', 'true');
+      elem.classList.add('disabled');
     } catch (ex) {
       console.log(ex);
     }
