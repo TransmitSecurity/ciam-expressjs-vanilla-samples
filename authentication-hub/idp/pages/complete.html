@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <title>Identity Provider</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <script type="module" src="./config.js"></script>
+    <script>
+      function updateElementText(id, text) {
+        try {
+          document.getElementById(id).textContent = text;
+        } catch (ex) {
+          console.log(ex);
+        }
+      }
+
+      async function init() {
+        const clientId = window.env.VITE_TS_CLIENT_ID;
+        updateElementText('clientId', clientId);
+
+        // Check if the authorization code is present in the query parameters
+        const queryParams = new URLSearchParams(window.location.search);
+        const code = queryParams.get('code');
+
+        console.log('Code', code);
+
+        // If not show the error message
+        if (!code) {
+          updateElementText('status', queryParams.get('error_description'));
+        } else {
+          // If the code is there, redirect the user to finish the authentication
+          // See: https://developer.transmitsecurity.com/guides/user/authentication_hub/#1-create-your-login-endpoint
+          const url = `https://api.userid.security/auth/centralized/callback?code=${code}`;
+          console.log(url);
+          window.location.replace(url);
+        }
+      }
+    </script>
+  </head>
+
+  <body onload="init()">
+    <h1>Verification</h1>
+    <span id="clientId"></span>
+    <br /><br />
+    <br /><br />
+    <span id="status"></span>
+    <br /><br />
+    <span id="rawToken"></span>
+  </body>
+</html>

@@ -1,0 +1,122 @@
+<html>
+  <head>
+    <title>Home</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <script type="module" src="./config.js"></script>
+
+    <script>
+      function setElementVisible(id, visible) {
+        try {
+          document.getElementById(id).style.display = visible ? 'block' : 'none';
+        } catch (ex) {
+          console.log(ex);
+        }
+      }
+
+      function updateElementText(id, text) {
+        try {
+          document.getElementById(id).textContent = text;
+        } catch (ex) {
+          console.log(ex);
+        }
+      }
+
+      function setUserLoggedIn(loggedIn) {
+        console.log('Set user logged in', loggedIn);
+        if (loggedIn) {
+          setElementVisible('loginBtn', false);
+          setElementVisible('logoutBtn', true);
+        } else {
+          setElementVisible('loginBtn', true);
+          setElementVisible('logoutBtn', false);
+        }
+      }
+
+      async function userInfo() {
+        try {
+          const response = await fetch('/me', {
+            method: 'GET',
+            credentials: 'include',
+          });
+
+          const data = await response.json();
+          console.log('Response from /me endpoint: ', data);
+          return data.idToken;
+        } catch (ex) {
+          updateElementText('status', `Error during session check: ${ex}`);
+        }
+      }
+
+      async function login() {
+        // We create a claim to get the username in the ID Token
+        const claims = JSON.stringify({
+          id_token: {
+            username: null,
+          },
+        });
+
+        // Here we configure the authentication request parameters
+        // See: https://developer.transmitsecurity.com/openapi/user/oidc/#operation/oidcAuthenticate
+        const queryParams = new URLSearchParams({
+          client_id: window.env.VITE_TS_CLIENT_ID,
+          scope: 'openid',
+          response_type: 'code',
+          redirect_uri: `${window.location.origin}/complete`,
+          acr_values: 'urn:transmit:centralized',
+          createNewUser: 'true',
+          resource: 'http://localhost:8080/login',
+          claims,
+        });
+        const url = `https://api.userid.security/oidc/auth?${queryParams.toString()}`;
+
+        // Request centralized login from the authentication hub
+        // See: https://developer.transmitsecurity.com/guides/user/authentication_hub/#3-request-centralized-login
+        window.location.replace(url);
+      }
+
+      async function logout() {
+        try {
+          const response = await fetch('/logout', {
+            method: 'POST',
+          });
+
+          const data = await response.json();
+          // You can get the number of sessions that were terminated with
+          // data.result.sessions_count
+          console.log('Response from /logout endpoint: ', data);
+
+          // Redirect the user to the login page
+          window.location.replace('/');
+        } catch (ex) {
+          updateElementText('status', `Error during logout: ${ex}`);
+        }
+      }
+
+      async function init() {
+        const clientId = window.env.VITE_TS_CLIENT_ID;
+        updateElementText('clientId', clientId);
+
+        // Check if the user is authenticated
+        const userData = await userInfo();
+        setUserLoggedIn(userData);
+
+        // Print a welcome message
+        if (userData) {
+          updateElementText('username', userData.username);
+        }
+      }
+    </script>
+  </head>
+
+  <body onload="init()">
+    <h1>Welcome <span id="username"></span></h1>
+    <span id="clientId"></span>
+    <br /><br />
+
+    <!-- User is logged out -->
+    <button id="loginBtn" onclick="login()" style="display: none">Login / Signup</button>
+
+    <!-- User is logged in -->
+    <button id="logoutBtn" onclick="logout()" style="display: none">Logout</button>
+  </body>
+</html>

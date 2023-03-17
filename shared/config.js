@@ -8,6 +8,7 @@ function webauthnApiBaseUrl() {
 
 export const config = {
   apis: {
+    auth: `${idmApiBaseUrl()}/oidc/auth`,
     token: `${idmApiBaseUrl()}/oidc/token`,
     logout: `${idmApiBaseUrl()}/v1/auth/logout`,
 
