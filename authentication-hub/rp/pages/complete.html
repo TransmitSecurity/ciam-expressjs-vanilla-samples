@@ -1,20 +1,15 @@
 <html>
   <head>
-    <title>Home</title>
-    <link rel="stylesheet" href="/stylesheets/style.css" />
-    <script type="module" src="./config.js"></script>
+    <title>ACME AIR</title>
+    <script type="module" src="./init.js"></script>
     <script>
-      function updateElementText(id, text) {
-        try {
-          document.getElementById(id).textContent = text;
-        } catch (ex) {
-          console.log(ex);
-        }
+      function displayPage() {
+        document.getElementById('page').classList.remove('hidden');
       }
 
       async function init() {
         const clientId = window.env.VITE_TS_CLIENT_ID;
-        updateElementText('clientId', clientId);
+        window.pageUtils.updateElementText('clientId', clientId);
 
         // Check if code is present in the query parameters
         const queryParams = new URLSearchParams(window.location.search);
@@ -24,7 +19,8 @@
 
         // If not show an error message
         if (!code) {
-          updateElementText('status', queryParams.get('error_description'));
+          displayPage();
+          window.pageUtils.updateElementText('status', queryParams.get('error_description'));
         } else {
           // If the code is there, exchange it and redirect the user to the home page
           exchangeAuthorizationCode(code);
@@ -49,22 +45,35 @@
             // Redirect the user to their home page if the token exchange was successful
             window.location.replace('/home');
           } else {
-            updateElementText('status', `Error during token exchange for code ${authCode}`);
+            displayPage();
+            window.pageUtils.updateElementText(
+              'status',
+              `Error during token exchange for code ${authCode}`,
+            );
           }
         } catch (ex) {
-          updateElementText('status', `Error during token exchange for code ${authCode}: ${ex}`);
+          displayPage();
+          window.pageUtils.updateElementText(
+            'status',
+            `Error during token exchange for code ${authCode}: ${ex}`,
+          );
         }
       }
     </script>
   </head>
 
   <body onload="init()">
-    <h1>Verification</h1>
-    <span id="clientId"></span>
-    <br /><br />
-    <br /><br />
-    <span id="status"></span>
-    <br /><br />
-    <button onclick="window.location.replace('/home')">Back</button>
+    <div class="page hidden" id="page">
+      <header>
+        <img src="/acme-logo.svg" alt="ACME" />
+        <div id="clientIdDiv">Client ID: <span id="clientId"></span></div>
+      </header>
+      <main>
+        <div class="content column gap" onsubmit="login()">
+          <span id="status"></span>
+          <button onclick="window.location.replace('/home')">Back</button>
+        </div>
+      </main>
+    </div>
   </body>
 </html>

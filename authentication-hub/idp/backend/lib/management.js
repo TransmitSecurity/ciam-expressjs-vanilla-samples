@@ -1,29 +1,37 @@
-import { userBaseUrl } from './endpoints';
 import fetch from 'node-fetch';
+import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 /**
- * Obtain a client access token for API authorization
- * See: https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
+ * Get the user data from the IDP service
  */
-export async function getClientToken() {
-  const url = `${userBaseUrl}/oidc/token`;
-  const params = {
-    client_id: process.env.VITE_TS_CLIENT_ID,
-    client_secret: process.env.TS_CLIENT_SECRET,
-    grant_type: 'client_credentials',
-  };
+export async function getUser(userId) {
+  const clientToken = await common.tokens.getClientCredsToken();
+
+  const response = await fetch(common.config.apis.getUser(userId), {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${clientToken}`,
+    },
+  });
+
+  return response.json();
+}
+
+/**
+ * Log the user out from the IdP session
+ * See: https://developer.transmitsecurity.com/guides/user/manage_user_sessions/#step-5-logout-session
+ */
+export async function logout(accessToken) {
+  const url = common.config.apis.logout;
 
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `Bearer ${accessToken}`,
     },
-    body: new URLSearchParams(params).toString(),
   });
 
-  // TODO add error handling, omitted for sample clarity
-
-  const clientToken = await response.json();
-  console.log('Client token', clientToken);
-  return clientToken.access_token;
+  const jsonResponse = await response.json();
+  console.log('Logout', jsonResponse);
+  return jsonResponse;
 }

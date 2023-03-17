@@ -1,20 +1,23 @@
 <html>
   <head>
-    <title>Identity Provider</title>
-    <link rel="stylesheet" href="/stylesheets/style.css" />
-    <script type="module" src="./config.js"></script>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME CONNECT</title>
+    <script type="module" src="./init.js"></script>
     <script>
-      function updateElementText(id, text) {
-        try {
-          document.getElementById(id).textContent = text;
-        } catch (ex) {
-          console.log(ex);
-        }
+      function displayPage() {
+        document.getElementById('page').classList.remove('hidden');
       }
 
       async function init() {
         const clientId = window.env.VITE_TS_CLIENT_ID;
-        updateElementText('clientId', clientId);
+        window.pageUtils.updateElementText('clientId', clientId);
 
         // Check if the authorization code is present in the query parameters
         const queryParams = new URLSearchParams(window.location.search);
@@ -24,7 +27,8 @@
 
         // If not show the error message
         if (!code) {
-          updateElementText('status', queryParams.get('error_description'));
+          displayPage();
+          window.pageUtils.updateElementText('status', queryParams.get('error_description'));
         } else {
           // If the code is there, redirect the user to finish the authentication
           // See: https://developer.transmitsecurity.com/guides/user/authentication_hub/#1-create-your-login-endpoint
@@ -37,12 +41,16 @@
   </head>
 
   <body onload="init()">
-    <h1>Verification</h1>
-    <span id="clientId"></span>
-    <br /><br />
-    <br /><br />
-    <span id="status"></span>
-    <br /><br />
-    <span id="rawToken"></span>
+    <div class="page hidden" id="page">
+      <header>
+        <img src="/acme-logo.svg" alt="ACME" />
+        <div id="clientIdDiv">Client ID: <span id="clientId"></span></div>
+      </header>
+      <main>
+        <div class="content column gap" onsubmit="login()">
+          <span id="status"></span>
+        </div>
+      </main>
+    </div>
   </body>
 </html>
