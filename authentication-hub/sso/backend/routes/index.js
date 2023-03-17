@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { getUserTokens, logout } from '../lib/management';
+import { logout } from '../lib/management';
+import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const router = Router();
 
@@ -47,7 +48,7 @@ router.post('/logout', async function (req, res) {
 router.post('/fetch-tokens', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   console.log(JSON.stringify(req.body));
-  const tokens = await getUserTokens(req.body.authCode);
+  const tokens = await common.tokens.getUserTokens(req.body.authCode);
 
   // Here we the session, this will automatically set a cookie on the user's browser
   // Transmit does not recommend using the access token directly from the front-end

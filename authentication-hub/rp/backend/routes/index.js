@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { getUserTokens, logout } from '../lib/management';
+import { logout } from '../lib/management';
+import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const router = Router();
 
@@ -9,20 +10,17 @@ function parseJwt(token) {
 
 // Render home page
 router.get(['/', '/home'], async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
   res.redirect('/pages/home.html');
 });
 
 // Render verification page
 router.get('/complete', async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
   const params = new URLSearchParams(req.query);
   res.redirect(`/pages/complete.html?${params.toString()}`);
 });
 
 // Logout user
 router.post('/logout', async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
   try {
     const accessToken = req.session.tokens.accessToken;
     req.session.tokens = undefined;
@@ -40,7 +38,7 @@ router.post('/logout', async function (req, res) {
 router.post('/fetch-tokens', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   console.log(JSON.stringify(req.body));
-  const tokens = await getUserTokens(req.body.authCode);
+  const tokens = await common.tokens.getUserTokens(req.body.authCode);
 
   // Here we the session, this will automatically set a cookie on the user's browser
   // Transmit does not recommend using the access token directly from the front-end
@@ -63,7 +61,6 @@ router.post('/fetch-tokens', async function (req, res) {
 
 // Get an authenticated user's saved ID Token or return a not found error
 router.get('/me', async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
   console.log('/ME', req.session.tokens);
   if (req.session.tokens) {
     res.status(200).send({

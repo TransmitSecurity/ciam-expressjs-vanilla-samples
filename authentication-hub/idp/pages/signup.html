@@ -15,6 +15,7 @@
       // This function is triggered the users input their username and password for signup. It is sent for a backend validation and registration.
       // For more information see https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-4-register-password
       async function signup() {
+        event.preventDefault();
         try {
           const username = document.getElementById('username').value;
           const password = document.getElementById('password').value;
@@ -54,14 +55,14 @@
         <div id="clientIdDiv">Client ID: <span id="clientId"></span></div>
       </header>
       <main>
-        <div class="content column gap">
+        <form class="content column gap" onsubmit="signup()">
           <h3>Welcome</h3>
           <input type="text" name="username" id="username" placeholder="Enter username" />
           <input type="password" name="password" id="password" placeholder="Enter password" />
-          <button class="full-width" onclick="signup()">Sign up</button>
+          <button class="full-width" type="submit">Sign up</button>
           <div id="status"></div>
           <div class="row">Already have an account? <a href="/pages/login.html">Sign in</a></div>
-        </div>
+        </form>
       </main>
     </div>
   </body>

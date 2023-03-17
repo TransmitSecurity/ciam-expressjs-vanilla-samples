@@ -1,5 +1,6 @@
 import express, { json, urlencoded } from 'express';
 import session from 'express-session';
+import crypto from 'crypto';
 import logger from 'morgan';
 
 import router from './routes/index';
@@ -14,7 +15,7 @@ app.use(urlencoded({ extended: false }));
 // not designed to be used in production
 app.use(
   session({
-    secret: 'randomsecret!',
+    secret: crypto.randomUUID(),
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false },
