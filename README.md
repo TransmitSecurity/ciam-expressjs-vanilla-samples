@@ -61,10 +61,13 @@ The video describes the following steps:
   - `TS_APP_ID` should contain you Application ID
   - `TS_REDIRECT_URI` should already be configures as seen above
 - (1:52) Build the sample from the root directory `yarn`
-- (1:59) Launch the sample using `SAMPLE=<directory-name> yarn start` where `<directory-name>` is
-  the directory of the sample you want to run. The sample will launch on port 8080 and a button will
+- (1:59) Launch the sample using the script `.launch.sh` as seen below, or use
+  `SAMPLE=<directory-name> yarn start` as seen on the video where `<directory-name>` is the
+  directory of the sample you want to run. The sample will launch on port 8080 and a button will
   appear to launch the UI on a separate tab. If a button does not appear, go to the "Ports" tab and
   expose 8080 explicitly, as seen in the video
+
+  <img src="https://user-images.githubusercontent.com/75998795/227149103-e08f164e-a5cd-4601-9ef8-7479293580bc.gif" width="300"/>
 
 Don't forget to stop your code space when you are done! For more information on code spaces PLS
 visit https://code.visualstudio.com/docs/remote/codespaces
