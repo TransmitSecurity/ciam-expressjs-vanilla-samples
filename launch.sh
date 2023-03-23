@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# Script obtained from https://unix.stackexchange.com/questions/146570/arrow-key-enter-menu
 # Renders a text based list of options that can be selected by the
 # user using up, down and enter keys and returns the chosen option.
 #
