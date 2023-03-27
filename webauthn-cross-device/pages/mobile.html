@@ -52,12 +52,14 @@
     async function init() {
       try {
         const clientId = window.env.VITE_TS_CLIENT_ID;
+        const serverPath =
+          window.env.VITE_TS_WEBAUTHN_API_BASE || 'https://webauthn.identity.security';
         authSessionId = window.pageUtils.extractUrlParameter('aid');
 
         window.pageUtils.hide('authenticate');
 
         await window.WebAuthnSdk.init(clientId, {
-          serverPath: 'https://webauthn.identity.security',
+          serverPath: serverPath,
         });
         window.pageUtils.updateElementText('status', `SDK Init done for client ID ${clientId}`);
 
