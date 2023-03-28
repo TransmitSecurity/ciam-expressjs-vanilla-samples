@@ -7,7 +7,11 @@ const router = Router();
 
 // Render home page
 router.get(['/'], async function (req, res) {
-  res.redirect('/pages/home.html');
+  if (!req.session?.tokens) {
+    res.redirect('/pages/login.html');
+  } else {
+    res.redirect('/pages/home.html');
+  }
 });
 
 // The following endpoint is used when redirecting back to the RP site after authentication for token exchange.
