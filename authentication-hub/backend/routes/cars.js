@@ -2,25 +2,36 @@ import { Router } from 'express';
 import { logout } from '../lib/management';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
-const router = Router();
+const carsRouter = Router();
 
 function parseJwt(token) {
   return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
 
 // Render home page
-router.get(['/', '/home'], async function (req, res) {
-  res.redirect('/pages/home.html');
+carsRouter.get(['/', '/home'], async function (req, res) {
+  // TODO add error handling, omitted for sample clarity
+  console.log('==== REQUEST URL: ', req.url);
+  const params = new URLSearchParams(req.query);
+  res.redirect(`/pages/cars/home.html?${params.toString()}`);
 });
 
 // Render verification page
-router.get('/complete', async function (req, res) {
+carsRouter.get('/complete', async function (req, res) {
+  // TODO add error handling, omitted for sample clarity
   const params = new URLSearchParams(req.query);
-  res.redirect(`/pages/complete.html?${params.toString()}`);
+  res.redirect(`/pages/cars/complete.html?${params.toString()}`);
+});
+
+// Render login page
+carsRouter.get('/login', async function (req, res) {
+  // TODO add error handling, omitted for sample clarity
+  res.redirect('/pages/cars/login.html');
 });
 
 // Logout user
-router.post('/logout', async function (req, res) {
+carsRouter.post('/logout', async function (req, res) {
+  // TODO add error handling, omitted for sample clarity
   try {
     const accessToken = req.session.tokens.accessToken;
     req.session.tokens = undefined;
@@ -35,7 +46,7 @@ router.post('/logout', async function (req, res) {
 // The following endpoint is used by views/complete.html when a flow is completed, for token exchange
 // SECURITY NOTES: Normally the ID token SHOULD NOT reach the UI, however this is a sample app and we want to display it for clarity.
 // For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-6-get-user-tokens
-router.post('/fetch-tokens', async function (req, res) {
+carsRouter.post('/fetch-tokens', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   console.log(JSON.stringify(req.body));
   const tokens = await common.tokens.getUserTokens(req.body.authCode);
@@ -60,7 +71,8 @@ router.post('/fetch-tokens', async function (req, res) {
 });
 
 // Get an authenticated user's saved ID Token or return a not found error
-router.get('/me', async function (req, res) {
+carsRouter.get('/me', async function (req, res) {
+  // TODO add error handling, omitted for sample clarity
   console.log('/ME', req.session.tokens);
   if (req.session.tokens) {
     res.status(200).send({
@@ -73,4 +85,4 @@ router.get('/me', async function (req, res) {
   }
 });
 
-export default router;
+export default carsRouter;

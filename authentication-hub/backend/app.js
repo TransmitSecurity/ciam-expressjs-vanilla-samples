@@ -1,9 +1,11 @@
 import express, { json, urlencoded } from 'express';
 import session from 'express-session';
-import crypto from 'crypto';
 import logger from 'morgan';
+import crypto from 'crypto';
 
-import router from './routes/index';
+import hubRouter from './routes/hub';
+import carsRouter from './routes/cars';
+import airRouter from './routes/air';
 
 const app = express();
 
@@ -13,6 +15,7 @@ app.use(urlencoded({ extended: false }));
 
 // This is a simplistic session mechanism
 // not designed to be used in production
+// This sample may be used with HTTP; in production code always use secure cooke, and add CSRF protection
 app.use(
   session({
     secret: crypto.randomUUID(),
@@ -22,6 +25,8 @@ app.use(
   }),
 );
 
-app.use('/', router);
+app.use('/hub', hubRouter);
+app.use('/cars', carsRouter);
+app.use('/air', airRouter);
 
 export const handler = app;
