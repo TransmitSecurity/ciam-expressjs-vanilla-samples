@@ -103,13 +103,13 @@
         // Here we configure the authentication request parameters
         // See: https://developer.transmitsecurity.com/openapi/user/oidc/#operation/oidcAuthenticate
         const queryParams = new URLSearchParams({
-          client_id: window.env.VITE_TS_CLIENT_ID,
+          client_id: window.env.VITE_TS_CLIENT_ID_SSOAIR,
           scope: 'openid',
           response_type: 'code',
-          redirect_uri: `${window.location.origin}/complete`,
+          redirect_uri: window.env.VITE_TS_REDIRECT_URI_SSOAIR,
           acr_values: 'urn:transmit:centralized',
           createNewUser: 'true',
-          resource: 'http://localhost:8080/login',
+          resource: window.env.VITE_SSO_RESOURCE_URL,
           claims,
         });
         const url = `https://api.userid.security/oidc/auth?${queryParams.toString()}`;

@@ -6,13 +6,13 @@ const hubRouter = Router();
 // Render verification page
 hubRouter.get('/complete', async function (req, res) {
   const params = new URLSearchParams(req.query);
-  res.redirect(`/pages/complete.html?${params.toString()}`);
+  res.redirect(`/pages/hub/complete.html?${params.toString()}`);
 });
 
 // Render login page
 hubRouter.get(['/', '/login'], async function (req, res) {
   const params = new URLSearchParams(req.query);
-  res.redirect(`/pages/login.html?${params.toString()}`);
+  res.redirect(`/pages/hub/login.html?${params.toString()}`);
 });
 
 // Authenticate a user with a password
@@ -26,7 +26,7 @@ hubRouter.post('/login', async function (req, res) {
 
 // Render signup page
 hubRouter.get('/signup', async function (req, res) {
-  res.redirect('/pages/signup.html');
+  res.redirect('/pages/hub/signup.html');
 });
 
 // Create a user with a username and password
