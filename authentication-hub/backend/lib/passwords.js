@@ -2,7 +2,10 @@ import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 export async function signUp(username, password) {
-  const clientToken = await common.tokens.getClientCredsToken();
+  const clientToken = await common.tokens.getClientCredsToken(
+    process.env.VITE_TS_CLIENT_ID_SSOHUB,
+    process.env.TS_CLIENT_SECRET_SSOHUB,
+  );
 
   const response = await fetch(common.config.apis.createUser, {
     method: 'post',
@@ -29,7 +32,10 @@ export async function signUp(username, password) {
 }
 
 export async function login(username, password) {
-  const clientToken = await common.tokens.getClientCredsToken();
+  const clientToken = await common.tokens.getClientCredsToken(
+    process.env.VITE_TS_CLIENT_ID_SSOHUB,
+    process.env.TS_CLIENT_SECRET_SSOHUB,
+  );
 
   const response = await fetch(common.config.apis.passwordLogin, {
     method: 'post',
@@ -40,8 +46,8 @@ export async function login(username, password) {
     body: JSON.stringify({
       username,
       password,
-      client_id: process.env.VITE_TS_CLIENT_ID,
-      redirect_uri: process.env.TS_REDIRECT_URI,
+      client_id: process.env.VITE_TS_CLIENT_ID_SSOHUB,
+      redirect_uri: process.env.TS_REDIRECT_URI_SSOHUB,
     }),
   });
 

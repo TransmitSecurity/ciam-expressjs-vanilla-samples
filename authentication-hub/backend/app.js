@@ -1,4 +1,4 @@
-import express, { json, urlencoded } from 'express';
+import express, { json, urlencoded, Router } from 'express';
 import session from 'express-session';
 import logger from 'morgan';
 import crypto from 'crypto';
@@ -25,6 +25,12 @@ app.use(
   }),
 );
 
+const indexRouter = Router();
+indexRouter.get('/', (req, res) => {
+  res.redirect(`/air/`);
+});
+
+app.use('/', indexRouter);
 app.use('/hub', hubRouter);
 app.use('/cars', carsRouter);
 app.use('/air', airRouter);
