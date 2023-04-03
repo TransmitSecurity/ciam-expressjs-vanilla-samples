@@ -95,7 +95,10 @@ router.get('/complete', async function (req, res) {
     // Get verification result
     // For more information see https://developer.transmitsecurity.com/guides/verify/quick_start_web/#step-5-get-verification-result
 
-    fetch(`${common.config.apis.hostedIDVSessionUrl}/${sessionId}/result`, requestOptions)
+    fetch(
+      `${common.config.apis.hostedIDVSessionUrl}/${encodeURIComponent(sessionId)}/result`,
+      requestOptions,
+    )
       .then(apiResponse => apiResponse.text())
       .then(apiResponse => {
         console.log(JSON.parse(apiResponse));
