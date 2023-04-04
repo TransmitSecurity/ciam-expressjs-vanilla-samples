@@ -49,7 +49,12 @@ carsRouter.post('/logout', async function (req, res) {
 carsRouter.post('/fetch-tokens', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   console.log(JSON.stringify(req.body));
-  const tokens = await common.tokens.getUserTokens(req.body.authCode);
+  const tokens = await common.tokens.getUserTokens(
+    req.body.authCode,
+    process.env.VITE_TS_CLIENT_ID_SSOCARS,
+    process.env.TS_CLIENT_SECRET_SSOCARS,
+    process.env.VITE_TS_REDIRECT_URI_SSOCARS,
+  );
 
   // Here we the session, this will automatically set a cookie on the user's browser
   // Transmit does not recommend using the access token directly from the front-end
