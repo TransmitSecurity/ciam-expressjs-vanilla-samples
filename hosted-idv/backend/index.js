@@ -20,6 +20,7 @@ router.get('/', function (req, res) {
 });
 
 router.post('/start-verification-session', async function (req, res) {
+  // state should be kept for validation on the call to /complete, for code simplicity we are not demonstrating it
   const state = (Math.floor(Math.random() * (100000 - 1)) + 1).toString();
 
   // fetch access token
@@ -72,6 +73,7 @@ router.post('/start-verification-session', async function (req, res) {
 });
 
 router.get('/complete', async function (req, res) {
+  // state should be kept for validation on the call to /complete, for code simplicity we are not demonstrating it
   const sessionId = req?.query.sessionId;
   const state = req?.query.state;
 
@@ -103,117 +105,55 @@ router.get('/complete', async function (req, res) {
       .then(apiResponse => {
         console.log(JSON.parse(apiResponse));
 
-        let html = '';
+        let resultTitle = undefined;
 
         // Get verification result
         // For more https://developer.transmitsecurity.com/guides/verify/quick_start_web/#step-6-handle-verification-result
 
         switch (JSON.parse(apiResponse).recommendation) {
           case 'ALLOW':
-            html = `
-                      <!DOCTYPE html>
-                      <html>
-                        <head>
-                          <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
-                          <link rel="preconnect" href="https://fonts.googleapis.com" />
-                          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-                          <link
-                            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
-                            rel="stylesheet"
-                          />
-                          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                          <title>ACME</title>
-                          <script type="module" src="../pages/init.js"></script>
-                        </head>
-                        <body>
-                          <div class="page">
-                            <header>
-                              <img src="/acme-logo.svg" />
-                            </header>
-                            <main>
-                              <div class="content column gap">
-                                <div id="emailDiv" class="column gap">
-                                  <h3>Verification completed with following results:</h3>
-                                  <pre>${JSON.stringify(JSON.parse(apiResponse), null, 2)}</pre>
-                                </div>
-                              </div>
-                            </main>
-                          </div>
-                        </body>
-                      </html>
-          `;
+            resultTitle = 'Verification completed with following results:';
             break;
           case 'CHALLENGE':
-            html = `
-                      <!DOCTYPE html>
-                      <html>
-                        <head>
-                          <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
-                          <link rel="preconnect" href="https://fonts.googleapis.com" />
-                          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-                          <link
-                            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
-                            rel="stylesheet"
-                          />
-                          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                          <title>ACME</title>
-                          <script type="module" src="../pages/init.js"></script>
-                        </head>
-                        <body>
-                          <div class="page">
-                            <header>
-                              <img src="/acme-logo.svg" />
-                            </header>
-                            <main>
-                              <div class="content column gap">
-                                <div id="emailDiv" class="column gap">
-                                  <h3 style="color: red;">Verification check didn’t pass, initiating a manual review process:</h3>
-                                  <pre>${JSON.stringify(JSON.parse(apiResponse), null, 2)}</pre>
-                                </div>
-                              </div>
-                            </main>
-                          </div>
-                        </body>
-                      </html>
-          `;
+            resultTitle = 'Verification check didn’t pass, initiating a manual review process:';
             break;
           case 'DENY':
-            html = `
-                      <!DOCTYPE html>
-                      <html>
-                        <head>
-                          <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
-                          <link rel="preconnect" href="https://fonts.googleapis.com" />
-                          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-                          <link
-                            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
-                            rel="stylesheet"
-                          />
-                          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                          <title>ACME</title>
-                          <script type="module" src="../pages/init.js"></script>
-                        </head>
-                        <body>
-                          <div class="page">
-                            <header>
-                              <img src="/acme-logo.svg" />
-                            </header>
-                            <main>
-                              <div class="content column gap">
-                                <div id="emailDiv" class="column gap">
-                                  <h3 style="color: red;">Verification check didn’t pass, high likelihood of attempted fraud:</h3>
-                                  <pre>${JSON.stringify(JSON.parse(apiResponse), null, 2)}</pre>
-                                </div>
-                              </div>
-                            </main>
-                          </div>
-                        </body>
-                      </html>
-          `;
+            resultTitle = 'Verification check didn’t pass, high likelihood of attempted fraud:';
             break;
           default:
             break;
         }
+
+        const html = `<!DOCTYPE html>
+                      <html>
+                        <head>
+                          <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+                          <link rel="preconnect" href="https://fonts.googleapis.com" />
+                          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+                          <link
+                            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+                            rel="stylesheet"
+                          />
+                          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                          <title>ACME</title>
+                          <script type="module" src="../pages/init.js"></script>
+                        </head>
+                        <body>
+                          <div class="page">
+                            <header>
+                              <img src="/acme-logo.svg" />
+                            </header>
+                            <main>
+                              <div class="content column gap">
+                                <div id="resultDiv" class="column gap">
+                                  <h3>${resultTitle}</h3>
+                                  <pre>${JSON.stringify(JSON.parse(apiResponse), null, 2)}</pre>
+                                </div>
+                              </div>
+                            </main>
+                          </div>
+                        </body>
+                      </html>`;
 
         res.send(html);
       })
