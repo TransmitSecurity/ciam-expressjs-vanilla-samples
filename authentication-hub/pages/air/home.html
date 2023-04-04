@@ -16,6 +16,7 @@
     <div class="page">
       <header>
         <img src="/air/acme-logo.svg" />
+        <div id="clientIdDiv">ClientID: <span id="clientId"></span></div>
       </header>
       <main>
         <div class="content column gap">
@@ -60,7 +61,7 @@
         loginDiv.classList.remove('hidden');
         logoutDiv.classList.remove('hidden');
 
-        const clientId = window.env.VITE_TS_CLIENT_ID;
+        const clientId = window.env.VITE_TS_CLIENT_ID_SSOAIR;
         window.pageUtils.updateElementText('clientId', clientId);
 
         // Check if the user is authenticated
