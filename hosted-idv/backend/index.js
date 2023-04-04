@@ -112,7 +112,7 @@ router.get('/complete', async function (req, res) {
           case 'ALLOW':
             html = `
                       <!DOCTYPE html>
-                      <html>
+                      <html style="display: none">
                         <head>
                           <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
                           <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -146,7 +146,7 @@ router.get('/complete', async function (req, res) {
           case 'CHALLENGE':
             html = `
                       <!DOCTYPE html>
-                      <html>
+                      <html style="display: none">
                         <head>
                           <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
                           <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -180,7 +180,7 @@ router.get('/complete', async function (req, res) {
           case 'DENY':
             html = `
                       <!DOCTYPE html>
-                      <html>
+                      <html style="display: none">
                         <head>
                           <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
                           <link rel="preconnect" href="https://fonts.googleapis.com" />
