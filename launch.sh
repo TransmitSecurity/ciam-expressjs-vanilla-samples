@@ -74,6 +74,7 @@ options=(
     "Password Authentication"
     "WebAuthn Passkey Authentication (autocomplete)"
     "WebAuthn Cross Device"
+    "Detection and Response Service"
 )
 optdir=(
     "login-with-sms"
@@ -81,6 +82,7 @@ optdir=(
     "password-authentication"
     "passkey-authentication"
     "webauthn-cross-device"
+    "password-authentication-drs"
 )
 
 select_option "${options[@]}"
