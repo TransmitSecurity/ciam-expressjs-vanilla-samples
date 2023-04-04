@@ -6,6 +6,10 @@ function webauthnApiBaseUrl() {
   return process.env.VITE_TS_WEBAUTHN_API_BASE || 'https://webauthn.identity.security';
 }
 
+function hostedIDVBaseUrl() {
+  return process.env.VITE_TS_HOSTED_IDV_API_BASE || 'https://main.us.verifyid.security';
+}
+
 export const config = {
   apis: {
     auth: `${idmApiBaseUrl()}/oidc/auth`,
@@ -25,5 +29,8 @@ export const config = {
 
     webauthnAuthorize: `${webauthnApiBaseUrl()}/v1/auth-session/authorize`,
     webauthnStartWithAuthorization: `${webauthnApiBaseUrl()}/v1/auth-session/start-with-authorization`,
+
+    hostedIDVSessionUrl: `${hostedIDVBaseUrl()}/verify/api/v1/verification`,
+    hostedIDVVerifyUrl: `${hostedIDVBaseUrl()}/verify`,
   },
 };

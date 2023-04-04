@@ -69,20 +69,22 @@ echo "Select one option using up/down keys and enter to confirm:"
 echo
 
 options=(
-    "SMS OTP Authentication"
+    "Authentication Hub"
     "Email OTP Authentication"
+    "Identity Verification (Hosted)"
     "Password Authentication"
+    "SMS OTP Authentication"
     "WebAuthn Passkey Authentication (autocomplete)"
     "WebAuthn Cross Device"
-    "Authentication Hub"
 )
 optdir=(
-    "login-with-sms"
+    "authentication-hub"
     "login-with-email"
+    "hosted-idv"
     "password-authentication"
+    "login-with-sms"
     "passkey-authentication"
     "webauthn-cross-device"
-    "authentication-hub"
 )
 
 select_option "${options[@]}"
