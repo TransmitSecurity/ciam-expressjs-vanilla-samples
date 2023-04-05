@@ -5,13 +5,15 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared';
  * Obtain a client access token for API authorization
  * See: https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
  */
-async function getClientCredsToken() {
+async function getClientCredsToken(resource = '') {
   const url = common.config.apis.token;
   const params = {
     client_id: process.env.VITE_TS_CLIENT_ID,
     client_secret: process.env.TS_CLIENT_SECRET,
     grant_type: 'client_credentials',
   };
+
+  if (resource) params['resource'] = resource;
 
   const response = await fetch(url, {
     method: 'POST',

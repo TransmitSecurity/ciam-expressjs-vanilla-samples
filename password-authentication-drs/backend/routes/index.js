@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { login, signUp } from '../lib/passwords';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 import { getUser, logout } from '../lib/management.js';
+import { getRiskRecommendation } from '../lib/risk.js';
 
 const router = Router();
 
@@ -47,6 +48,7 @@ router.post('/signup', async function (req, res) {
     res.send(signupResponse);
   } else {
     const result = await login(username, password);
+    console.log('Login response', result);
     res.send(result);
   }
 });
@@ -75,6 +77,17 @@ router.post('/logout', async function (req, res) {
   const accessToken = req.session.tokens.accessToken;
   req.session.destroy(err => console.log(err));
   const result = await logout(accessToken);
+  res.send(result);
+});
+
+// Get a risk recommendation
+router.get('/risk/recommendation', async function (req, res) {
+  const params = new URLSearchParams(req.query);
+  const actionToken = params.get('actionToken');
+  const userId = params.get('userId');
+
+  const result = await getRiskRecommendation(actionToken, userId);
+
   res.send(result);
 });
 

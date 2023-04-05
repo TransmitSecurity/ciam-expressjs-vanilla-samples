@@ -11,9 +11,9 @@ export async function signUp(username, password) {
       Authorization: `Bearer ${clientToken}`,
     },
     body: JSON.stringify({
-      username,
+      username: username,
       credentials: {
-        password,
+        password: password,
         force_replace: false,
       },
     }),
@@ -38,8 +38,8 @@ export async function login(username, password) {
       Authorization: `Bearer ${clientToken}`,
     },
     body: JSON.stringify({
-      username,
-      password,
+      username: username,
+      password: password,
       client_id: process.env.VITE_TS_CLIENT_ID,
       redirect_uri: process.env.TS_REDIRECT_URI,
     }),
