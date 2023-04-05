@@ -8,3 +8,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
 window.env = import.meta.env;
 window.pageUtils = pageUtils;
+window.drs = {
+  actionType: {
+    LOGIN: 'login',
+    REGISTER: 'register',
+    TRANSACTION: 'transaction',
+    PASSWORD_RESET: 'password_reset',
+    LOGOUT: 'logout',
+    CHECKOUT: 'checkout',
+    ACCOUNT_DETAILS_CHANGE: 'account_details_change',
+    ACCOUNT_AUTH_CHANGE: 'account_auth_change',
+    WITHDRAW: 'withdraw',
+    CREDITS_CHANGE: 'credits_change',
+  },
+};
+
+// Step 2: Load DRS SDK
+document.addEventListener('TSAccountProtectionReady', function () {
+  console.log('TSAccountProtectionReady', window.env.VITE_TS_DRS_CLIENT_ID);
+  window.myTSAccountProtection = new window.TSAccountProtection(window.env.VITE_TS_DRS_CLIENT_ID);
+  window.myTSAccountProtection.init();
+});
