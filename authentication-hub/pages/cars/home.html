@@ -78,7 +78,7 @@
             setUserLoggedIn(false);
           } else {
             // Check if the user is authenticated (SSO)
-            // silentLogin(); TODO need to fix this
+            silentLogin();
           }
         } else {
           // Print a welcome message
@@ -119,11 +119,10 @@
         const queryParams = new URLSearchParams({
           client_id: window.env.VITE_TS_CLIENT_ID_SSOCARS,
           scope: 'openid',
-          prompt: 'none',
+          prompt: 'consent',
           response_type: 'code',
           redirect_uri: window.env.VITE_TS_REDIRECT_URI_SSOCARS,
           resource: window.env.VITE_SSO_RESOURCE_URL,
-          acr_values: 'urn:transmit:centralized',
           createNewUser: 'true',
           claims,
         });

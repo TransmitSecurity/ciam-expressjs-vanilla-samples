@@ -33,8 +33,8 @@ carsRouter.get('/login', async function (req, res) {
 carsRouter.post('/logout', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   try {
-    const accessToken = req.session.tokens.accessToken;
-    req.session.tokens = undefined;
+    const accessToken = req.session.carTokens.accessToken;
+    req.session.carTokens = undefined;
     req.session.save();
     const result = await logout(accessToken);
     res.send(result);
@@ -63,7 +63,7 @@ carsRouter.post('/fetch-tokens', async function (req, res) {
   if (tokens.id_token) {
     // TODO: verify tokens signature
     const idToken = parseJwt(tokens.id_token);
-    req.session.tokens = {
+    req.session.carTokens = {
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
       idToken,
@@ -78,10 +78,10 @@ carsRouter.post('/fetch-tokens', async function (req, res) {
 // Get an authenticated user's saved ID Token or return a not found error
 carsRouter.get('/me', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
-  console.log('/ME', req.session.tokens);
-  if (req.session.tokens) {
+  console.log('/ME', req.session.carTokens);
+  if (req.session.carTokens) {
     res.status(200).send({
-      idToken: req.session.tokens.idToken,
+      idToken: req.session.carTokens.idToken,
     });
   } else {
     res.status(404).send({

@@ -33,8 +33,8 @@ airRouter.get('/login', async function (req, res) {
 airRouter.post('/logout', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   try {
-    const accessToken = req.session.tokens.accessToken;
-    req.session.tokens = undefined;
+    const accessToken = req.session.airTokens.accessToken;
+    req.session.airTokens = undefined;
     req.session.save();
     const result = await logout(accessToken);
     res.send(result);
@@ -63,7 +63,7 @@ airRouter.post('/fetch-tokens', async function (req, res) {
   if (tokens.id_token) {
     // TODO: verify tokens signature
     const idToken = parseJwt(tokens.id_token);
-    req.session.tokens = {
+    req.session.airTokens = {
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
       idToken,
@@ -78,10 +78,10 @@ airRouter.post('/fetch-tokens', async function (req, res) {
 // Get an authenticated user's saved ID Token or return a not found error
 airRouter.get('/me', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
-  console.log('/ME', req.session.tokens);
-  if (req.session.tokens) {
+  console.log('/ME', req.session.airTokens);
+  if (req.session.airTokens) {
     res.status(200).send({
-      idToken: req.session.tokens.idToken,
+      idToken: req.session.airTokens.idToken,
     });
   } else {
     res.status(404).send({
