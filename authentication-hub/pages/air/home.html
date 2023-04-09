@@ -21,7 +21,7 @@
       <main>
         <div class="content column gap">
           <!-- Login button -->
-          <div id="loginDiv" class="column gap">
+          <div id="loginDiv" class="column gap" style="display: none">
             <h3>Find affordable flights</h3>
             <p>Plan your next trip with Acme Air</p>
 
@@ -35,7 +35,7 @@
             </button>
           </div>
           <!-- Home page for authenticated user -->
-          <div id="logoutDiv" class="column gap">
+          <div id="logoutDiv" class="column gap" style="display: none">
             <h3>Welcome back to Acme Air!</h3>
             <div style="margin-bottom: 1rem">
               <span>Traveller id:</span>
@@ -50,6 +50,7 @@
               Logout
             </button>
           </div>
+          <p class="footer">Looking for a renatl car? Try <a href="/cars/">here</a></p>
         </div>
       </main>
     </div>
@@ -58,9 +59,6 @@
       const loginDiv = document.getElementById('loginDiv');
 
       async function loadPage() {
-        loginDiv.classList.remove('hidden');
-        logoutDiv.classList.remove('hidden');
-
         const clientId = window.env.VITE_TS_CLIENT_ID_SSOAIR;
         window.pageUtils.updateElementText('clientId', clientId);
 
