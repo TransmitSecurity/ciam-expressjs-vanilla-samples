@@ -1,213 +1,124 @@
 # Authentication hub
 
 This sample follows the
-[official Transmit guide on Authentication Hub](https://developer.transmitsecurity.com/guides/user/authentication_hub/)
+[Transmit Security guide on Authentication Hub](https://developer.transmitsecurity.com/guides/user/authentication_hub/)
+and the
+[Transmit Security SSO guide](https://developer.transmitsecurity.com/guides/user/sso_across_apps/).
+
+## About this sample
 
 The Transmit Authentication Hub allows you to create a centralized authentication experience across
 all your business lines. Use it to unify and centralize user identities, with an option to provide
 seamless single sign-on (SSO) across multiple apps.
 
-This sample focuses on simplicity and code clarity, as such you won't find advanced security
-features or error handling in the code.
+In this demo, the Acme organization needs to authenticate a user for two business applications:
+"Acme Air" airlines, and "Acme Cars" car rentals. To do so, the business applications will rely on a
+third application, the authentication hub, called "Acme Connect".
 
-## About this demo
+---
 
-In this demo, a business application needs to authenticate a user. To do so, the business
-application will rely on another application to authenticate users: the authentication hub.
+## Setup
 
-We will call the business application `Relying Party` because it will rely on another party (the
-authentication hub) to authenticate users. And the authentication hub will be called
-`Identity Provider` because it is the application providing the user identity to the business app.
+This sample consists of 3 applications, and requires additional setup accordingly. The detailed
+setup is detailed in the guide linked above, here is the TLDR version along with additions to the
+`.env` file.
 
-You will find three samples in this demo:
+**NOTE:** All the URLs below are pointing to `localhost` assuming you are launching the sample from
+your local machine. If you are using Code-spaces, use the Code-spaces base URL defined in the
+[main README file](../README.md).
 
-- `idp` corresponds to the Identity Provider application.
-- `rp` corresponds to the Relying Party application.
-- `sso` corresponds to another Relying Party, using silent SSO to log users in.
+### Create a resource
 
-The rest of this document explains how to use these samples to demo an Authentication Hub use case.
+In your administration tenant, go to the "Applications" section via the side bar, select the
+"Resources" tab, and create a new resource:
 
-### Reminder about codespace URLs
-
-Whenever you start a codespace, you will have to build and save somewhere your **codespace base
-URL**. This is done by adding `-8080.preview.app` before `.github.dev`.
-
-For example if your codespace URL is
+- Resource name: `SSO`
+- Resource URI: `http://localhost:8080/login`
+- Add the following section to your `.env` file:
 
 ```
-https://erwan-transmit-organic-space-ac2221022x2dd0cc.github.dev
+# SSO Sample app values below
+VITE_SSO_RESOURCE_URL=http://localhost:8080/login
 ```
-
-Then your codespace **base** URL will be
-
-```
-https://erwan-transmit-organic-space-ac2221022x2dd0cc-8080.preview.app.github.dev/complete
-```
-
-### Running locally
-
-This documentation was designed with Github codespaces in mind. If you want to run these three
-different samples locally, you will need to use three different ports.
-
-To do so, use `yarn start:local` or `npm run start:local` when starting the application.
-
-- the `idp` will run on port `8080`
-- the `rp` will run on port `8081`
-- the `sso` will run on port `8082`
-
-## Create a resource
-
-In your administration tenant, create a resource:
-
-- Resource name: SSO
-- Resouce URI: http://localhost:8080/login
 
 This resource will be used for the silent SSO authentication only, but every application that is
 part of the SSO needs to request this resource during login.
 
-## Set up the Relying Party
+### Create the authentication hub app
 
-### Step 1 - Start your codespace
+In your administration tenant, go to the "Applications" section via the side bar, and create a new
+app called `auth-hub-sample`:
 
-Start a new codespace. You can refer to the main README for more information.
-
-### Step 2 - Create your application
-
-In your Transmit tenant:
-
-1. Create a new application
-2. Name it `RelyingParty`
-3. Select "Allow registration" in Advanced Settings > Public sign-up
-4. Set a client display name
-5. Set the redirect URI to the base URL of your codespace followed by `/complete`.
-
-Here is an example redirect URI
+- Select the "Allow registration" radio button under the "Public sign-up" section
+- Select the "Set as authentication hub" checkbox
+- Set the following "Authentication hub URL": `http://localhost:8080/hub/`
+- Set the following "Redirect URI" under "Client information": `http://localhost:8080/hub/complete`
+- Add the `SSO` resource to the "Resources" input box. Note that this step is only required to use
+  the silent authentication feature
+- Click "Save"
+- Configure the password authentication method as described in
+  [this step in the Transmit guide](https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-3-configure-auth-method).
+- Add the following section to your `.env` file:
 
 ```
-https://erwan-transmit-organic-space-ac2221022x2dd0cc-8080.preview.app.github.dev/complete
+TS_REDIRECT_URI_SSOHUB=http://localhost:8080/hub/complete
+VITE_TS_CLIENT_ID_SSOHUB=***YOUR CLIENT ID***
+TS_CLIENT_SECRET_SSOHUB=***YOUR CLIENT SECRET***
 ```
 
-Finally add the resource `SSO` to your application. Note that this step is only required to use the
-silent authentication feature.
+### Create the "Air" business app
 
-### Step 3 - Create your environment file
+In your administration tenant, go to the "Applications" section via the side bar, and create a new
+app called `sso-air-sample`:
 
-Create a file `.env` and update its value to match those of the application you just created.
+- Select the "Allow registration" radio button under the "Public sign-up" section
+- Set the following "Redirect URI" under "Client information": `http://localhost:8080/air/complete`
+- Add the `SSO` resource to the "Resources" input box. Note that this step is only required to use
+  the silent authentication feature
+- Click "Save"
+- Add the following section to your `.env` file:
 
-### Step 4 - Start your application
-
-The `Relying Party` will be based on the `authentication-hub/rp` sample. It doesn't need to do much
-except redirect users to the `Identity Provider` when they need to log in.
-
-In your code space start your application:
-
-```bash
-cd authentication-hub/rp
-yarn
-yarn start
+```
+VITE_TS_REDIRECT_URI_SSOAIR=http://localhost:8080/air/complete
+VITE_TS_CLIENT_ID_SSOAIR=***YOUR CLIENT ID***
+TS_CLIENT_SECRET_SSOAIR=***YOUR CLIENT SECRET***
 ```
 
-## Set up the Hub
+### Create the "Cars" business app
 
-### Step 1 - Start a new codespace
+In your administration tenant, go to the "Applications" section via the side bar, and create a new
+app called `sso-cars-sample`:
 
-Start a second codespace, different from the first one you started.
+- Select the "Allow registration" radio button under the "Public sign-up" section
+- Set the following "Redirect URI" under "Client information": `http://localhost:8080/cars/complete`
+- Add the `SSO` resource to the "Resources" input box. Note that this step is only required to use
+  the silent authentication feature
+- Click "Save"
+- Add the following section to your `.env` file:
 
-### Step 2 - Create your application hub
-
-In your Transmit tenant:
-
-1. Create a new application
-2. Name it `IdentityProvider`
-3. Select "Allow registration" in Advanced Settings > Public sign-up
-4. Select "Set as authentication hub"
-5. Set the authentication hub URL to the base URL of your codespace
-6. Set a client display name
-7. Set the redirect URI to the base URL of your codespace followed by `/complete`.
-8. Finally add the resource `SSO` to your application. Note that this step is only required to use
-   the silent authentication feature.
-
-### Step 3 - Configure your application
-
-In your Transmit tenant, configure the passwords authentication method following
-[this step in the Transmit guide](https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-3-configure-auth-method).
-
-### Step 4 - Create your environment file
-
-In the codespace of `Identity Provider`, create a file `.env` and update its value to match those of
-the application you just created.
-
-### Step 5 - Start your application
-
-The `Identity Provider` app will be based on the sample `authentication-hub/idp`. In your codespace
-start your application:
-
-```bash
-cd authentication-hub-idp
-yarn
-yarn start
+```
+VITE_TS_REDIRECT_URI_SSOCARS=http://localhost:8080/cars/complete
+VITE_TS_CLIENT_ID_SSOCARS=***YOUR CLIENT ID***
+TS_CLIENT_SECRET_SSOCARS=***YOUR CLIENT SECRET***
 ```
 
-## Test the authentication hub
+---
 
-Navigate to the base URL of the Relying Party then click on "Login / Signup". You will be redirected
-to the Identity Provider. Login or signup, depending on the existence of your account. You will be
-redirected to the Relying Party and be authenticated (you will see a Welcome page with a logout
-button).
+## Running the demo
 
-## Set up the SSO demo
+Launch the sample as described in the [main README file](../README.md), using `yarn` for initial
+setup and the `launcher.sh` for running the server. Going to `http://localhost:8080/` gets you to
+the `Acme Air" business app, but you can toggle between it and the "Acme Cars" app using the provide
+links.
 
-This section follows the
-[SSO guide](https://developer.transmitsecurity.com/guides/user/sso_across_apps/).
+Clicking "Login" from any app gets you to the Hub where you can create a new user or use an existing
+one. Once the signup or authentication is complete, you will be redirected to the original app you
+started with. If you now follow the link to the other app, you can use SSO to login. The two apps
+have different SSO behavior by design, to demonstrate the options:
 
-### Step 1 - Start your codespace
+- If you do a login via the "Acme Cars" app, and once completed go to the "Acme Air" app - you will
+  need to click the "Login" button, no further action.
+- If you do a login via the "Acme Air" app, and once completed go to the "Acme Cars" app - you will
+  experience a silent login.
 
-Start a third codespace, different from the Relying Party and Identity Provider.
-
-### Step 2 - Create your application
-
-In your Transmit tenant:
-
-1. Create a new application
-2. Name it `SSODemo`
-3. Select "Allow registration" in Advanced Settings > Public sign-up
-4. Set a client display name
-5. Set the redirect URI to the base URL of your codespace followed by `/complete`.
-6. Finally add the resource `SSO` to your application. Note that this step is only required to use
-   the silent authentication feature.
-
-### Step 3 - Create your environment file
-
-Create a file `.env` and update the variables to match those of the application you just created.
-
-### Step 4 - Start your application
-
-The SSO demo will be based on the `authentication-hub/sso` sample. It will perform a silent
-authentication to check if a user is logged in and redirect users to the `Identity Provider` when
-they need to log in.
-
-In your code space start your application:
-
-```bash
-cd authentication-hub/sso
-yarn
-yarn start
-```
-
-## Test silent SSO
-
-Let's start by creating the user:
-
-1. Navigate to the `sso` application and click "Login / Signup". You are redirected to the `idp`
-   app.
-2. Click "Signup" and enter a username and password. You are redirected back to the `sso` app.
-3. Click "Logout".
-
-Now that the user is created, we can try the silent SSO feature.
-
-1. Navigate to the `rp` application and click "Login / Signup". You are redirected to the `idp` app.
-2. Enter your username and password. You are redirected back to the `rp` app.
-3. Now, _without_ logging out, navigate to the `sso` app.
-4. You are automatically logged in.
-
-If you log out from either application, you will be logged out from the SSO session.
+Logging out is individual to each app.
