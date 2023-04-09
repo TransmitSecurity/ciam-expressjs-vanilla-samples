@@ -1,4 +1,4 @@
-# ciam-expressjs-vanilla-samples
+# Transmit Security Platform Samples (web, vanilla JS)
 
 ## Structure of this repository
 
@@ -107,6 +107,7 @@ contact person and configure the following:
 
 - `VITE_TS_IDM_API_BASE`
 - `VITE_TS_WEBAUTHN_API_BASE`
+- `VITE_TS_HOSTED_IDV_API_BASE`
 
 ---
 
