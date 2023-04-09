@@ -131,3 +131,9 @@ have different SSO behavior by design, to demonstrate the options:
   experience a silent login.
 
 Logging out is individual to each app.
+
+
+
+https://user-images.githubusercontent.com/75998795/230760930-aea83cf0-4a9f-4861-a170-abb0742d675e.mp4
+
+
