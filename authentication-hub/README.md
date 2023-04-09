@@ -15,6 +15,15 @@ In this demo, the Acme organization needs to authenticate a user for two busines
 "Acme Air" airlines, and "Acme Cars" car rentals. To do so, the business applications will rely on a
 third application, the authentication hub, called "Acme Connect".
 
+**NOTE:** The sample is using password authentication for the authentication hub, but could be
+adapted to use any authentication method desired. Feel free to experiment and modify the `hub`
+application, make use of code and instructions provided in other authentication samples provided in
+this repo.
+
+**NOTE 2:** For simplicity's sake, all the apps in this samples and run on the same domain. In real
+life scenarios you would have each run in at least a separate subdomain, allowing proper state and
+cookies separation.
+
 ---
 
 ## Setup
