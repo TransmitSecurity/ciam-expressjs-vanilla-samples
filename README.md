@@ -1,4 +1,4 @@
-# ciam-expressjs-vanilla-samples
+# Transmit Security Platform Samples (web, vanilla JS)
 
 ## Structure of this repository
 
