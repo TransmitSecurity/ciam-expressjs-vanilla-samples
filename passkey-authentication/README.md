@@ -9,6 +9,9 @@ For more information see
 
 Set up this example using the instruction in the [main README file](../README.md)
 
+**IMPORTANT**: Currently Webauthn works with a single redirect URI. When testing - make sure your
+app definition includes only one redirect URI.
+
 ## Sample user experience
 
 - Open a browser tab on <domain:port>/
