@@ -6,6 +6,10 @@ function webauthnApiBaseUrl() {
   return process.env.VITE_TS_WEBAUTHN_API_BASE || 'https://webauthn.identity.security';
 }
 
+function serviceProviderId() {
+  return process.env.TS_SERVICE_PROVIDER_ID || '';
+}
+
 export const config = {
   apis: {
     token: `${idmApiBaseUrl()}/oidc/token`,
@@ -24,5 +28,7 @@ export const config = {
 
     webauthnAuthorize: `${webauthnApiBaseUrl()}/v1/auth-session/authorize`,
     webauthnStartWithAuthorization: `${webauthnApiBaseUrl()}/v1/auth-session/start-with-authorization`,
+
+    samlIdpUrl: `${idmApiBaseUrl()}/serviceprovider/saml2/sso/${serviceProviderId()}`,
   },
 };
