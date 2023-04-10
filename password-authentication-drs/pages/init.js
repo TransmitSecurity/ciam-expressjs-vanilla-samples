@@ -29,3 +29,16 @@ document.addEventListener('TSAccountProtectionReady', function () {
   window.myTSAccountProtection = new window.TSAccountProtection(window.env.VITE_TS_DRS_CLIENT_ID);
   window.myTSAccountProtection.init();
 });
+
+// Step 5: Fetch DRS recommendation
+window.getRiskRecommendation = function (actionToken, userId) {
+  const query = new URLSearchParams({
+    actionToken: actionToken,
+    userId: userId,
+  }).toString();
+
+  return fetch(`/risk/recommendation?${query}`, {
+    method: 'GET',
+    cache: 'no-cache',
+  });
+};

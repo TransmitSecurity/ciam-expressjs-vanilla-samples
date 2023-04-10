@@ -60,6 +60,39 @@
         }
       }
 
+      async function transact() {
+        try {
+          // Step 4: Report DRS actions
+          window.myTSAccountProtection
+            .triggerActionEvent(window.drs.actionType.TRANSACTION)
+            .then(actionResponse => {
+              const actionToken = actionResponse.actionToken;
+              console.log('Action Token', actionToken);
+              // Add code here to send the action and the received actionToken to your backend
+
+              const response = window.getRiskRecommendation(actionToken);
+              response
+                .then(resp => resp.json())
+                .then(resp => {
+                  console.log('Transact', resp);
+
+                  const recommendation = resp.response.recommendation.type;
+                  const riskScore = resp.response['risk_score'];
+
+                  window.pageUtils.updateElementText(
+                    'status',
+                    `Your risk recommendation is a ${recommendation} with a risk score of ${riskScore}`,
+                  );
+                })
+                .catch(err => {
+                  console.error('Transact', err);
+                });
+            });
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during transact: ${ex}`);
+        }
+      }
+
       async function init() {
         // Check if the user is authenticated
         const userData = await getUserData();
@@ -90,6 +123,7 @@
           <img src="/shield.svg" alt="Logged in" />
           <div>You are logged in!</div>
           <div id="status"></div>
+          <button onclick="transact()">Transaction</button>
         </div>
       </main>
     </div>
