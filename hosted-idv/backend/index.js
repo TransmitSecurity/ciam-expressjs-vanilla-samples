@@ -25,7 +25,7 @@ router.post('/start-verification-session', async function (req, res) {
 
   // fetch access token
   // For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
-  accessToken = await common.tokens.getClientCredsTokenForHostedIDV();
+  accessToken = await common.tokens.getClientCredsToken('https://verify.identity.security');
 
   if (!accessToken) {
     res.status(500).send({ error: 'could not fetch access token' });
@@ -80,7 +80,7 @@ router.get('/complete', async function (req, res) {
   console.log('received body is', sessionId, state);
   // fetch access token
   // For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
-  accessToken = await common.tokens.getClientCredsTokenForHostedIDV();
+  accessToken = await common.tokens.getClientCredsToken('https://verify.identity.security');
 
   if (!accessToken) {
     res.status(500).send({ error: 'could not fetch access token' });
