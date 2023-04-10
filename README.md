@@ -1,4 +1,4 @@
-# ciam-expressjs-vanilla-samples
+# Transmit Security Platform Samples (web, vanilla JS)
 
 ## Structure of this repository
 
@@ -103,10 +103,9 @@ refer to the following documentations:
 
 By default, the samples work with the US production cluster. However if you are working with a
 tenant that resides on a different cluster, e.g. EU or a staging cluster, consult your Transmit
-contact person and configure the following:
+contact person and configure the following environment variable in your `.env` file:
 
-- `VITE_TS_IDM_API_BASE`
-- `VITE_TS_WEBAUTHN_API_BASE`
+- `VITE_TS_API_BASE`
 
 ---
 

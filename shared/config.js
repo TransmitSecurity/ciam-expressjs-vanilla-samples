@@ -21,6 +21,9 @@ export const config = {
     webauthnAuthorize: `${baseUrl()}/cis/v1/auth-session/authorize`,
     webauthnStartWithAuthorization: `${baseUrl()}/cis/v1/auth-session/start-with-authorization`,
 
+    hostedIDVSessionUrl: `${baseUrl()}/verify/api/v1/verification`,
+    hostedIDVVerifyUrl: `${baseUrl()}/verify/app`,
+
     getRiskRecommendation: query => `${baseUrl()}/risk/v1/recommendation?${query}`,
   },
 };

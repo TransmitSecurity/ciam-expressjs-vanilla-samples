@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <img src="/acme-logo.svg" />
+      </header>
+      <main>
+        <div class="content column gap">
+          <div id="resultDiv" class="column gap">
+            <h3>Sample App for Hosted IDV</h3>
+            <button
+              id="start-verification-session"
+              onclick="startVerificationSession()"
+              class="full-width"
+            >
+              Start IDV Flow
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      async function startVerificationSession() {
+        fetch('/start-verification-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({}),
+        })
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Network response error');
+          })
+          .then(data => {
+            // redirect to verify URL
+            if (data.redirectUrl) {
+              window.location.href = data.redirectUrl;
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching data:', error);
+          });
+      }
+    </script>
+  </body>
+</html>
