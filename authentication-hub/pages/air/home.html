@@ -111,7 +111,9 @@
           resource: window.env.VITE_SSO_RESOURCE_URL,
           claims,
         });
-        const url = `https://api.userid.security/oidc/auth?${queryParams.toString()}`;
+        const url = `${
+          window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io'
+        }/cis/oidc/auth?${queryParams.toString()}`;
 
         // Request centralized login from the authentication hub
         // See: https://developer.transmitsecurity.com/guides/user/authentication_hub/#3-request-centralized-login

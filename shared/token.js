@@ -5,7 +5,7 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared';
  * Obtain a client access token for API authorization
  * See: https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
  */
-async function getClientCredsToken(client_id, client_secret) {
+async function getClientCredsToken(resource = '', client_id, client_secret) {
   const url = common.config.apis.token;
   const params = {
     client_id: client_id || process.env.VITE_TS_CLIENT_ID,
@@ -13,28 +13,7 @@ async function getClientCredsToken(client_id, client_secret) {
     grant_type: 'client_credentials',
   };
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams(params).toString(),
-  });
-
-  // No error handling for the sake of simplicity, assuming the router level catches exceptions
-  const clientToken = await response.json();
-  console.log('Client token', clientToken);
-  return clientToken.access_token;
-}
-
-async function getClientCredsTokenForHostedIDV() {
-  const url = common.config.apis.token;
-  const params = {
-    client_id: process.env.VITE_TS_CLIENT_ID,
-    client_secret: process.env.TS_CLIENT_SECRET,
-    grant_type: 'client_credentials',
-    resource: 'https://verify.identity.security',
-  };
+  if (resource) params['resource'] = resource;
 
   const response = await fetch(url, {
     method: 'POST',
@@ -88,7 +67,6 @@ export function parseJwt(token) {
 
 export const tokenRequest = {
   getClientCredsToken: getClientCredsToken,
-  getClientCredsTokenForHostedIDV: getClientCredsTokenForHostedIDV,
   getUserTokens: getUserTokens,
   parseJwt: parseJwt,
 };

@@ -32,7 +32,9 @@
         } else {
           // If the code is there, redirect the user to finish the authentication
           // See: https://developer.transmitsecurity.com/guides/user/authentication_hub/#1-create-your-login-endpoint
-          const url = `https://api.userid.security/auth/centralized/callback?code=${code}`;
+          const url = `${
+            window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io'
+          }/cis/auth/centralized/callback?code=${code}`;
           console.log(url);
           window.location.replace(url);
         }

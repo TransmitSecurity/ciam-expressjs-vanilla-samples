@@ -9,7 +9,10 @@ Set up this example using the instruction in the [main README file](../README.md
 
 Make sure you follow the setup instructions for the Webauthn API.
 
-TIP: When running from your local machine, use the following values for your `.env` and portal
+**IMPORTANT**: Currently Webauthn works with a single redirect URI. When testing - make sure your
+app definition includes only one redirect URI.
+
+**TIP**: When running from your local machine, use the following values for your `.env` and portal
 setup:
 
 - Redirect URI: `http://localhost:8080/complete`

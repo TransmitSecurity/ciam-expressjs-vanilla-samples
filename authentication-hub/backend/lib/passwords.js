@@ -3,6 +3,7 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 export async function signUp(username, password) {
   const clientToken = await common.tokens.getClientCredsToken(
+    '',
     process.env.VITE_TS_CLIENT_ID_SSOHUB,
     process.env.TS_CLIENT_SECRET_SSOHUB,
   );
@@ -33,6 +34,7 @@ export async function signUp(username, password) {
 
 export async function login(username, password) {
   const clientToken = await common.tokens.getClientCredsToken(
+    '',
     process.env.VITE_TS_CLIENT_ID_SSOHUB,
     process.env.TS_CLIENT_SECRET_SSOHUB,
   );
