@@ -7,7 +7,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 RUN corepack enable
 COPY . .
-RUN cat package.json | grep -v husky > package.json
+# RUN cat package.json | grep -v husky > package.json
 RUN yarn
 
 ENV NODE_ENV production
