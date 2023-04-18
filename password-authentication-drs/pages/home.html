@@ -105,6 +105,9 @@
         // Otherwise print a welcome message
         window.pageUtils.updateElementText('username', userData.username);
 
+        // Print user id for easy search in the platform
+        window.pageUtils.updateElementText('userid', userData.user_id);
+
         // Step 3: Set user for DRS
         window.myTSAccountProtection.setAuthenticatedUser(userData.user_id);
       }
@@ -121,7 +124,7 @@
         <div class="content column centered gap">
           <h3>Welcome <span id="username"></span></h3>
           <img src="/shield.svg" alt="Logged in" />
-          <div>You are logged in!</div>
+          <div>You are logged in <span id="userid"></span> !</div>
           <div id="status"></div>
           <button onclick="transact()">Transaction</button>
         </div>
