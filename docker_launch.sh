@@ -94,4 +94,4 @@ while read e; do
 done <<<$(cat .env |grep -ve '^#' | grep -v '^$' | sed 's/ .*//' | grep -v DEBUG)
 
 echo "docker run --platform linux/amd64 $DOCKER_ENV_VARS -p 8080:8080 transmitsecurity/js-vanilla-samples:latest"
-docker run --platform linux/amd64 $DOCKER_ENV_VARS -p 8080:8080 transmitsecurity/tools:latest
+docker run --platform linux/amd64 $DOCKER_ENV_VARS -p 8080:8080 transmitsecurity/js-vanilla-samples:latest

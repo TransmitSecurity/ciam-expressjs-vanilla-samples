@@ -13,7 +13,7 @@ create at the root of the project as seen below.
 You can either launch sample apps directly from the browser using GitHub Codespaces, or clone and
 run from your local machine. See below instructions for both flavors.
 
-## Setting up Codespaces
+## Setting and running from Codespaces
 
 You can connect the samples to your own
 [Transmit Security tenant](https://portal.identity.security/) and launch them from a Codespace
@@ -87,6 +87,22 @@ local environment.
 npm install --force
 SAMPLE=<directory-name> npm run start
 ```
+
+## Running from a Docker container
+
+The content of this repository is also packaged as a container on Dockerhub, see
+[transmitsecurity/js-vanilla-samples](https://hub.docker.com/r/transmitsecurity/js-vanilla-samples).
+
+To launch this container, you can either use a direct shell command where each envionment variable
+in the `.env` file is translated into a `-e VAR=value` section in the below:
+
+```
+docker run --platform linux/amd64 -e SAMPLE=<directory-name> -e ... -p 8080:8080 transmitsecurity/js-vanilla-samples:latest
+
+```
+
+Alternatively, you can use the `docker_launch.sh` utility, which is identical to `launch.sh` except
+it launches the container, and appends the values inside the `.env` automatically.
 
 ## Additional notes
 
