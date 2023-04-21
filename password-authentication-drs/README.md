@@ -18,6 +18,15 @@ Follow the main README to create your application and configure your environment
 Configure the passwords authentication method in your tenant by following
 [this step in the Transmit guide](https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-3-configure-auth-method).
 
+### Configure detection and response services
+
+Update your `.env` file:
+
+- `VITE_TS_DRS_CLIENT_ID` should contain your risk Client ID (Platform Admin Console > Risk >
+  Settings)
+- `TS_DRS_CLIENT_SECRET` should contain your risk Client secret (Platform Admin Console > Risk >
+  Settings)
+
 ## Application features
 
 ### Signup
@@ -38,3 +47,17 @@ password used during signup to authenticate.
 When a user successfully logged in, the access token and refresh token will be saved as cookies.
 When the home page is loaded, it looks for these cookies, if they are found, the user is
 authenticated, otherwise, they are redirected to the login page.
+
+### Detection and Response Monitoring and Recommendation
+
+When a user performs any of the following actions, the action will be collected and visible in the
+Platform Admin Console (Risk > Recommendations). Actions:
+
+- `Sign Up`
+- `Login`
+- `Transaction` (post login page)
+- `Logout`
+
+When a user performs the `Transaction` action, a recommendation and risk score will be displayed to
+allow the front end client make a real time decision of whether to add friction or remove friction
+to this user's experience.
