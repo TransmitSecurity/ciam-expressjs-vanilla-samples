@@ -12,11 +12,11 @@
     "shared"
   ],
   "devDependencies": {
-    "husky": "8.0.3",
     "eslint": "^8.34.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-import": "^2.27.5",
+    "husky": "8.0.3",
     "prettier": "^2.8.4"
   },
   "scripts": {

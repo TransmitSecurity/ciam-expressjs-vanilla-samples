@@ -1,4 +1,4 @@
-# Hosted IDV flow
+# Hosted Identity Verification Flow
 
 This sample follows the following guide:
 
