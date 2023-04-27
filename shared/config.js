@@ -1,25 +1,34 @@
-function baseUrl() {
-  return process.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io';
+function baseUrl(useApiGateway) {
+  if (process.env.VITE_TS_API_BASE) {
+    if (process.env.VITE_TS_API_BASE === 'http://localhost') {
+      // On local dev environment don't need the API gateway prefix
+      return process.env.VITE_TS_API_BASE;
+    }
+  }
+
+  const pathPrefix = useApiGateway ? '/cis' : '';
+
+  return (process.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io') + pathPrefix;
 }
 
 export const config = {
   apis: {
     token: `${baseUrl()}/oidc/token`,
-    logout: `${baseUrl()}/cis/v1/auth/logout`,
+    logout: `${baseUrl(true)}/v1/auth/logout`,
 
-    createUser: `${baseUrl()}/cis/v1/users`,
-    getUser: userId => `${baseUrl()}/cis/v1/users/${userId}`,
+    createUser: `${baseUrl(true)}/v1/users`,
+    getUser: userId => `${baseUrl(true)}/v1/users/${userId}`,
 
-    passwordLogin: `${baseUrl()}/cis/v1/auth/password/login`,
+    passwordLogin: `${baseUrl(true)}/v1/auth/password/login`,
 
-    sendOtpEmail: `${baseUrl()}/cis/v1/auth/otp/email`,
-    validateOtpEmail: `${baseUrl()}/cis/v1/auth/otp/email/validation`,
+    sendOtpEmail: `${baseUrl(true)}/v1/auth/otp/email`,
+    validateOtpEmail: `${baseUrl(true)}/v1/auth/otp/email/validation`,
 
-    sendOtpSMS: `${baseUrl()}/cis/v1/auth/otp/sms`,
-    validateOtpSMS: `${baseUrl()}/cis/v1/auth/otp/sms/validation`,
+    sendOtpSMS: `${baseUrl(true)}/v1/auth/otp/sms`,
+    validateOtpSMS: `${baseUrl(true)}/v1/auth/otp/sms/validation`,
 
-    webauthnAuthorize: `${baseUrl()}/cis/v1/auth-session/authorize`,
-    webauthnStartWithAuthorization: `${baseUrl()}/cis/v1/auth-session/start-with-authorization`,
+    webauthnAuthorize: `${baseUrl(true)}/v1/auth-session/authorize`,
+    webauthnStartWithAuthorization: `${baseUrl(true)}/v1/auth-session/start-with-authorization`,
 
     hostedIDVSessionUrl: `${baseUrl()}/verify/api/v1/verification`,
     hostedIDVVerifyUrl: `${baseUrl()}/verify/app`,
