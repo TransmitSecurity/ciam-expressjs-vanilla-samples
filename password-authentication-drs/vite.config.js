@@ -11,4 +11,7 @@ export default defineConfig({
       handler: './backend/app.js',
     }),
   ],
+  server: {
+    port: process.env.PORT || 8080,
+  },
 });

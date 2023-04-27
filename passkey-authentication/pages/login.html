@@ -12,14 +12,14 @@
     <title>ACME</title>
     <script
       type="text/javascript"
-      src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
+      src="https://cdn.identity.security/authentication-sdk/2.10.0/TsAuthSdk.min.js"
     ></script>
     <script type="module" src="./init.js"></script>
     <script>
       async function initPage() {
         try {
           await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
-            serverPath: 'https://webauthn.identity.security',
+            serverPath: window.env.VITE_TS_API_BASE,
           });
 
           await window.WebAuthnSdk.preparePasskeyAuthentication();
