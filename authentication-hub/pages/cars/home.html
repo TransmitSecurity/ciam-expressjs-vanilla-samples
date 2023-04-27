@@ -120,16 +120,18 @@
         const queryParams = new URLSearchParams({
           client_id: window.env.VITE_TS_CLIENT_ID_SSOCARS,
           scope: 'openid',
-          prompt: 'consent',
+          // prompt: 'consent',
           response_type: 'code',
           redirect_uri: window.env.VITE_TS_REDIRECT_URI_SSOCARS,
+          acr_values: 'urn:transmit:centralized',
           resource: window.env.VITE_SSO_RESOURCE_URL,
           createNewUser: 'true',
           claims,
         });
         const url = `${
-          window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io'
-        }/cis/oidc/auth?${queryParams.toString()}`;
+          window.env.VITE_TS_API_BASE ||
+          'https://api.userid.security' /*'https://api.transmitsecurity.io'*/
+        }/oidc/auth?${queryParams.toString()}`;
 
         // Request centralized login from the authentication hub
         // See: https://developer.transmitsecurity.com/guides/user/authentication_hub/#3-request-centralized-login
@@ -158,8 +160,9 @@
           claims,
         });
         const url = `${
-          window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io'
-        }/cis/oidc/auth?${queryParams.toString()}`;
+          window.env.VITE_TS_API_BASE ||
+          'https://api.userid.security' /*'https://api.transmitsecurity.io'*/
+        }/oidc/auth?${queryParams.toString()}`;
 
         // Request centralized login from the authentication hub
         // See: https://developer.transmitsecurity.com/guides/user/authentication_hub/#3-request-centralized-login
