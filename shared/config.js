@@ -1,5 +1,5 @@
 function idmApiBaseUrl() {
-  return process.env.VITE_TS_IDM_API_BASE || 'https://api.userid.security';
+  return process.env.VITE_TS_IDM_API_BASE || 'https://api.transmitsecurity.io/cis';
 }
 
 function webauthnApiBaseUrl() {
@@ -29,6 +29,6 @@ export const config = {
     webauthnAuthorize: `${webauthnApiBaseUrl()}/v1/auth-session/authorize`,
     webauthnStartWithAuthorization: `${webauthnApiBaseUrl()}/v1/auth-session/start-with-authorization`,
 
-    samlIdpUrl: `${idmApiBaseUrl()}/serviceprovider/saml2/sso/${serviceProviderId()}`,
+    samlIdpUrl: `${idmApiBaseUrl()}/v1/serviceprovider/saml2/sso/${serviceProviderId()}`,
   },
 };
