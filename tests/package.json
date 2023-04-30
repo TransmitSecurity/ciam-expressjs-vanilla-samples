@@ -1,0 +1,20 @@
+{
+  "name": "tests",
+  "version": "1.0.0",
+  "description": "tests for examples",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "@types/jasmine": "^4.3.1",
+    "@wdio/cli": "^8.8.8",
+    "@wdio/jasmine-framework": "^8.8.8",
+    "@wdio/local-runner": "^8.8.8",
+    "@wdio/spec-reporter": "^8.8.7",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  },
+  "scripts": {
+    "wdio": "wdio run ./wdio.conf.ts"
+  }
+}
