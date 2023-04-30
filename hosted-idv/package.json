@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "vite --debug --host --port 8080"
+    "start": "vite --debug --host"
   },
   "dependencies": {
     "@ciam-expressjs-vanilla-samples/shared": "1.0.0",

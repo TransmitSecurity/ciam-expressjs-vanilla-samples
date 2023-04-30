@@ -13,6 +13,9 @@ async function getClientCredsToken(resource = '', client_id, client_secret) {
     grant_type: 'client_credentials',
   };
 
+  console.log('URL:', url);
+  console.log('ClientCreds:', params);
+
   if (resource) params['resource'] = resource;
 
   const response = await fetch(url, {
