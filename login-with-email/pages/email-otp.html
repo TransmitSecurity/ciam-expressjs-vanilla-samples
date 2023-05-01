@@ -32,6 +32,7 @@
             <button id="loginButton" onclick="login()" class="full-width">Login</button>
             <div id="otpText" class="text"></div>
           </div>
+          <div id="status"></div>
         </div>
       </main>
     </div>
@@ -49,11 +50,17 @@
       }
 
       async function sendOTP() {
+        window.pageUtils.showLoading();
+        window.pageUtils.updateElementText('status', '');
+
         // TODO - Hila Partuk: 20/02/2023 Add FE validation for the email value
         await sendEmailOtp(emailInput.value, handleEmailOtpResponse);
       }
 
       async function login() {
+        window.pageUtils.showLoading();
+        window.pageUtils.updateElementText('status', '');
+
         // TODO - Hila Partuk: 20/02/2023 Add FE validation for the OTP value
         await verifyOtp(emailInput.value, otpInput.value, handleVerifyOtpResponse);
       }
@@ -66,7 +73,11 @@
           otpDiv.classList.remove('hidden');
 
           otpText.textContent = `We sent a code to ${emailInput.value}`;
+        } else {
+          window.pageUtils.updateElementText('status', emailOtpResponse.data.message);
         }
+
+        window.pageUtils.hideLoading();
       };
 
       const handleVerifyOtpResponse = verifyOtpResponse => {
@@ -75,6 +86,9 @@
         if (verifyOtpResponse?.status === 200) {
           // success!!!!!! use the result to redirect to completion page
           window.location = verifyOtpResponse.data.result;
+        } else {
+          window.pageUtils.updateElementText('status', verifyOtpResponse.data.message);
+          window.pageUtils.hideLoading();
         }
       };
     </script>
