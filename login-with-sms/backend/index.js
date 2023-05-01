@@ -1,7 +1,7 @@
 import express from 'express';
 import fetch from 'node-fetch';
-import escape from 'escape-html';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
+import querystring from 'querystring';
 
 const router = express.Router();
 
@@ -23,7 +23,7 @@ router.post('/sms-otp', async function (req, res) {
   const phone = req?.body?.phone;
 
   if (!phone) {
-    res.send({
+    res.status(400).send({
       message: 'Received phone is empty',
     });
   } else {
@@ -39,7 +39,7 @@ router.post('/sms-otp', async function (req, res) {
       const smsOtpResponse = await sendSmsOTP(phone);
       res.status(smsOtpResponse.status).send({
         received_phone: phone,
-        response: JSON.stringify(smsOtpResponse),
+        ...smsOtpResponse,
       });
     } catch (error) {
       console.log(error);
@@ -76,11 +76,7 @@ router.post('/verify', async function (req, res) {
 });
 
 router.get('/complete', function (req, res) {
-  if (req.query.code) {
-    res.send(`Login completed with code: ${escape(req.query.code)}`);
-  } else {
-    res.send(`Login completed with error: ${escape(req.query.error)}`);
-  }
+  res.redirect(`/pages/complete.html?${querystring.stringify(req.query)}`);
 });
 
 async function sendSmsOTP(phone) {
@@ -104,7 +100,7 @@ async function sendSmsOTP(phone) {
   const status = resp.status;
   const data = await resp.json();
   console.log('response is ', { status, data });
-  return { status, data };
+  return { status, ...data };
 }
 
 async function validateOTP(phone, otpCode) {

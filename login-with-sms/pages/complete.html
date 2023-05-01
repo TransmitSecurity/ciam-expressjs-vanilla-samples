@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
+    <script>
+      function initPage() {
+        const code = window.pageUtils.extractUrlParameter('code');
+        const error = window.pageUtils.extractUrlParameter('error');
+        const resultDiv = document.getElementById('result');
+        const messageDiv = document.getElementById('message');
+
+        if (code) {
+          resultDiv.innerHTML = 'Authorization code:';
+          messageDiv.innerHTML = code;
+          messageDiv.classList.add('break-anywhere');
+        } else {
+          resultDiv.innerHTML = 'An error has occurred:';
+          messageDiv.innerHTML = error;
+        }
+      }
+
+      function restart() {
+        window.location.replace('/');
+      }
+    </script>
+  </head>
+  <body onload="initPage()">
+    <div class="page">
+      <header>
+        <img src="/acme-logo.svg" />
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3>Authorization complete</h3>
+          <div id="result"></div>
+          <div id="message"></div>
+          <button id="sendEmailButton" onclick="restart()" class="full-width">Restart</button>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
