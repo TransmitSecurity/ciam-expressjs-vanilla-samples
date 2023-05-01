@@ -18,6 +18,8 @@
     <script>
       async function initPage() {
         try {
+          window.pageUtils.showLoading();
+
           await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
             serverPath: window.env.VITE_TS_API_BASE,
           });
@@ -26,13 +28,21 @@
 
           window.pageUtils.enable('passkeyInput');
 
+          window.pageUtils.hideLoading();
+
           const code = await window.WebAuthnSdk.executePasskeyAuthentication();
+
+          window.pageUtils.showLoading();
+
           await fetch(`/complete?code=${code}`);
 
           window.location.replace('/');
+          return;
         } catch (ex) {
-          window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
+          window.pageUtils.updateElementText('status', `${ex.description}`);
         }
+
+        window.pageUtils.hideLoading();
       }
     </script>
   </head>

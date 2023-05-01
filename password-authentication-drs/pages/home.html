@@ -32,6 +32,8 @@
 
       async function logout() {
         try {
+          window.pageUtils.showLoading();
+
           // Step 4: Report DRS actions
           window.myTSAccountProtection
             .triggerActionEvent(window.drs.actionType.LOGOUT)
@@ -55,42 +57,43 @@
 
           // Redirect the user to the login page
           window.location.replace('/pages/login.html');
+          return;
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
         }
+
+        window.pageUtils.hideLoading();
       }
 
       async function transact() {
         try {
+          window.pageUtils.showLoading();
+
           // Step 4: Report DRS actions
-          window.myTSAccountProtection
-            .triggerActionEvent(window.drs.actionType.TRANSACTION)
-            .then(actionResponse => {
-              const actionToken = actionResponse.actionToken;
-              console.log('Action Token', actionToken);
-              // Add code here to send the action and the received actionToken to your backend
+          const actionResponse = await window.myTSAccountProtection.triggerActionEvent(
+            window.drs.actionType.TRANSACTION,
+          );
 
-              const response = window.getRiskRecommendation(actionToken);
-              response
-                .then(resp => resp.json())
-                .then(resp => {
-                  console.log('Transact', resp);
+          const actionToken = actionResponse.actionToken;
+          console.log('Action Token', actionToken);
+          // Add code here to send the action and the received actionToken to your backend
 
-                  const recommendation = resp.response.recommendation.type;
-                  const riskScore = resp.response['risk_score'];
+          const recommendationResponse = await window.getRiskRecommendation(actionToken);
+          const json = await recommendationResponse.json();
+          console.log('Transact', json);
 
-                  window.pageUtils.updateElementText(
-                    'status',
-                    `Your risk recommendation is a ${recommendation} with a risk score of ${riskScore}`,
-                  );
-                })
-                .catch(err => {
-                  console.error('Transact', err);
-                });
-            });
+          const recommendation = json.response.recommendation.type;
+          const riskScore = json.response['risk_score'];
+
+          window.pageUtils.updateElementText(
+            'status',
+            `Your risk recommendation is a ${recommendation} with a risk score of ${riskScore}`,
+          );
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during transact: ${ex}`);
         }
+
+        window.pageUtils.hideLoading();
       }
 
       async function init() {

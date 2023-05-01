@@ -35,6 +35,8 @@
 
       async function logout() {
         try {
+          window.pageUtils.showLoading();
+
           const response = await fetch('/logout', {
             method: 'POST',
           });
@@ -46,9 +48,13 @@
 
           // Redirect the user to the login page
           window.location.replace('/pages/login.html');
+
+          return;
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
         }
+
+        window.pageUtils.hideLoading();
       }
 
       async function init() {

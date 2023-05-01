@@ -19,6 +19,8 @@
       // For more information see https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-4-register-password
       async function signup() {
         try {
+          window.pageUtils.showLoading();
+
           // Step 4: Report DRS actions
           window.myTSAccountProtection
             .triggerActionEvent(window.drs.actionType.REGISTER)
@@ -51,10 +53,13 @@
           } else {
             // Redirect the user to finish the authentication
             window.location.replace(jsonResult.response.result.url);
+            return;
           }
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during signup: ${ex}`);
         }
+
+        window.pageUtils.hideLoading();
       }
     </script>
   </head>
