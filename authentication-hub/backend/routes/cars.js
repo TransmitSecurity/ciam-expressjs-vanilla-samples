@@ -76,9 +76,9 @@ carsRouter.post('/fetch-tokens', async function (req, res) {
 });
 
 // Get an authenticated user's saved ID Token or return a not found error
-carsRouter.get('/me', async function (req, res) {
+carsRouter.get('/user-info', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
-  console.log('/ME', req.session.carTokens);
+  console.log('/user-info', req.session.carTokens);
   if (req.session.carTokens) {
     res.status(200).send({
       idToken: req.session.carTokens.idToken,

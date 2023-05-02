@@ -16,12 +16,12 @@
     <div class="page">
       <header>
         <img src="/cars/acme-logo.svg" />
-        <div id="clientIdDiv">ClientID: <span id="clientId"></span></div>
+        <div id="clientIdDiv" class="metadata">ClientID: <span id="clientId"></span></div>
       </header>
       <main>
         <div class="content column gap">
           <!-- Login button -->
-          <div id="loginDiv" class="column gap">
+          <div id="loginDiv" class="column gap hidden">
             <h3>Find the best car for your road trip</h3>
             <p>Plan your next adventure with Acme Cars</p>
 
@@ -35,7 +35,7 @@
             </button>
           </div>
           <!-- Home page for authenticated user -->
-          <div id="logoutDiv" class="column gap">
+          <div id="logoutDiv" class="column gap hidden">
             <h3>Welcome back to Acme Cars!</h3>
             <div style="margin-bottom: 1rem">
               <span>Driver id:</span>
@@ -56,9 +56,6 @@
     </div>
     <script>
       let loginRequired = false;
-
-      const logoutDiv = document.getElementById('logoutDiv');
-      const loginDiv = document.getElementById('loginDiv');
 
       async function loadPage() {
         const clientId = window.env.VITE_TS_CLIENT_ID_SSOCARS;
@@ -87,23 +84,15 @@
         }
       }
 
-      function setElementVisible(id, visible) {
-        try {
-          document.getElementById(id).style.display = visible ? 'block' : 'none';
-        } catch (ex) {
-          console.log(ex);
-        }
-      }
-
       function setUserLoggedIn(userData) {
         console.log('Set user logged in', userData);
         if (userData) {
           window.pageUtils.updateElementText('sub', userData.sub);
-          setElementVisible('loginDiv', false);
-          setElementVisible('logoutDiv', true);
+          window.pageUtils.hide('loginDiv');
+          window.pageUtils.show('logoutDiv');
         } else {
-          setElementVisible('loginDiv', true);
-          setElementVisible('logoutDiv', false);
+          window.pageUtils.show('loginDiv');
+          window.pageUtils.hide('logoutDiv');
         }
       }
 
@@ -171,13 +160,13 @@
 
       async function userInfo() {
         try {
-          const response = await fetch('/cars/me', {
+          const response = await fetch('/cars/user-info', {
             method: 'GET',
             credentials: 'include',
           });
 
           const data = await response.json();
-          console.log('Response from /cars/me endpoint: ', data);
+          console.log('Response from /cars/user-info endpoint: ', data);
           return data.idToken;
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during session check: ${ex}`);

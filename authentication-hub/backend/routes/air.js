@@ -76,9 +76,9 @@ airRouter.post('/fetch-tokens', async function (req, res) {
 });
 
 // Get an authenticated user's saved ID Token or return a not found error
-airRouter.get('/me', async function (req, res) {
+airRouter.get('/user-info', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
-  console.log('/ME', req.session.airTokens);
+  console.log('/user-info', req.session.airTokens);
   if (req.session.airTokens) {
     res.status(200).send({
       idToken: req.session.airTokens.idToken,

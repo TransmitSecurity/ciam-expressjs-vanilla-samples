@@ -16,12 +16,12 @@
     <div class="page">
       <header>
         <img src="/air/acme-logo.svg" />
-        <div id="clientIdDiv">ClientID: <span id="clientId"></span></div>
+        <div id="clientIdDiv" class="metadata">ClientID: <span id="clientId"></span></div>
       </header>
       <main>
         <div class="content column gap">
           <!-- Login button -->
-          <div id="loginDiv" class="column gap" style="display: none">
+          <div id="loginDiv" class="column gap hidden">
             <h3>Find affordable flights</h3>
             <p>Plan your next trip with Acme Air</p>
 
@@ -35,7 +35,7 @@
             </button>
           </div>
           <!-- Home page for authenticated user -->
-          <div id="logoutDiv" class="column gap" style="display: none">
+          <div id="logoutDiv" class="column gap hidden">
             <h3>Welcome back to Acme Air!</h3>
             <div style="margin-bottom: 1rem">
               <span>Traveller id:</span>
@@ -55,9 +55,6 @@
       </main>
     </div>
     <script>
-      const logoutDiv = document.getElementById('logoutDiv');
-      const loginDiv = document.getElementById('loginDiv');
-
       async function loadPage() {
         const clientId = window.env.VITE_TS_CLIENT_ID_SSOAIR;
         window.pageUtils.updateElementText('clientId', clientId);
@@ -72,22 +69,14 @@
         }
       }
 
-      function setElementVisible(id, visible) {
-        try {
-          document.getElementById(id).style.display = visible ? 'block' : 'none';
-        } catch (ex) {
-          console.log(ex);
-        }
-      }
-
       function setUserLoggedIn(loggedIn) {
         console.log('Set user logged in', loggedIn);
         if (loggedIn) {
-          setElementVisible('loginDiv', false);
-          setElementVisible('logoutDiv', true);
+          window.pageUtils.hide('loginDiv');
+          window.pageUtils.show('logoutDiv');
         } else {
-          setElementVisible('loginDiv', true);
-          setElementVisible('logoutDiv', false);
+          window.pageUtils.show('loginDiv');
+          window.pageUtils.hide('logoutDiv');
         }
       }
 
@@ -123,13 +112,13 @@
 
       async function userInfo() {
         try {
-          const response = await fetch('/air/me', {
+          const response = await fetch('/air/user-info', {
             method: 'GET',
             credentials: 'include',
           });
 
           const data = await response.json();
-          console.log('Response from /air/me endpoint: ', data);
+          console.log('Response from /air/user-info endpoint: ', data);
           return data.idToken;
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during session check: ${ex}`);

@@ -13,8 +13,8 @@
     height: $header-height;
     padding: 0 $padding;
 
-    #clientIdDiv {
-      color: #c1c1c1;
+    .metadata {
+      color: $metadata-color;
     }
   }
 
