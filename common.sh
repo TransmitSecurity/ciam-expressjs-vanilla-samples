@@ -69,6 +69,7 @@ echo "Select one option using up/down keys and enter to confirm:"
 echo
 
 options=(
+    "Authentication Hub"
     "Detection and Response Service"
     "Email OTP Authentication"
     "Identity Verification (Hosted)"
@@ -78,6 +79,7 @@ options=(
     "WebAuthn Cross Device"
 )
 optdir=(
+    "authentication-hub"
     "password-authentication-drs"
     "login-with-email"
     "hosted-idv"
