@@ -23,41 +23,78 @@
         <img src="/acme-logo.svg" />
       </header>
       <main>
-        <div class="content column gap">
-          <div id="emailDiv" class="column gap">
-            <h3>Sign in using another device</h3>
-            <img id="qr" class="column centered" src="" />
-            <button
-              id="start"
-              onclick="initiateCrossDeviceFlow()"
-              class="full-width disabled"
-              disabled
-            >
-              Show QR
-            </button>
-            <div id="url" class="text column long-text"></div>
-            <div id="status" class="column gap"></div>
+        <div class="content column centered gap">
+          <div class="title sm">Sign in using another device</div>
+          <div id="spinner" class="page-icon"></div>
+          <div id="qrDiv" class="column gap centered hidden">
+            <div class="text">Scan this QR code using a mobile device</div>
+            <img id="qr" src="" class="qr-code" />
+            <div class="text">Or open the following link in a separate browser</div>
+            <div
+              id="url"
+              class="text break-anywhere copyable"
+              onclick="window.pageUtils.copyText(this)"
+            ></div>
           </div>
+          <div id="inProgressDiv" class="text hidden">
+            Complete the process on your mobile device
+          </div>
+          <div id="completeDiv" class="column centered gap hidden">
+            <img src="/shield.svg" />
+            <div>
+              Complete flow for user <b><span id="username"></span></b>
+            </div>
+            <button onclick="window.location.reload()" class="full-width">Restart</button>
+          </div>
+          <div id="status"></div>
         </div>
       </main>
     </div>
   </body>
   <script>
-    // Initialize page and SDK
+    // Initialize SDK and Cross Device flow
     async function init() {
       try {
         const clientId = window.env.VITE_TS_CLIENT_ID;
-        window.pageUtils.updateElementText('status', `Starting SDK init for client ID ${clientId}`);
         await window.WebAuthnSdk.init(clientId, {
           serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
         });
-        window.pageUtils.updateElementText('status', `SDK Init done`);
 
-        // enable button
-        window.pageUtils.enable('start');
+        // Initiate the cross device flow and provide the handlers.
+        const controller = await window.WebAuthnSdk.startCrossDeviceFlow({
+          onDeviceAttach,
+          onCredentialRegister,
+          onCredentialAuthenticate,
+          onFailure,
+        });
+
+        if (controller.authSessionId) {
+          // Construct the URL of your login page along with the authSessionId param (aid in this example).
+          // To use a mobile device, best to display the generated URL using a QR code.
+          const url = `${window.location.origin}/pages/mobile.html?aid=${controller.authSessionId}`;
+
+          // Load the QR image and display the page after it is loaded
+          const qrImg = new Image();
+          qrImg.onload = () => {
+            const qrElem = document.getElementById('qr');
+            qrElem.setAttribute('src', qrImg.src);
+            window.pageUtils.show('qrDiv');
+            window.pageUtils.hide('spinner');
+          };
+          qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=220x220`;
+
+          window.pageUtils.updateElementText('url', url);
+        } else {
+          window.pageUtils.updateElementText(
+            'status',
+            `Something may be wrong with your app or webauthn config. Please re-check the Transmit portal and .env setup`,
+          );
+          window.pageUtils.hide('spinner');
+        }
       } catch (ex) {
         console.log(ex);
         window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
+        window.pageUtils.hide('spinner');
       }
     }
 
@@ -67,7 +104,9 @@
     async function onDeviceAttach() {
       // set the status text
       console.log('Received event: mobile device connected');
-      window.pageUtils.updateElementText('status', `Mobile device connected`);
+      window.pageUtils.hide('qrDiv');
+      window.pageUtils.show('spinner');
+      window.pageUtils.show('inProgressDiv');
 
       return true; // Return true to keep polling
     }
@@ -101,41 +140,6 @@
       return false;
     }
 
-    // Start the cross device flow, setup
-    async function initiateCrossDeviceFlow() {
-      // Initiate the cross device flow and provide the handlers.
-      const controller = await window.WebAuthnSdk.startCrossDeviceFlow({
-        onDeviceAttach,
-        onCredentialRegister,
-        onCredentialAuthenticate,
-        onFailure,
-      });
-
-      if (controller.authSessionId) {
-        // Construct the URL of your login page along with the authSessionId param (aid in this example).
-        // To use a mobile device, best to display the generated URL using a QR code.
-        const url = `${window.location.origin}/pages/mobile.html?aid=${controller.authSessionId}`;
-        const qrElem = document.getElementById('qr');
-        qrElem.setAttribute(
-          'src',
-          `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=220x220`,
-        );
-
-        window.pageUtils.updateElementText(
-          'url',
-          `Scan the QR or open the following link in a separate browser:  ${url}`,
-        );
-        window.pageUtils.updateElementText('status', 'Waiting for mobile device to connect');
-        // hide the button, to prevent multiple clicks once a device is attached
-        window.pageUtils.hide('start');
-      } else {
-        window.pageUtils.updateElementText(
-          'status',
-          `Something may be wrong with your app or webauthn config. Please re-check the Transmit portal and .env setup`,
-        );
-      }
-    }
-
     // This functions is triggered the flow is complete, and we can exchange the code for an ID token
     async function exchangeAndDisplayIDToken(authCode) {
       try {
@@ -151,10 +155,12 @@
 
         // ruff'n'tuff parsing of the token... usually happens server side of course, to be improved for the sample code.
         const data = await response.json();
+        console.log('DATA: ' + data);
         const idtoken = data?.id_token;
         const tokenJson = JSON.parse(window.atob(idtoken.split('.')[1]));
         const username = tokenJson.webauthn_username;
-        window.pageUtils.updateElementText('status', `Complete flow for user ${username}`);
+        window.pageUtils.updateElementText('username', username);
+        window.pageUtils.show('completeDiv');
         console.log('Raw ID Token', tokenJson);
       } catch (ex) {
         console.log('Error during flow completion', ex);
@@ -163,6 +169,9 @@
           `Error during token exchange for code ${authCode}: ${ex}`,
         );
       }
+
+      window.pageUtils.hide('spinner');
+      window.pageUtils.hide('inProgressDiv');
     }
   </script>
 </html>
