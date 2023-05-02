@@ -4,6 +4,7 @@ function baseUrl() {
 
 export const config = {
   apis: {
+    auth: `${baseUrl()}/cis/oidc/auth`,
     token: `${baseUrl()}/oidc/token`,
     logout: `${baseUrl()}/cis/v1/auth/logout`,
 

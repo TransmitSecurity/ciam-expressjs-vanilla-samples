@@ -21,7 +21,7 @@
           window.pageUtils.showLoading();
 
           await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
-            serverPath: window.env.VITE_TS_API_BASE,
+            serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
           });
 
           const usernameInput = document.getElementById('username');

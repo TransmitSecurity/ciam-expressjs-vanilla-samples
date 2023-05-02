@@ -5,11 +5,11 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared';
  * Obtain a client access token for API authorization
  * See: https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
  */
-async function getClientCredsToken(resource = '') {
+async function getClientCredsToken(resource = '', client_id, client_secret) {
   const url = common.config.apis.token;
   const params = {
-    client_id: process.env.VITE_TS_CLIENT_ID,
-    client_secret: process.env.TS_CLIENT_SECRET,
+    client_id: client_id || process.env.VITE_TS_CLIENT_ID,
+    client_secret: client_secret || process.env.TS_CLIENT_SECRET,
     grant_type: 'client_credentials',
   };
 
@@ -35,14 +35,14 @@ async function getClientCredsToken(resource = '') {
 // This function wraps an API call for fetching user access and ID tokens, based on a provide authCode
 // The access token is used for authorizing backend to API calls on behalf of the user, the ID token identifies the user.
 // For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-6-get-user-tokens
-export async function getUserTokens(authCode) {
+export async function getUserTokens(authCode, client_id, client_secret, redirect_uri) {
   const url = common.config.apis.token;
   const params = new URLSearchParams({
     grant_type: 'authorization_code',
     code: authCode,
-    client_id: process.env.VITE_TS_CLIENT_ID,
-    client_secret: process.env.TS_CLIENT_SECRET,
-    redirect_uri: process.env.TS_REDIRECT_URI,
+    client_id: client_id || process.env.VITE_TS_CLIENT_ID,
+    client_secret: client_secret || process.env.TS_CLIENT_SECRET,
+    redirect_uri: redirect_uri || process.env.TS_REDIRECT_URI,
   });
 
   const options = {
