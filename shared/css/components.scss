@@ -143,6 +143,39 @@ img {
   width: 64px;
 }
 
+.copyable {
+  position: relative;
+  cursor: pointer;
+
+  &:after {
+    display: none;
+    content: 'Copy...';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 12px;
+    background-color: white;
+    color: $primary;
+  }
+
+  &:hover:after {
+    display: block;
+  }
+
+  &.show-message:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    color: $primary;
+    content: 'Copied to clipboard';
+    z-index: 10;
+    text-align: center;
+  }
+}
+
 #status {
   color: red;
   min-height: 20px;
