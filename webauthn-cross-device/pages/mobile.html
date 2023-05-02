@@ -14,7 +14,7 @@
 
     <script
       type="text/javascript"
-      src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
+      src="https://cdn.identity.security/authentication-sdk/2.10.0/TsAuthSdk.min.js"
     ></script>
   </head>
 
@@ -57,7 +57,7 @@
         window.pageUtils.hide('authenticate');
 
         await window.WebAuthnSdk.init(clientId, {
-          serverPath: 'https://webauthn.identity.security',
+          serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
         });
         window.pageUtils.updateElementText('status', `SDK Init done for client ID ${clientId}`);
 
