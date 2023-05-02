@@ -19,6 +19,8 @@
       // For more information see https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-5-authenticate-user
       async function login() {
         try {
+          window.pageUtils.showLoading();
+
           // Step 4: Report DRS actions
           window.myTSAccountProtection
             .triggerActionEvent(window.drs.actionType.LOGIN)
@@ -52,10 +54,13 @@
             // Redirect the user to finish the authentication
             console.log(`Redirecting to ${jsonResult.response.result.url}`);
             window.location.replace(jsonResult.response.result.url);
+            return;
           }
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during login: ${ex}`);
         }
+
+        window.pageUtils.hideLoading();
       }
     </script>
   </head>

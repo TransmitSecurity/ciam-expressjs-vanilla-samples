@@ -48,4 +48,26 @@ export const pageUtils = {
       console.log(ex);
     }
   },
+  showLoading: function () {
+    const mask = document.createElement('div');
+    const spinner = document.createElement('div');
+
+    mask.id = 'loading-mask';
+    mask.appendChild(spinner);
+    document.body.appendChild(mask);
+
+    setTimeout(function () {
+      // Set timeout in order to execute this change on the next event loop and trigger the transition
+      mask.classList.add('loaded');
+    }, 0);
+  },
+  hideLoading: function () {
+    const mask = document.getElementById('loading-mask');
+    mask.classList.remove('loaded');
+
+    setTimeout(function () {
+      // Allow transition to complete before removing the spinner from the DOM
+      document.body.removeChild(mask);
+    }, 300);
+  },
 };

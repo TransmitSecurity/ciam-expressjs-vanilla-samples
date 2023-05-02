@@ -18,6 +18,8 @@
     <script>
       async function registerPasskey() {
         try {
+          window.pageUtils.showLoading();
+
           await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
             serverPath: window.env.VITE_TS_API_BASE,
           });
@@ -42,17 +44,20 @@
             await fetch(`/complete?code=${code}`);
 
             window.location.replace('/');
+            return;
           } else {
             window.pageUtils.updateElementText('status', `Username required`);
           }
         } catch (ex) {
           console.log(ex);
-          window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
+          window.pageUtils.updateElementText('status', `${ex.description}`);
         }
+
+        window.pageUtils.hideLoading();
       }
     </script>
   </head>
-  <body onload="initPage()">
+  <body>
     <div class="page" id="page">
       <header>
         <img src="/acme-logo.svg" alt="ACME" />
