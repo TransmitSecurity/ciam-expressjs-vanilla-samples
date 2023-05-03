@@ -148,18 +148,22 @@ img {
   cursor: pointer;
 
   &:after {
-    display: none;
-    content: 'Copy...';
+    content: '';
+    display: block;
     position: absolute;
     bottom: 0;
     right: 0;
-    font-size: 12px;
+    height: 20px;
+    width: 20px;
     background-color: white;
-    color: $primary;
+    background-image: url('../img/copy.svg');
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    background-size: 16px 16px;
   }
 
   &:hover:after {
-    display: block;
+    background-image: url('../img/copy-hover.svg');
   }
 
   &.show-message:before {
