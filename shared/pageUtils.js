@@ -70,4 +70,12 @@ export const pageUtils = {
       document.body.removeChild(mask);
     }, 300);
   },
+  copyText: async function (divElement) {
+    const value = divElement.innerHTML;
+    await navigator.clipboard.writeText(value);
+    divElement.classList.add('show-message');
+    setTimeout(() => {
+      divElement.classList.remove('show-message');
+    }, 1000);
+  },
 };

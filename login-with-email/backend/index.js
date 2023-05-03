@@ -1,7 +1,7 @@
 import express from 'express';
 import fetch from 'node-fetch';
-import escape from 'escape-html';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
+import * as querystring from 'querystring';
 
 const router = express.Router();
 
@@ -23,7 +23,7 @@ router.post('/email-otp', async function (req, res) {
   const email = req?.body?.email;
 
   if (!email) {
-    res.send({
+    res.status(400).send({
       message: 'Received email is empty',
     });
   } else {
@@ -39,7 +39,7 @@ router.post('/email-otp', async function (req, res) {
       const emailOtpResponse = await sendEmailOTP(email);
       res.status(emailOtpResponse.status).send({
         received_email: email,
-        response: JSON.stringify(emailOtpResponse),
+        ...emailOtpResponse,
       });
     } catch (error) {
       console.log(error);
@@ -76,11 +76,7 @@ router.post('/verify', async function (req, res) {
 });
 
 router.get('/complete', function (req, res) {
-  if (req.query.code) {
-    res.send(`Login completed with code: ${escape(req.query.code)}`);
-  } else {
-    res.send(`Login completed with error: ${escape(req.query.error)}`);
-  }
+  res.redirect(`/pages/complete.html?${querystring.stringify(req.query)}`);
 });
 
 async function sendEmailOTP(email) {
@@ -104,7 +100,7 @@ async function sendEmailOTP(email) {
   const status = resp.status;
   const data = await resp.json();
   console.log('response is ', { status, data });
-  return { status, data };
+  return { status, ...data };
 }
 
 async function validateOTP(email, otpCode) {

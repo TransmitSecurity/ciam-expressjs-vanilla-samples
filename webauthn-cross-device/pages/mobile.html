@@ -25,19 +25,30 @@
       </header>
       <main>
         <div class="content column gap">
-          <div id="authenticate" class="column gap" hidden>
-            <button id="authnBtn" onclick="doAuthentication()" class="full-width">
-              Authenticate
-            </button>
-            <div class="divider">
-              <span class="divider-text">or</span>
+          <div id="formsDiv" class="column gap">
+            <div id="authenticateDiv" class="column gap hidden">
+              <button id="authnBtn" onclick="doAuthentication()" class="full-width">
+                Authenticate
+              </button>
+              <div class="divider">
+                <span class="divider-text">or</span>
+              </div>
+            </div>
+            <div id="registerDiv" class="column gap">
+              <input id="usnInput" type="text" size="40" placeholder="Username" />
+              <button id="regBtn" onclick="doRegistration()" class="full-width">
+                Register a new user
+              </button>
             </div>
           </div>
-          <div id="register" class="column gap">
-            <input id="usnInput" type="text" size="40" placeholder="Username" />
-            <button id="regBtn" onclick="doRegistration()" class="full-width">
-              Register a new user
-            </button>
+          <div id="successDiv" class="column gap centered hidden">
+            <div class="title sm">Success</div>
+            <img src="/green-check.svg" class="page-icon" />
+            <div class="text">Completed with auth code (see console log).</div>
+            <div class="text">
+              Please return to the Desktop device page to see flow completion and response.
+            </div>
+            <div class="text">You can close this tab.</div>
           </div>
           <div id="status" class="column gap"></div>
         </div>
@@ -54,12 +65,9 @@
         const clientId = window.env.VITE_TS_CLIENT_ID;
         authSessionId = window.pageUtils.extractUrlParameter('aid');
 
-        window.pageUtils.hide('authenticate');
-
         await window.WebAuthnSdk.init(clientId, {
           serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
         });
-        window.pageUtils.updateElementText('status', `SDK Init done for client ID ${clientId}`);
 
         // Check if WebAuthn is supported for this device. if not - no real need to continue.
         const isBiometricsSupported = await window.WebAuthnSdk.isPlatformAuthenticatorSupported();
@@ -70,14 +78,16 @@
           // The below is an example business logic to show authentication iff we have a user that previously registered
           // Registration for a different user always remains open in this sample app
           console.log(JSON.stringify(bindingInfo));
-          currentUser = (await window.WebAuthnSdk.getDeviceUsers()).find(u => {
-            return u.isCurrent;
+          currentUser = (await window.WebAuthnSdk.getDeviceUsers()).find(user => {
+            return user.isCurrent;
           });
           console.log(currentUser);
           if (currentUser) {
-            window.pageUtils.show('authenticate');
+            window.pageUtils.show('authenticateDiv');
             window.pageUtils.updateElementText('authnBtn', `Login with ${currentUser.username}`);
           }
+
+          return;
         } else {
           // WebAuthn is not supported
           window.pageUtils.updateElementText(
@@ -86,8 +96,12 @@
           );
         }
       } catch (ex) {
-        window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
+        console.log('Error during init:', ex);
+        window.pageUtils.updateElementText('status', `${ex.description}`);
       }
+
+      window.pageUtils.disable('regBtn');
+      window.pageUtils.disable('authnBtn');
     }
 
     // Triggered on registration click
@@ -95,9 +109,7 @@
       try {
         const username = document.getElementById('usnInput').value;
 
-        // make sure the button is not clicked again
-        window.pageUtils.disable('regBtn');
-        window.pageUtils.disable('authnBtn');
+        window.pageUtils.showLoading();
 
         // Send the authSessionID to the backend, to set it as allowed for webauthn registration. By default auth-sessions are only allowed for authentication.
         await fetch('/mobile/authorize-session-user', {
@@ -114,35 +126,35 @@
         // Execute the registration API calls
         await window.WebAuthnSdk.prepareWebauthnRegistration(username, username, authSessionId);
         const authCode = await window.WebAuthnSdk.executeWebauthnRegistration();
-        window.pageUtils.updateElementText(
-          'status',
-          `Completed with auth code (see console log). Please return to the Desktop device page to see flow completion and response.`,
-        );
+
+        window.pageUtils.show('successDiv');
+        window.pageUtils.hide('formsDiv');
         console.log(`Completed with auth code: ${authCode}`);
       } catch (ex) {
-        window.pageUtils.updateElementText('status', `Error during registration: ${ex}`);
-        console.log(ex);
+        window.pageUtils.updateElementText('status', ex.description);
+        console.log('Error during registration', ex);
       }
+
+      window.pageUtils.hideLoading();
     }
 
     // triggered on authentication click
     async function doAuthentication() {
       try {
-        // make sure the button is not clicked again
-        window.pageUtils.disable('regBtn');
-        window.pageUtils.disable('authnBtn');
+        window.pageUtils.showLoading();
 
         await window.WebAuthnSdk.prepareWebauthnAuthentication(currentUser.username);
         const authCode = await window.WebAuthnSdk.executeWebauthnAuthentication();
-        window.pageUtils.updateElementText(
-          'status',
-          `Completed with auth code (see console log). Please return to the Desktop device page to see flow completion and response.`,
-        );
+
+        window.pageUtils.show('successDiv');
+        window.pageUtils.hide('formsDiv');
         console.log(`Completed with auth code ${authCode}`);
       } catch (ex) {
-        window.pageUtils.updateElementText('status', `Error during authentication: ${ex}`);
-        console.log(ex);
+        window.pageUtils.updateElementText('status', ex.description);
+        console.log('Error during authentication', ex);
       }
+
+      window.pageUtils.hideLoading();
     }
   </script>
 </html>
