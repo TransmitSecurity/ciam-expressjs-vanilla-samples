@@ -19,6 +19,8 @@ export const config = {
     sendOtpSMS: `${baseUrl()}/cis/v1/auth/otp/sms`,
     validateOtpSMS: `${baseUrl()}/cis/v1/auth/otp/sms/validation`,
 
+    sendMagicLink: `${baseUrl()}/cis/v1/auth/links/email`,
+
     webauthnAuthorize: `${baseUrl()}/cis/v1/auth-session/authorize`,
     webauthnStartWithAuthorization: `${baseUrl()}/cis/v1/auth-session/start-with-authorization`,
 
