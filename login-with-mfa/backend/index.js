@@ -6,7 +6,7 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared';
 const router = express.Router();
 
 /**
- * For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp
+ * For more information see https://developer.transmitsecurity.com/guides/user/auth_mfa_guide/
  * **/
 
 // In a production server, you would cache the access token,
