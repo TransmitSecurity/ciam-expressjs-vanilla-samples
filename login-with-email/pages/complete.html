@@ -15,18 +15,49 @@
       function initPage() {
         const code = window.pageUtils.extractUrlParameter('code');
         const error = window.pageUtils.extractUrlParameter('error');
-        const resultDiv = document.getElementById('result');
-        const messageDiv = document.getElementById('message');
 
         if (code) {
-          resultDiv.innerHTML = 'Authorization code:';
-          messageDiv.innerHTML = code;
-          messageDiv.classList.add('break-anywhere');
+          window.pageUtils.updateElementText('message', 'Authorization code:');
+          window.pageUtils.updateElementText('result', code);
         } else {
-          resultDiv.innerHTML = 'An error has occurred:';
-          messageDiv.innerHTML = error;
+          window.pageUtils.updateElementText('title', 'Authorization failed');
+          window.pageUtils.updateElementText('status', error);
+          window.pageUtils.hide('codeDiv');
         }
       }
+
+      async function exchangeAndValidate() {
+        window.pageUtils.showLoading();
+        const code = document.getElementById('result').innerText;
+
+        const response = await fetch('/exchange-and-validate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ code: code }),
+        });
+
+        const status = response.status;
+        const data = await response.json();
+        console.log('Response from /exchange-and-validate', { status, data });
+        handleValidationResponse({ status, data });
+      }
+
+      const handleValidationResponse = response => {
+        if (response.status === 200) {
+          window.pageUtils.hide('codeDiv');
+          window.pageUtils.show('tokenDiv');
+          window.pageUtils.updateElementText(
+            'tokenData',
+            JSON.stringify(response.data, undefined, 2),
+          );
+        } else {
+          window.pageUtils.updateElementText('status', response.data.message);
+        }
+
+        window.pageUtils.hideLoading();
+      };
 
       function restart() {
         window.location.replace('/');
@@ -40,10 +71,21 @@
       </header>
       <main>
         <div class="content column gap">
-          <h3>Authorization complete</h3>
-          <div id="result"></div>
-          <div id="message"></div>
-          <button id="sendEmailButton" onclick="restart()" class="full-width">Restart</button>
+          <h3 id="title">Authorization complete</h3>
+          <div id="codeDiv" class="column gap">
+            <div id="message"></div>
+            <pre id="result"></pre>
+            <button onclick="exchangeAndValidate()" class="full-width">
+              Exchange and validate
+            </button>
+          </div>
+          <div id="tokenDiv" class="column hidden">
+            <div>Token signature validation passed successfully!</div>
+            <div>You should also validate the data on your end.</div>
+            <pre id="tokenData" class="column gap"></pre>
+            <button onclick="restart()" class="full-width">Restart</button>
+          </div>
+          <div id="status"></div>
         </div>
       </main>
     </div>

@@ -79,6 +79,23 @@ router.get('/complete', function (req, res) {
   res.redirect(`/pages/complete.html?${querystring.stringify(req.query)}`);
 });
 
+router.post('/exchange-and-validate', async function (req, res) {
+  try {
+    const code = req.body.code;
+    const token = await exchangeCode(code);
+    const validationResult = await validateToken(token);
+
+    res.send(validationResult);
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).send({
+      message: 'Error in the token validation',
+      error,
+    });
+  }
+});
+
 async function sendEmailOTP(email) {
   const url = common.config.apis.sendOtpEmail;
   const options = {
@@ -124,6 +141,15 @@ async function validateOTP(email, otpCode) {
   const data = await resp.json();
   console.log('response is ', { status, data });
   return { status, data };
+}
+
+async function exchangeCode(code) {
+  const tokens = await common.tokens.getUserTokens(code);
+  return tokens.access_token;
+}
+
+async function validateToken(token) {
+  return common.tokens.validateToken(token);
 }
 
 export const indexRouter = router;

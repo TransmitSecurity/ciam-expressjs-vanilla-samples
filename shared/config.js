@@ -6,6 +6,7 @@ export const config = {
   apis: {
     auth: `${baseUrl()}/cis/oidc/auth`,
     token: `${baseUrl()}/oidc/token`,
+    jwks: `${baseUrl()}/cis/oidc/jwks`,
     logout: `${baseUrl()}/cis/v1/auth/logout`,
 
     createUser: `${baseUrl()}/cis/v1/users`,
