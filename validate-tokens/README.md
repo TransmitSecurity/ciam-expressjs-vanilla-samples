@@ -1,7 +1,7 @@
 # Validate tokens to protect your APIs
 
 In case you intend to use Transmit Security access tokens or ID tokens to protect your APIs, you
-should validate the access token before you allow access to your API.
+should validate the tokens before you allow access to your API.
 
 We implemented tokens validation in our login-with-email sample. The validation process is based on
 the following guide: https://developer.transmitsecurity.com/guides/user/validate_tokens/
