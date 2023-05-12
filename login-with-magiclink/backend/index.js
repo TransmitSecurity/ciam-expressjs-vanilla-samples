@@ -6,7 +6,7 @@ import * as querystring from 'querystring';
 const router = express.Router();
 
 /**
- * For more information see https://developer.transmitsecurity.com/guides/user/auth_mfa_guide/
+ * For more information see https://developer.transmitsecurity.com/guides/user/auth_email_magic_link/
  * **/
 
 // In a production server, you would cache the access token,
