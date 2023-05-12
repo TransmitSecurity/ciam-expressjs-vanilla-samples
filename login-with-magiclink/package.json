@@ -1,5 +1,5 @@
 {
-  "name": "@ciam-expressjs-vanilla-samples/login-with-mfa",
+  "name": "@ciam-expressjs-vanilla-samples/login-with-magiclink",
   "version": "1.0.0",
   "private": true,
   "scripts": {
