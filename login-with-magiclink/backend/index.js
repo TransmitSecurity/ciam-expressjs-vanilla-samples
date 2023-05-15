@@ -23,7 +23,7 @@ router.post('/send-magic-link', async function (req, res) {
   const email = req?.body?.email;
 
   if (!email) {
-    res.send({
+    res.status(401).send({
       message: 'Received email is empty',
     });
   } else {
