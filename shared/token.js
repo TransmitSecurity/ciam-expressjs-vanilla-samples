@@ -1,5 +1,7 @@
 import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
+import jwt from 'jsonwebtoken';
+import jwkToPem from 'jwk-to-pem';
 
 /**
  * Obtain a client access token for API authorization
@@ -64,12 +66,44 @@ export async function getUserTokens(authCode, client_id, client_secret, redirect
   return data;
 }
 
+// This function validates the JWT token signature using the OIDC JWKS API
+// For more information see https://developer.transmitsecurity.com/guides/user/validate_tokens/
+export async function validateToken(token) {
+  const jwks = await getJwks();
+  const { header } = jwt.decode(token, { complete: true });
+  const kid = header.kid;
+  const key = jwks.keys.find(key => key.kid === kid);
+  const publicKey = jwkToPem(key);
+
+  return jwt.verify(token, publicKey);
+}
+
+// This function wraps an API call for fetching the OIDC JWKS
+// For more information see https://developer.transmitsecurity.com/openapi/user/oidc/#operation/oidcGetKeys
+export async function getJwks() {
+  const url = common.config.apis.jwks;
+  const options = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  // No error handling for the sake of simplicity, assuming the router level catches exceptions
+  const resp = await fetch(url, options);
+  const data = await resp.json();
+
+  console.log(resp.headers, resp.status, data);
+  return data;
+}
+
 export function parseJwt(token) {
   return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
 
 export const tokenRequest = {
-  getClientCredsToken: getClientCredsToken,
-  getUserTokens: getUserTokens,
-  parseJwt: parseJwt,
+  getClientCredsToken,
+  getUserTokens,
+  validateToken,
+  parseJwt,
 };

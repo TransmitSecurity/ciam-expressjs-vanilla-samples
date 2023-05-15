@@ -72,9 +72,10 @@ options=(
     "Authentication Hub"
     "Detection and Response Service"
     "Email OTP Authentication"
+    "SMS OTP Authentication"
+    "Token Validation"
     "Identity Verification (Hosted)"
     "Password Authentication"
-    "SMS OTP Authentication"
     "WebAuthn Passkey Authentication (autocomplete)"
     "WebAuthn Cross Device"
 )
@@ -82,9 +83,10 @@ optdir=(
     "authentication-hub"
     "password-authentication-drs"
     "login-with-email"
+    "login-with-sms"
+    "login-with-email"
     "hosted-idv"
     "password-authentication"
-    "login-with-sms"
     "passkey-authentication"
     "webauthn-cross-device"
 )

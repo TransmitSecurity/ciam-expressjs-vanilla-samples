@@ -4,8 +4,7 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "start": "vite --debug --host --port 8080",
-    "start:local": "vite --debug --host --port 8082",
+    "start": "vite --debug --host",
     "lint": "eslint \"**/*.{js,html}\"",
     "format": "prettier .  --write"
   },

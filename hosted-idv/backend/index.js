@@ -141,7 +141,7 @@ router.get('/complete', async function (req, res) {
                         <body>
                           <div class="page">
                             <header>
-                              <img src="/acme-logo.svg" />
+                              <a href="/"><img src="/acme-logo.svg" /></a>
                             </header>
                             <main>
                               <div class="content column gap">
