@@ -1,29 +1,22 @@
-import express, { json, urlencoded } from 'express';
+import express from 'express';
 import session from 'express-session';
-import logger from 'morgan';
-import crypto from 'crypto';
 
-import router from './routes/index';
-//todo: get rid of router stuff, have it all be in one file like magic link example
+import { indexRouter } from './index.js';
 
 const app = express();
-
-app.use(logger('dev'));
-app.use(json());
-app.use(urlencoded({ extended: false }));
+app.use(express.json());
 
 // This is a simplistic session mechanism
 // not designed to be used in production
-// This sample may be used with HTTP; in production code always use secure cooke, and add CSRF protection
-app.use(
-  session({
-    secret: crypto.randomUUID(),
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false },
-  }),
-);
+// This sample may be used with HTTP; in production code always use secure cookies, and add CSRF protection
+const sessionConfig = {
+  secret: crypto.randomUUID(),
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false },
+};
+app.use(session(sessionConfig));
 
-app.use('/', router);
+app.use('/', indexRouter);
 
 export const handler = app;

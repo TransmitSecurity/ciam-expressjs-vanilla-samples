@@ -1,7 +1,7 @@
 # Multi Factor Password authentication and signup
 
 This sample follows parts of the
-[official Transmit guide on passwords](https://developer.transmitsecurity.com/guides/user/auth_passwords/)
+[official Transmit guide on multi-factor authentication](https://developer.transmitsecurity.com/guides/user/auth_mfa_guide/)
 
 The sample shows how to use the Transmit APIs to create a new user then authenticate them with a
 username and password along with a SMS OTP.
