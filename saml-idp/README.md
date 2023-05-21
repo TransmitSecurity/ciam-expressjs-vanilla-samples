@@ -35,8 +35,8 @@ Set up this example using the instruction in the [main README file](../README.md
   the creation of the SP in transmit portal) example of "SAML 2.0 endpoint (HTTP)" output :
   [https://api.userid.security/serviceprovider/saml2/sso/fn3jm0zqh0xfvvn38k327]
   ("fn3jm0zqh0xfvvn38k327" is the SP id)
-- Open root .env file and add : TS_SERVICE_PROVIDER_ID={TS_SERVICE_PROVIDER_ID} ( replace
-  {TS_SERVICE_PROVIDER_ID})
+- create .env file in "saml-idp" folder and add : TS_SERVICE_PROVIDER_ID={TS_SERVICE_PROVIDER_ID} (
+  replace {TS_SERVICE_PROVIDER_ID})
 - Navigate again to [https://samltest.id/start-idp-test/] and set the "EntityId" as an identifier to
   saml idp tester
 - Press go and start authentication by the SMS OTP
