@@ -26,12 +26,18 @@ Set up this example using the instruction in the [main README file](../README.md
 - Press the "BUILD IDP METADATA" and save xml data into a file
 - Go to [https://samltest.id/start-idp-test/] and press the link at first line ["metadata link
   between your IdP and the SAMLtest SP by using the upload form"]
-- press "choose file" button and locate your metadata file you created before and press "UPLOAD" (
+- Press "choose file" button and locate your metadata file you created before and press "UPLOAD" (
   you need to see a confirmation with the xml metadata file after few seconds)
 
 ### Sample user experience
 
+- Extract service provider id from the "SAML 2.0 endpoint (HTTP)" param (which you have saved from
+  the creation of the SP in transmit portal) example of "SAML 2.0 endpoint (HTTP)" output :
+  [https://api.userid.security/serviceprovider/saml2/sso/fn3jm0zqh0xfvvn38k327]
+  ("fn3jm0zqh0xfvvn38k327" is the SP id)
+- Open root .env file and add : TS_SERVICE_PROVIDER_ID={TS_SERVICE_PROVIDER_ID} ( replace
+  {TS_SERVICE_PROVIDER_ID})
 - Navigate again to [https://samltest.id/start-idp-test/] and set the "EntityId" as an identifier to
   saml idp tester
-- press go and start authentication by the SMS OTP
-- after successful auth you will see redirection to the result SAML tester page
+- Press go and start authentication by the SMS OTP
+- After successful auth you will see redirection to the result SAML tester page
