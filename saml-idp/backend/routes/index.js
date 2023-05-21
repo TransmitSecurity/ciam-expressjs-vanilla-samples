@@ -24,20 +24,21 @@ router.get('/complete', async function (req, res) {
 
     if (tokens.access_token) {
       const samlIdpUrl = common.config.apis.samlIdpUrl;
-      const url = `${samlIdpUrl}?SAMLRequest=${encodeURIComponent(req.session.samlRequest)}`;
+      const url = `${samlIdpUrl}?SAMLRequest=${encodeURIComponent(
+        req.session.samlRequest,
+      )}&RelayState=${encodeURIComponent(req.session.relayState)}`;
       req.session.samlRequest;
       console.log(`saml request: ${req.session.samlRequest}`);
       console.log(`GET request url to saml idp (encoded params): ${url}`);
-      console.log(`token is: ${tokens.access_token}`);
       const resp = await fetch(url, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${tokens.access_token}`,
         },
       });
-      const data = await resp.json();
-      console.log(JSON.stringify(data));
-      console.log(resp.headers);
+      const data = await resp.text();
+      console.log(`SAML response from idp: ${data}`);
+      return res.send(data);
     }
   } else {
     res.send(`Login with SMS completed with error: ${req.query.error}`);
@@ -73,7 +74,6 @@ router.post('/login-sms/sms-otp', async function (req, res) {
         response: JSON.stringify(smsOtpResponse),
       });
     } catch (error) {
-      console.log(error);
       res.status(500).send({
         received_phone: phone,
         message: 'Error in the sms-otp flow',
