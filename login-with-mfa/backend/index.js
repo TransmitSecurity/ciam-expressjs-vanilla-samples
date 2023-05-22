@@ -9,10 +9,17 @@ const router = express.Router();
  * For more information see https://developer.transmitsecurity.com/guides/user/auth_mfa_guide/
  * **/
 
-// In a production server, you would cache the access token,
-// and regenerate whenever it expires.
-// This parameter emulates this 'cache' with a static variable for simplicity.
-let accessToken = null;
+const tokenCache = {};
+
+async function getAccessToken() {
+  if (tokenCache?.token === undefined || tokenCache.expiry < new Date().getTime()) {
+    tokenCache.token = await common.tokens.getClientCredsToken();
+
+    //tokens are good for 3600 seconds, if getting close get a new one
+    tokenCache.expiry = new Date().getTime() + 3590 * 1000;
+  }
+  return tokenCache.token;
+}
 
 // GET signup page
 router.get('/', function (req, res) {
@@ -30,11 +37,6 @@ router.post('/create-user', async function (req, res) {
     });
   } else {
     try {
-      accessToken = await common.tokens.getClientCredsToken();
-      if (!accessToken) {
-        res.status(500).send({ error: 'could not fetch access token' });
-      }
-
       // create the user
       const createUserResponse = await createUser(username, phone, password);
 
@@ -63,11 +65,6 @@ router.post('/login', async function (req, res) {
     });
   } else {
     try {
-      accessToken = await common.tokens.getClientCredsToken();
-      if (!accessToken) {
-        res.status(500).send({ error: 'could not fetch access token' });
-      }
-
       // authenticate asking for MFA
       const loginResponse = await loginRequestMFA(username, password);
 
@@ -126,13 +123,12 @@ router.get('/complete', async function (req, res) {
 
   if (req.query.error === 'mfa_required') {
     //should probably examine the error_description field to determine what other MFA methods can be used and
-    //potentially present to the user we default to SMS OTP in this example
+    //potentially present to the user. we default to SMS OTP in this example
 
     try {
       const getUserResponse = await getUserByUsername(req.session.username);
       const phone = getUserResponse.result?.phone_number?.value;
 
-      res.redirect('/pages/sms-otp.html');
       if (phone === undefined) {
         const error = {
           error: `Username ${req.session.username} does not have a primary phone number`,
@@ -142,13 +138,13 @@ router.get('/complete', async function (req, res) {
       }
 
       console.log(`mfa required, sending SMS OTP and redirecting to sms otp page`);
-      //const sendOtp = await sendSmsOTP(phone);
-      //todo: do something here if issue sending otp
       await sendSmsOTP(phone);
 
       //save the user's phone number so we can validate the OTP code
       req.session.phone = phone;
       req.session.save();
+
+      res.redirect('/pages/sms-otp.html');
     } catch (error) {
       res.status(500).send({
         error: error,
@@ -160,8 +156,7 @@ router.get('/complete', async function (req, res) {
 });
 
 async function createUser(username, phone, password) {
-  const clientToken = await common.tokens.getClientCredsToken();
-
+  const clientToken = await getAccessToken();
   const resp = await fetch(common.config.apis.createUser, {
     method: 'post',
     headers: {
@@ -184,8 +179,7 @@ async function createUser(username, phone, password) {
 }
 
 async function loginRequestMFA(username, password) {
-  const clientToken = await common.tokens.getClientCredsToken();
-
+  const clientToken = await getAccessToken();
   const resp = await fetch(common.config.apis.passwordLogin, {
     method: 'post',
     headers: {
@@ -207,8 +201,7 @@ async function loginRequestMFA(username, password) {
 }
 
 async function getUserByUsername(username) {
-  const clientToken = await common.tokens.getClientCredsToken();
-
+  const clientToken = await getAccessToken();
   const resp = await fetch(common.config.apis.getUserByUsername(username), {
     headers: {
       'Content-Type': 'application/json',
@@ -223,11 +216,12 @@ async function getUserByUsername(username) {
 }
 
 async function sendSmsOTP(phoneNumber) {
+  const clientToken = await getAccessToken();
   const url = common.config.apis.sendOtpSMS;
   const options = {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${clientToken}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -245,11 +239,12 @@ async function sendSmsOTP(phoneNumber) {
 }
 
 async function validateSmsOTP(phoneNumber, otpCode) {
+  const clientToken = await getAccessToken();
   const url = common.config.apis.validateOtpSMS;
   const options = {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${clientToken}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({

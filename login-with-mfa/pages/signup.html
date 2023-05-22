@@ -19,7 +19,7 @@
       </header>
       <main>
         <div class="content column gap">
-          <h3>Welcome to MFA Example</h3>
+          <h3>MFA Example - Create New User</h3>
           <div id="createUserDiv" class="column gap">
             <input type="text" name="username" id="username" placeholder="Enter username" />
             <input type="password" name="password" id="password" placeholder="Enter password" />
@@ -28,11 +28,11 @@
               name="phone"
               id="phone"
               size="40"
-              placeholder="Enter phone ex. +17346651212"
+              placeholder="Enter phone number ex. +17346651212"
             />
             <button class="full-width" onclick="createUser()">Create User</button>
 
-            <div class="row">Already have an account? <a href="/pages/login.html">Sign in</a></div>
+            <div class="row">Already have an account? <a href="/pages/login.html">Login</a></div>
           </div>
           <div id="createUserText" class="text"></div>
           <div id="status"></div>
@@ -76,8 +76,7 @@
 
         if (createResponse?.status === 201) {
           createUserDiv.classList.add('hidden');
-          //createUserText = `User created please <a href="/pages/login.html">Sign in</a>`;
-          createUserText.innerHTML = `<span>User created please <a href="/pages/login.html">Sign in</a></span`;
+          createUserText.innerHTML = `<span>User created please <a href="/pages/login.html">Login</a></span`;
         } else {
           window.pageUtils.updateElementText('status', createResponse.data.message);
         }

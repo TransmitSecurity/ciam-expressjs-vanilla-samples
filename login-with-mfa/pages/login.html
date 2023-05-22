@@ -19,7 +19,7 @@
       </header>
       <main>
         <div class="content column gap">
-          <h3>Welcome to MFA Login</h3>
+          <h3>MFA Example - Login</h3>
           <input type="text" name="username" id="username" placeholder="Enter username" />
           <input type="password" name="password" id="password" placeholder="Enter password" />
           <button class="full-width" onclick="login()">Login</button>
@@ -31,10 +31,7 @@
       </main>
     </div>
     <script>
-      // This function is triggered the users input their username and password. It is sent for a backend validation.
-      // For more information see https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-5-authenticate-user
       async function login() {
-        //try {
         window.pageUtils.showLoading();
 
         const username = document.getElementById('username').value;
@@ -61,12 +58,10 @@
         console.log('Login Response', loginResponse);
 
         if (loginResponse?.status === 200) {
-          //todo: some redirect here
           console.log(`Redirecting to ${loginResponse.data.result.url}`);
           window.location.replace(loginResponse.data.result.url);
           return;
         } else {
-          //console.log(`inside handler)
           window.pageUtils.updateElementText('status', loginResponse.data.message);
         }
         window.pageUtils.hideLoading();
