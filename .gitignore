@@ -1,11 +1,12 @@
-.env
-node_modules
-*/.env
-*/node_modules
+**/.env
+**/node_modules
+**/package-lock.json
 */dist
 */build
 .idea
 TODOS.md
 yarn-error.log
 .husky/
-
+**/.DS_Store
+.DS_Store
+.history

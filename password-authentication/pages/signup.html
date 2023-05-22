@@ -16,6 +16,8 @@
       // For more information see https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-4-register-password
       async function signup() {
         try {
+          window.pageUtils.showLoading();
+
           const username = document.getElementById('username').value;
           const password = document.getElementById('password').value;
 
@@ -39,10 +41,13 @@
           } else {
             // Redirect the user to finish the authentication
             window.location.replace(jsonResult.response.result.url);
+            return;
           }
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during signup: ${ex}`);
         }
+
+        window.pageUtils.hideLoading();
       }
     </script>
   </head>
@@ -50,7 +55,7 @@
   <body>
     <div class="page" id="page">
       <header>
-        <img src="/acme-logo.svg" alt="ACME" />
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
       </header>
       <main>
         <div class="content column gap">

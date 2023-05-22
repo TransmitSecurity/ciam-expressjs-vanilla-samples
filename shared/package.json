@@ -4,6 +4,8 @@
   "main": "exports.js",
   "license": "MIT",
   "dependencies": {
+    "jsonwebtoken": "9.0.0",
+    "jwk-to-pem": "2.0.5",
     "uuid": "^9.0.0"
   }
 }

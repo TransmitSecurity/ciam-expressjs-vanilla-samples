@@ -1,4 +1,4 @@
-# ciam-expressjs-vanilla-samples
+# Transmit Security Platform Samples (web, vanilla JS)
 
 ## Structure of this repository
 
@@ -13,7 +13,7 @@ create at the root of the project as seen below.
 You can either launch sample apps directly from the browser using GitHub Codespaces, or clone and
 run from your local machine. See below instructions for both flavors.
 
-## Setting up Codespaces
+## Setting and running from Codespaces
 
 You can connect the samples to your own
 [Transmit Security tenant](https://portal.identity.security/) and launch them from a Codespace
@@ -61,7 +61,7 @@ The video describes the following steps:
   - `TS_APP_ID` should contain you Application ID
   - `TS_REDIRECT_URI` should already be configures as seen above
 - (1:52) Build the sample from the root directory `yarn`
-- (1:59) Launch the sample using the script `.launch.sh` as seen below, or use
+- (1:59) Launch the sample using the script `./launch.sh` as seen below, or use
   `SAMPLE=<directory-name> yarn start` as seen on the video where `<directory-name>` is the
   directory of the sample you want to run. The sample will launch on port 8080 and a button will
   appear to launch the UI on a separate tab. If a button does not appear, go to the "Ports" tab and
@@ -88,6 +88,22 @@ npm install --force
 SAMPLE=<directory-name> npm run start
 ```
 
+## Running from a Docker container
+
+The content of this repository is also packaged as a container on Dockerhub, see
+[transmitsecurity/js-vanilla-samples](https://hub.docker.com/r/transmitsecurity/js-vanilla-samples).
+
+To launch this container, you can either use a direct shell command where each envionment variable
+in the `.env` file is translated into a `-e VAR=value` section in the below:
+
+```
+docker run --platform linux/amd64 -e SAMPLE=<directory-name> -e ... -p 8080:8080 transmitsecurity/js-vanilla-samples:latest
+
+```
+
+Alternatively, you can use the `docker_launch.sh` utility, which is identical to `launch.sh` except
+it launches the container, and appends the values inside the `.env` automatically.
+
 ## Additional notes
 
 ### Debugging tabs on a mobile device
@@ -103,10 +119,9 @@ refer to the following documentations:
 
 By default, the samples work with the US production cluster. However if you are working with a
 tenant that resides on a different cluster, e.g. EU or a staging cluster, consult your Transmit
-contact person and configure the following:
+contact person and configure the following environment variable in your `.env` file:
 
-- `VITE_TS_IDM_API_BASE`
-- `VITE_TS_WEBAUTHN_API_BASE`
+- `VITE_TS_API_BASE`
 
 ---
 

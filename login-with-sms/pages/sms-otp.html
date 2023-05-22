@@ -15,7 +15,7 @@
   <body onload="loadPage()">
     <div class="page">
       <header>
-        <img src="/acme-logo.svg" />
+        <a href="/"><img src="/acme-logo.svg" /></a>
       </header>
       <main>
         <div class="content column gap">
@@ -32,6 +32,7 @@
             <button id="loginButton" onclick="login()" class="full-width">Login</button>
             <div id="otpText" class="text"></div>
           </div>
+          <div id="status"></div>
         </div>
       </main>
     </div>
@@ -48,11 +49,17 @@
       }
 
       async function sendOTP() {
+        window.pageUtils.showLoading();
+        window.pageUtils.updateElementText('status', '');
+
         // TODO - Hila Partuk: 20/02/2023 Add FE validation for the phone value
         await sendSmsOtp(phoneInput.value, handleSmsOtpResponse);
       }
 
       async function login() {
+        window.pageUtils.showLoading();
+        window.pageUtils.updateElementText('status', '');
+
         // TODO - Hila Partuk: 20/02/2023 Add FE validation for the OTP value
         await verifyOtp(phoneInput.value, otpInput.value, handleVerifyOtpResponse);
       }
@@ -65,7 +72,11 @@
           otpDiv.classList.remove('hidden');
 
           otpText.textContent = `We sent a code to ${phoneInput.value}`;
+        } else {
+          window.pageUtils.updateElementText('status', smsOtpResponse.data.message);
         }
+
+        window.pageUtils.hideLoading();
       };
 
       const handleVerifyOtpResponse = verifyOtpResponse => {
@@ -74,6 +85,9 @@
         if (verifyOtpResponse?.status === 200) {
           // success!!!!!! use the result to redirect to completion page
           window.location = verifyOtpResponse.data.result;
+        } else {
+          window.pageUtils.updateElementText('status', verifyOtpResponse.data.message);
+          window.pageUtils.hideLoading();
         }
       };
     </script>

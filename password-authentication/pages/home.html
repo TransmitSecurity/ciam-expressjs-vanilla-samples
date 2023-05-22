@@ -29,6 +29,8 @@
 
       async function logout() {
         try {
+          window.pageUtils.showLoading();
+
           const response = await fetch('/logout', {
             method: 'POST',
           });
@@ -40,9 +42,12 @@
 
           // Redirect the user to the login page
           window.location.replace('/pages/login.html');
+          return;
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
         }
+
+        window.pageUtils.hideLoading();
       }
 
       async function init() {
@@ -63,7 +68,7 @@
   <body onload="init()">
     <div class="page">
       <header>
-        <img src="/acme-logo.svg" alt="ACME" />
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
         <button onclick="logout()">Logout</button>
       </header>
       <main>

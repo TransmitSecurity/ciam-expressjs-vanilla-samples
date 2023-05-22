@@ -1,0 +1,137 @@
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
+
+    <!-- Step 2: Load DRS SDK -->
+    <script src="https://cdn.riskid.security/sdk/web_sdk_latest.js" defer="true"></script>
+
+    <script>
+      async function getUserData() {
+        try {
+          const response = await fetch('/user', {
+            method: 'GET',
+            credentials: 'include',
+          });
+
+          const data = await response.json();
+          console.log('Response from /user endpoint: ', data);
+          return data.result;
+        } catch (ex) {
+          console.log('Unauthorized');
+        }
+      }
+
+      async function logout() {
+        try {
+          window.pageUtils.showLoading();
+
+          // Step 4: Report DRS actions
+          window.myTSAccountProtection
+            .triggerActionEvent(window.drs.actionType.LOGOUT)
+            .then(actionResponse => {
+              const actionToken = actionResponse.actionToken;
+              console.log('Action Token', actionToken);
+              // Add code here to send the action and the received actionToken to your backend
+            });
+
+          const response = await fetch('/logout', {
+            method: 'POST',
+          });
+
+          const data = await response.json();
+          // You can get the number of sessions that were terminated with
+          // data.result.sessions_count
+          console.log('Response from /logout endpoint: ', data);
+
+          // Step 7: Clear DRS user
+          window.myTSAccountProtection.clearUser();
+
+          // Redirect the user to the login page
+          window.location.replace('/pages/login.html');
+          return;
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
+        }
+
+        window.pageUtils.hideLoading();
+      }
+
+      async function transact() {
+        try {
+          window.pageUtils.showLoading();
+
+          // Step 4: Report DRS actions
+          const actionResponse = await window.myTSAccountProtection.triggerActionEvent(
+            window.drs.actionType.TRANSACTION,
+          );
+
+          const actionToken = actionResponse.actionToken;
+          console.log('Action Token', actionToken);
+          // Add code here to send the action and the received actionToken to your backend
+
+          const recommendationResponse = await window.getRiskRecommendation(actionToken);
+          const json = await recommendationResponse.json();
+          console.log('Transact', json);
+
+          const recommendation = json.response.recommendation.type;
+          const riskScore = json.response['risk_score'];
+
+          window.pageUtils.updateElementText(
+            'status',
+            `Your risk recommendation is a ${recommendation} with a risk score of ${riskScore}`,
+          );
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during transact: ${ex}`);
+        }
+
+        window.pageUtils.hideLoading();
+      }
+
+      async function init() {
+        // Check if the user is authenticated
+        const userData = await getUserData();
+
+        // If not, redirect to login page
+        if (!userData) {
+          window.location.replace('/pages/login.html');
+        }
+
+        // Otherwise print a welcome message
+        window.pageUtils.updateElementText('username', userData.username);
+
+        // Print user id for easy search in the platform
+        window.pageUtils.updateElementText('userid', userData.user_id);
+
+        // Step 3: Set user for DRS
+        window.myTSAccountProtection.setAuthenticatedUser(userData.user_id);
+      }
+    </script>
+  </head>
+
+  <body onload="init()">
+    <div class="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
+        <button onclick="logout()">Logout</button>
+      </header>
+      <main>
+        <div class="content column centered gap">
+          <h3>Welcome <span id="username"></span></h3>
+          <img src="/shield.svg" alt="Logged in" />
+          <div>You are logged in <span id="userid"></span> !</div>
+          <div id="status"></div>
+          <button onclick="transact()">Transaction</button>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

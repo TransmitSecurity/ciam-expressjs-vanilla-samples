@@ -13,15 +13,16 @@
     "shared"
   ],
   "devDependencies": {
-    "husky": "8.0.3",
     "eslint": "^8.34.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-import": "^2.27.5",
+    "husky": "8.0.3",
     "prettier": "^2.8.4"
   },
   "scripts": {
-    "prepare": "husky install && rm -f .husky/pre-commit && npx husky add .husky/pre-commit \"yarn lint && yarn format && git add .\"",
+    "prepare": "husky install && rm -rf .husky/pre-commit && npx husky add .husky/pre-commit \"yarn lint && yarn format && git add .\"",
+    "start:npm": "npm run --cwd $SAMPLE start",
     "start": "yarn --cwd $SAMPLE start",
     "lint": "eslint \"**/*.{js,html}\"",
     "format": "prettier .  --write"

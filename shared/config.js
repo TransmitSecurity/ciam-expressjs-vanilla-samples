@@ -1,9 +1,5 @@
-function idmApiBaseUrl() {
-  return process.env.VITE_TS_IDM_API_BASE || 'https://api.transmitsecurity.io/cis';
-}
-
-function webauthnApiBaseUrl() {
-  return process.env.VITE_TS_WEBAUTHN_API_BASE || 'https://webauthn.identity.security';
+function baseUrl() {
+  return process.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io';
 }
 
 function serviceProviderId() {
@@ -12,23 +8,32 @@ function serviceProviderId() {
 
 export const config = {
   apis: {
-    token: `${idmApiBaseUrl()}/oidc/token`,
-    logout: `${idmApiBaseUrl()}/v1/auth/logout`,
+    auth: `${baseUrl()}/cis/oidc/auth`,
+    token: `${baseUrl()}/oidc/token`,
+    jwks: `${baseUrl()}/cis/oidc/jwks`,
+    logout: `${baseUrl()}/cis/v1/auth/logout`,
 
-    createUser: `${idmApiBaseUrl()}/v1/users`,
-    getUser: userId => `${idmApiBaseUrl()}/v1/users/${userId}`,
+    createUser: `${baseUrl()}/cis/v1/users`,
+    getUser: userId => `${baseUrl()}/cis/v1/users/${userId}`,
 
-    passwordLogin: `${idmApiBaseUrl()}/v1/auth/password/login`,
+    passwordLogin: `${baseUrl()}/cis/v1/auth/password/login`,
 
-    sendOtpEmail: `${idmApiBaseUrl()}/v1/auth/otp/email`,
-    validateOtpEmail: `${idmApiBaseUrl()}/v1/auth/otp/email/validation`,
+    sendOtpEmail: `${baseUrl()}/cis/v1/auth/otp/email`,
+    validateOtpEmail: `${baseUrl()}/cis/v1/auth/otp/email/validation`,
 
-    sendOtpSMS: `${idmApiBaseUrl()}/v1/auth/otp/sms`,
-    validateOtpSMS: `${idmApiBaseUrl()}/v1/auth/otp/sms/validation`,
+    sendOtpSMS: `${baseUrl()}/cis/v1/auth/otp/sms`,
+    validateOtpSMS: `${baseUrl()}/cis/v1/auth/otp/sms/validation`,
 
-    webauthnAuthorize: `${webauthnApiBaseUrl()}/v1/auth-session/authorize`,
-    webauthnStartWithAuthorization: `${webauthnApiBaseUrl()}/v1/auth-session/start-with-authorization`,
+    sendMagicLink: `${baseUrl()}/cis/v1/auth/links/email`,
 
-    samlIdpUrl: `${idmApiBaseUrl()}/v1/serviceprovider/saml2/sso/${serviceProviderId()}`,
+    webauthnAuthorize: `${baseUrl()}/cis/v1/auth-session/authorize`,
+    webauthnStartWithAuthorization: `${baseUrl()}/cis/v1/auth-session/start-with-authorization`,
+
+    hostedIDVSessionUrl: `${baseUrl()}/verify/api/v1/verification`,
+    hostedIDVVerifyUrl: `${baseUrl()}/verify/app`,
+
+    getRiskRecommendation: query => `${baseUrl()}/risk/v1/recommendation?${query}`,
+
+    samlIdpUrl: `${baseUrl()}/cis/v1/serviceprovider/saml2/sso/${serviceProviderId()}`,
   },
 };

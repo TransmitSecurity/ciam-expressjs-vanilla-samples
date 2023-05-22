@@ -1,0 +1,87 @@
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME Login</title>
+    <script type="module" src="./init.js"></script>
+
+    <!-- Step 2: Load DRS SDK -->
+    <script src="https://cdn.riskid.security/sdk/web_sdk_latest.js" defer="true"></script>
+
+    <script>
+      // This function is triggered the users input their username and password. It is sent for a backend validation.
+      // For more information see https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-5-authenticate-user
+      async function login() {
+        try {
+          window.pageUtils.showLoading();
+
+          // Step 4: Report DRS actions
+          window.myTSAccountProtection
+            .triggerActionEvent(window.drs.actionType.LOGIN)
+            .then(actionResponse => {
+              const actionToken = actionResponse.actionToken;
+              console.log('Action Token', actionToken);
+              // Add code here to send the action and the received actionToken to your backend
+            });
+
+          const username = document.getElementById('username').value;
+          const password = document.getElementById('password').value;
+
+          const result = await fetch('/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username,
+              password,
+            }),
+          });
+
+          const jsonResult = await result.json();
+          console.log(jsonResult);
+          if (jsonResult.error) {
+            window.pageUtils.updateElementText('status', jsonResult.response.message);
+          } else if (!jsonResult.response.result && !jsonResult.response.result.url) {
+            window.pageUtils.updateElementText('status', 'No link found in server response');
+          } else {
+            // Redirect the user to finish the authentication
+            console.log(`Redirecting to ${jsonResult.response.result.url}`);
+            window.location.replace(jsonResult.response.result.url);
+            return;
+          }
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during login: ${ex}`);
+        }
+
+        window.pageUtils.hideLoading();
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="page" id="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3>Welcome</h3>
+          <input type="text" name="username" id="username" placeholder="Enter username" />
+          <input type="password" name="password" id="password" placeholder="Enter password" />
+          <button class="full-width" onclick="login()">Login</button>
+          <div id="status"></div>
+          <div class="row">
+            Don&apos;t have an account? <a href="/pages/signup.html">Sign up</a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

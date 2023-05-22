@@ -1,0 +1,71 @@
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/hub/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME Signup</title>
+    <script type="module" src="./init.js"></script>
+
+    <script>
+      // This function is triggered the users input their username and password for signup. It is sent for a backend validation and registration.
+      // For more information see https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-4-register-password
+      async function signup() {
+        event.preventDefault();
+        try {
+          const username = document.getElementById('username').value;
+          const password = document.getElementById('password').value;
+
+          const result = await fetch('/hub/signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username,
+              password,
+            }),
+          });
+
+          const jsonResult = await result.json();
+          console.log(jsonResult);
+          if (jsonResult.error) {
+            window.pageUtils.updateElementText('status', jsonResult.response.message);
+          } else if (!jsonResult.response && !jsonResult.response.url) {
+            window.pageUtils.updateElementText('status', 'Redirect URL missing in server response');
+          } else {
+            // Redirect the user to finish the authentication
+            window.location.replace(jsonResult.response.result.url);
+          }
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during signup: ${ex}`);
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="page" id="page">
+      <header>
+        <a href="/hub/"><img src="/hub/acme-logo.svg" alt="ACME" /></a>
+        <div id="clientIdDiv" class="metadata">Client ID: <span id="clientId"></span></div>
+      </header>
+      <main>
+        <form class="content column gap" onsubmit="signup()">
+          <h3>Welcome</h3>
+          <input type="text" name="username" id="username" placeholder="Enter username" />
+          <input type="password" name="password" id="password" placeholder="Enter password" />
+          <button class="full-width" type="submit">Sign up</button>
+          <div id="status"></div>
+          <div class="row">
+            Already have an account? <a href="/pages/hub/login.html">Sign in</a>
+          </div>
+        </form>
+      </main>
+    </div>
+  </body>
+</html>

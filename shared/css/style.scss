@@ -20,5 +20,9 @@ body {
   display: none !important;
 }
 
+.break-anywhere {
+  line-break: anywhere;
+}
+
 @import 'variables';
 @import 'components';

@@ -12,14 +12,16 @@
     <title>ACME</title>
     <script
       type="text/javascript"
-      src="https://cdn.identity.security/authentication-sdk/2.3.0/TsAuthSdk.min.js"
+      src="https://cdn.identity.security/authentication-sdk/2.10.0/TsAuthSdk.min.js"
     ></script>
     <script type="module" src="./init.js"></script>
     <script>
       async function registerPasskey() {
         try {
+          window.pageUtils.showLoading();
+
           await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
-            serverPath: 'https://webauthn.identity.security',
+            serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
           });
 
           const usernameInput = document.getElementById('username');
@@ -42,20 +44,23 @@
             await fetch(`/complete?code=${code}`);
 
             window.location.replace('/');
+            return;
           } else {
             window.pageUtils.updateElementText('status', `Username required`);
           }
         } catch (ex) {
           console.log(ex);
-          window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
+          window.pageUtils.updateElementText('status', `${ex.description}`);
         }
+
+        window.pageUtils.hideLoading();
       }
     </script>
   </head>
-  <body onload="initPage()">
+  <body>
     <div class="page" id="page">
       <header>
-        <img src="/acme-logo.svg" alt="ACME" />
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
       </header>
       <main>
         <div class="content column gap">
