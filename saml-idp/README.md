@@ -32,7 +32,7 @@
 
 - Extract service provider id from the "SAML 2.0 endpoint (HTTP)" param (which you have saved from
   the creation of the SP in transmit portal) example of "SAML 2.0 endpoint (HTTP)" output :
-  [https://api.transmitsecurity.io/serviceprovider/saml2/sso/fn3jm0zqh0xfvvn38k327]
+  [https://api.transmitsecurity.io/cis/v1/serviceprovider/saml2/sso/fn3jm0zqh0xfvvn38k327]
   ("fn3jm0zqh0xfvvn38k327" is the SP id)
 - create .env file in "saml-idp" folder and add : TS_SERVICE_PROVIDER_ID={TS_SERVICE_PROVIDER_ID}
   (replace {TS_SERVICE_PROVIDER_ID})
