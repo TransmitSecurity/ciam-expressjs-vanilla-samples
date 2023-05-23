@@ -42,7 +42,7 @@ router.get('/complete', async function (req, res) {
       return res.send(data);
     }
   } else {
-    res.send(`Login with SMS completed with error: ${req.query.error}`);
+    res.send(`Login with SMS completed with error: ${encodeURIComponent(req.query.error)}`);
   }
 });
 
