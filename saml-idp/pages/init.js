@@ -1,6 +1,6 @@
 // This module places the VITE meta env on the window, as well as common functions that
 // are used in multiple samples.
-import '../../../shared/css/style.scss';
+import '../../shared/css/style.scss';
 import { pageUtils } from '@ciam-expressjs-vanilla-samples/shared/pageUtils';
 
 // this together with <html style="display: none"> avoids flash of unstyled content (FOUC)

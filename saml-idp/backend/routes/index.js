@@ -49,7 +49,7 @@ router.get('/complete', async function (req, res) {
 // *************************** LOGIN WITH SMS ROUTING SECTION *****************************
 
 router.get('/login-sms', function (req, res) {
-  res.redirect('login-with-sms/pages/sms-otp.html');
+  res.redirect('pages/sms-otp.html');
 });
 
 router.post('/login-sms/sms-otp', async function (req, res) {
