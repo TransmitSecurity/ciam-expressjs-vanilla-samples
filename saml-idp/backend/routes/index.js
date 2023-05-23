@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
+import fetch from 'node-fetch';
 const router = Router();
 
 // In a production server, you would cache the access token,
@@ -74,6 +75,7 @@ router.post('/login-sms/sms-otp', async function (req, res) {
         response: JSON.stringify(smsOtpResponse),
       });
     } catch (error) {
+      console.log('error in the sms-otp flow', error);
       res.status(500).send({
         received_phone: phone,
         message: 'Error in the sms-otp flow',
