@@ -1,9 +1,12 @@
 # SAML IDP
 
-- Set up this example using the instruction in the [main README file](../README.md)
+Set up this example using the instruction in the [main README file](../README.md)
 
-- let's choose a SAML IDP tester simulating SP (for our example let's navigate to
-  [https://samltest.id/start-idp-test/])
+Please follow "Federate SSO with Transmit SAML IDP" guide:
+https://developer.transmitsecurity.com/guides/user/sso_login_saml/
+
+let's choose a SAML IDP tester simulating SP (for our example let's navigate to
+[https://samltest.id/start-idp-test/])
 
 ## Set up the Transmit application & service provider
 
