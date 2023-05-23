@@ -41,3 +41,10 @@ Set up this example using the instruction in the [main README file](../README.md
   saml idp tester
 - Press go and start authentication by the SMS OTP
 - After successful auth you will see redirection to the result SAML tester page
+
+
+https://github.com/TransmitSecurity/ciam-expressjs-vanilla-samples/assets/75998795/91f05073-a522-4fb0-9693-b2bf59d7f1ed
+
+
+
+
