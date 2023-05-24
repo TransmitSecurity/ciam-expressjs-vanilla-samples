@@ -50,7 +50,7 @@ The sample code only implements the IDP part. We will create a full flow using t
 
 - Navigate again to the [SP client simulator](https://samltest.id/start-idp-test/) and set the
   "EntityId" to be the same one you provided in the XML metadata file.
-- Press "Go" and start authentication by the SMS OTP
+- Press "Go" and start authentication by SMS OTP
 - After successful authentication you will be redirected back to the SP simulator completion page.
 
 https://github.com/TransmitSecurity/ciam-expressjs-vanilla-samples/assets/75998795/91f05073-a522-4fb0-9693-b2bf59d7f1ed
