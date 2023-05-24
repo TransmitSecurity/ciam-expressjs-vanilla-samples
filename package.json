@@ -9,6 +9,7 @@
     "passkey-authentication",
     "password-authentication",
     "webauthn-cross-device",
+    "saml-idp",
     "shared"
   ],
   "devDependencies": {

@@ -77,6 +77,7 @@ options=(
     "Identity Verification (Hosted)"
     "Magic Link Authentication"
     "Password Authentication"
+    "SAML IDP"
     "WebAuthn Passkey Authentication (autocomplete)"
     "WebAuthn Cross Device"
 )
@@ -89,6 +90,7 @@ optdir=(
     "hosted-idv"
     "login-with-magiclink"
     "password-authentication"
+    "saml-idp"
     "passkey-authentication"
     "webauthn-cross-device"
 )
