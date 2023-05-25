@@ -25,8 +25,8 @@ window.drs = {
 
 // Step 2: Load DRS SDK
 document.addEventListener('TSAccountProtectionReady', function () {
-  console.log('TSAccountProtectionReady', window.env.VITE_TS_DRS_CLIENT_ID);
-  window.myTSAccountProtection = new window.TSAccountProtection(window.env.VITE_TS_DRS_CLIENT_ID);
+  console.log('TSAccountProtectionReady', window.env.VITE_TS_CLIENT_ID);
+  window.myTSAccountProtection = new window.TSAccountProtection(window.env.VITE_TS_CLIENT_ID);
   window.myTSAccountProtection.init();
 });
 
