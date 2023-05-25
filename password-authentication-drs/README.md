@@ -18,15 +18,6 @@ Follow the main README to create your application and configure your environment
 Configure the passwords authentication method in your tenant by following
 [this step in the Transmit guide](https://developer.transmitsecurity.com/guides/user/auth_passwords/#step-3-configure-auth-method).
 
-### Configure detection and response services
-
-Update your `.env` file:
-
-- `VITE_TS_DRS_CLIENT_ID` should contain your risk Client ID (Platform Admin Console > Risk >
-  Settings)
-- `TS_DRS_CLIENT_SECRET` should contain your risk Client secret (Platform Admin Console > Risk >
-  Settings)
-
 ## Application features
 
 ### Signup
