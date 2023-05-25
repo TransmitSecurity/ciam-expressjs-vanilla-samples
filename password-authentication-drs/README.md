@@ -52,3 +52,5 @@ Platform Admin Console (Risk > Recommendations). Actions:
 When a user performs the `Transaction` action, a recommendation and risk score will be displayed to
 allow the front end client make a real time decision of whether to add friction or remove friction
 to this user's experience.
+
+Actions and recommendations can be seen in the Admin-portal under `Detection and Response > Recommendations` [link](https://portal.identity.security/risk/timeline)
