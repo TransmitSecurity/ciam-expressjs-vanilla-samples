@@ -78,6 +78,7 @@ options=(
     "Magic Link Authentication"
     "Multi Factor Authentication"
     "Password Authentication"
+    "SAML IDP"
     "WebAuthn Passkey Authentication (autocomplete)"
     "WebAuthn Cross Device"
 )
@@ -91,6 +92,7 @@ optdir=(
     "login-with-magiclink"
     "login-with-mfa"
     "password-authentication"
+    "saml-idp"
     "passkey-authentication"
     "webauthn-cross-device"
 )

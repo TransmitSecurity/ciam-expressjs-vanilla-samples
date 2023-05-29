@@ -2,6 +2,10 @@ function baseUrl() {
   return process.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io';
 }
 
+function serviceProviderId() {
+  return process.env.TS_SERVICE_PROVIDER_ID || '';
+}
+
 export const config = {
   apis: {
     auth: `${baseUrl()}/cis/oidc/auth`,
@@ -30,5 +34,7 @@ export const config = {
     hostedIDVVerifyUrl: `${baseUrl()}/verify/app`,
 
     getRiskRecommendation: query => `${baseUrl()}/risk/v1/recommendation?${query}`,
+
+    samlIdpUrl: `${baseUrl()}/cis/v1/serviceprovider/saml2/sso/${serviceProviderId()}`,
   },
 };
