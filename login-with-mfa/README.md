@@ -31,6 +31,5 @@ Configure the passwords authentication method in your tenant by following
 - Check your phone for the OTP code sent through SMS, enter the code and click the Login button
 - The browser will redirect to the completion endpoint and show the OIDC auth code now that the MFA
   flow is complete
-- It is recommended to open the browser debugger tools and look at the console logs which reflect
-  flow and network. It is also strongly recommended to run this flow in a **new** Private or
-  Incognito window **each** time
+- To run the example again click the Restart button on the complete page, this will logout the user
+  and clear their session in the browser
