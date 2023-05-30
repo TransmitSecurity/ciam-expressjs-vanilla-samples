@@ -28,11 +28,27 @@
         }
       }
 
-      function restart() {
-        window.location.replace('/');
+      async function restart() {
+        try {
+          window.pageUtils.showLoading();
+
+          const response = await fetch('/logout', {
+            method: 'POST',
+          });
+
+          const data = await response.json();
+          console.log('Response from /logout endpoint: ', data);
+
+          window.location.replace('/');
+          return;
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
+        }
+        window.pageUtils.hideLoading();
       }
     </script>
   </head>
+
   <body onload="initPage()">
     <div class="page">
       <header>

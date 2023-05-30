@@ -90,6 +90,13 @@ router.post('/login', async function (req, res) {
   }
 });
 
+router.post('/logout', async function (req, res) {
+  const accessToken = req.session.tokens.accessToken;
+  req.session.destroy(err => console.log(err));
+  const logoutResult = await logout(accessToken);
+  res.status(logoutResult.status).send({ ...logoutResult.data });
+});
+
 router.post('/verify-sms-otp', async function (req, res) {
   const otpCode = req?.body?.otpCode;
   console.log('received body is', req?.body);
@@ -151,6 +158,19 @@ router.get('/complete', async function (req, res) {
       });
     }
   } else {
+    const params = new URLSearchParams(req.query);
+    const tokens = await common.tokens.getUserTokens(params.get('code'));
+    if (tokens.id_token) {
+      const idToken = common.tokens.parseJwt(tokens.id_token);
+
+      req.session.tokens = {
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        idToken,
+      };
+
+      req.session.save();
+    }
     res.redirect(`/pages/complete.html?${querystring.stringify(req.query)}`);
   }
 });
@@ -196,7 +216,7 @@ async function loginRequestMFA(username, password) {
   });
   const status = resp.status;
   const data = await resp.json();
-  console.log('response is ', { status, data });
+  console.log('login with password response is ', { status, data });
   return { status, ...data };
 }
 
@@ -211,7 +231,23 @@ async function getUserByUsername(username) {
 
   const status = resp.status;
   const data = await resp.json();
-  console.log('response is ', { status, data });
+  console.log('get user response is ', { status, data });
+  return { status, ...data };
+}
+
+async function logout(accessToken) {
+  const url = common.config.apis.logout;
+
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const status = resp.status;
+  const data = await resp.json();
+  console.log('logout response is ', { status, data });
   return { status, ...data };
 }
 
@@ -234,7 +270,7 @@ async function sendSmsOTP(phoneNumber) {
   const resp = await fetch(url, options);
   const status = resp.status;
   const data = await resp.json();
-  console.log('response is ', { status, data });
+  console.log('send sms otp response is ', { status, data });
   return { status, data };
 }
 
@@ -256,7 +292,7 @@ async function validateSmsOTP(phoneNumber, otpCode) {
   const resp = await fetch(url, options);
   const status = resp.status;
   const data = await resp.json();
-  console.log('response is ', { status, data });
+  console.log('validate sms otp response is ', { status, data });
   return { status, data };
 }
 
