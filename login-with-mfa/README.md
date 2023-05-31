@@ -32,11 +32,9 @@ Configure the passwords authentication method in your tenant by following
 - The browser will redirect to the completion endpoint and show the OIDC auth code now that the MFA
   flow is complete
 - It is recommended to open the browser debugger tools and look at the console logs which reflect
-  flow and network. It is also strongly recommended to run this flow in a **new** Private or
-  Incognito window **each** time
-  
+  flow and network.
+- To run the example again click the Restart button on the complete page, this will logout the user
+  and clear their session in the browser  
 
 https://github.com/TransmitSecurity/ciam-expressjs-vanilla-samples/assets/75998795/e1ce5a9b-3903-4ba7-86c7-54cd9d790e03
 
-
-  
