@@ -28,6 +28,10 @@ export const config = {
 
     webauthnAuthorize: `${baseUrl()}/cis/v1/auth-session/authorize`,
     webauthnStartWithAuthorization: `${baseUrl()}/cis/v1/auth-session/start-with-authorization`,
+    webauthnToken: `${baseUrl()}/cis/v1/auth/webauthn/authenticate/token`,
+    webauthnRegisterComplete: `${baseUrl()}/cis/v1/auth/webauthn/register/complete`,
+    webauthnRegisterCompleteExternal: `${baseUrl()}/cis/v1/auth/webauthn/register/external-user/complete`,
+    webauthnAuthenticateCompleteExternal: `${baseUrl()}/cis/v1/auth/webauthn/authenticate/external-user/complete`,
 
     hostedIDVSessionUrl: `${baseUrl()}/verify/api/v1/verification`,
     hostedIDVVerifyUrl: `${baseUrl()}/verify/app`,

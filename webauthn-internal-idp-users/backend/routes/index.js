@@ -69,8 +69,8 @@ router.post('/token', async function (req, res) {
 router.post('/register/complete', async function (req, res) {
   try {
     const webauthnEncodedResult = req.body.webauthn_encoded_result;
-    const url = common.config.apis.webauthnRegisterCompleteExternal;
-    const token = await common.tokens.getClientCredsToken();
+    const url = common.config.apis.webauthnRegisterComplete;
+    const token = req.session.tokens.accessToken;
     const request = {
       method: 'POST',
       headers: {
@@ -86,7 +86,7 @@ router.post('/register/complete', async function (req, res) {
     const json = await data.json();
     console.log('register response', json);
 
-    res.send(json);
+    res.status(data.status).send(json);
   } catch (e) {
     console.log(e);
   }

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="text/javascript" src="/TsAuthSdk.js"></script>
+    <script type="module" src="./init.js"></script>
+    <script>
+      async function initPage() {
+        try {
+          window.pageUtils.showLoading();
+
+          await window.WebAuthnSdk.auth.init(window.env.VITE_TS_CLIENT_ID, {
+            serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
+          });
+
+          window.pageUtils.enable('passkeyInput');
+          autofill();
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `${ex.description}`);
+        }
+
+        window.pageUtils.hideLoading();
+      }
+
+      async function autofill() {
+        window.WebAuthnSdk.auth.authenticate.autofill.activate({
+          onSuccess: handleSuccessfulAutofill,
+          onError: handleAutofillError,
+        });
+      }
+
+      async function handleSuccessfulAutofill(webauthn_encoded_result) {
+        const token = await fetch(`/authenticate/complete`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            webauthn_encoded_result,
+          }),
+        });
+
+        const data = await token.json();
+        console.log('Response from /token endpoint: ', data);
+
+        if (data.error_code) {
+          window.pageUtils.updateElementText('status', `Error during login: ${data.message}`);
+          return;
+        }
+
+        window.location.replace('/');
+      }
+      async function handleAutofillError(error) {
+        console.log(error);
+      }
+
+      async function login() {
+        const username = document.getElementById('passkeyInput').value;
+        const res = await window.WebAuthnSdk.auth.authenticate.modal(username);
+        console.log(res);
+      }
+
+      async function abort() {
+        await window.WebAuthnSdk.auth.authenticate.autofill.abort();
+      }
+    </script>
+  </head>
+  <body onload="initPage()">
+    <div class="page" id="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3>Welcome</h3>
+          <input
+            id="passkeyInput"
+            type="text"
+            size="40"
+            placeholder="Select a passkey"
+            autocomplete="username webauthn"
+            disabled
+          />
+          <div class="row">
+            <button id="loginButton" onclick="login()">Login</button>
+            <button id="activateButton" onclick="autofill()">Activate</button>
+            <button id="abortButton" onclick="abort()">Abort</button>
+          </div>
+          <div class="row">
+            Don&apos;t have an account? <a href="/pages/register.html">Sign up</a>
+          </div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

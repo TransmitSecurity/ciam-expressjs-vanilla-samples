@@ -1,8 +1,10 @@
+import { randomUUID } from 'crypto';
 import express from 'express';
 import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const router = express.Router();
+let clientCredsToken;
 
 router.get(['/'], async function (req, res) {
   if (!req.session?.tokens) {
@@ -12,29 +14,11 @@ router.get(['/'], async function (req, res) {
   }
 });
 
-router.get('/complete', async function (req, res) {
-  const params = new URLSearchParams(req.query);
-  const tokens = await common.tokens.getUserTokens(params.get('code'));
-  console.log('Tokens', tokens);
-
-  if (tokens.id_token) {
-    const idToken = common.tokens.parseJwt(tokens.id_token);
-    req.session.tokens = {
-      accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token,
-      idToken,
-    };
-    req.session.save();
-  }
-
-  res.redirect('/pages/home.html');
-});
-
-router.post('/token', async function (req, res) {
+router.post('/authenticate/complete', async function (req, res) {
   try {
     const webauthnEncodedResult = req.body.webauthn_encoded_result;
-    const url = common.config.apis.webauthnToken;
-    const token = await common.tokens.getClientCredsToken();
+    const url = common.config.apis.webauthnAuthenticateCompleteExternal;
+    const token = await getClientCredsToken();
     const request = {
       method: 'POST',
       headers: {
@@ -48,17 +32,7 @@ router.post('/token', async function (req, res) {
 
     const data = await fetch(url, request);
     const json = await data.json();
-    console.log('Token response', json);
-
-    if (json.id_token) {
-      const idToken = common.tokens.parseJwt(json.id_token);
-      req.session.tokens = {
-        accessToken: json.access_token,
-        refreshToken: json.refresh_token,
-        idToken,
-      };
-      req.session.save();
-    }
+    console.log('Complete response', json);
 
     res.send(json);
   } catch (e) {
@@ -70,7 +44,8 @@ router.post('/register/complete', async function (req, res) {
   try {
     const webauthnEncodedResult = req.body.webauthn_encoded_result;
     const url = common.config.apis.webauthnRegisterCompleteExternal;
-    const token = await common.tokens.getClientCredsToken();
+    const token = await getClientCredsToken();
+    const user_identifier = randomUUID();
     const request = {
       method: 'POST',
       headers: {
@@ -78,6 +53,7 @@ router.post('/register/complete', async function (req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        user_identifier: user_identifier,
         webauthn_encoded_result: webauthnEncodedResult,
       }),
     };
@@ -89,21 +65,6 @@ router.post('/register/complete', async function (req, res) {
     res.send(json);
   } catch (e) {
     console.log(e);
-  }
-});
-
-// Get an authenticated user's saved ID Token or return a not found error
-router.get('/user', async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
-  console.log('/user', req.session.tokens);
-  if (req.session.tokens) {
-    res.status(200).send({
-      idToken: req.session.tokens.idToken,
-    });
-  } else {
-    res.status(404).send({
-      idToken: null,
-    });
   }
 });
 
@@ -127,5 +88,14 @@ router.post('/logout', async function (req, res) {
 
   res.send(json);
 });
+
+// Get a client credentials token
+async function getClientCredsToken() {
+  if (!clientCredsToken) {
+    clientCredsToken = await common.tokens.getClientCredsToken();
+  }
+
+  return clientCredsToken;
+}
 
 export const indexRouter = router;
