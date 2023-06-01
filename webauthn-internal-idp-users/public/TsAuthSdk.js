@@ -2,28 +2,28 @@
   'use strict';
 
   /******************************************************************************
-     Copyright ©2022 Transmit Security Incorporated. All rights reserved.
-     Transmit Security and the Transmit Security logo are trademarks or registered
-     trademarks of Transmit Security Incorporated. All other company and/or product
-     names may be trademarks or registered trademarks of their owners. Information
-     contained in this document is subject to change without notice.
-     www.transmitsecurity.com
-     ******************************************************************************/
+   Copyright ©2022 Transmit Security Incorporated. All rights reserved.
+   Transmit Security and the Transmit Security logo are trademarks or registered
+   trademarks of Transmit Security Incorporated. All other company and/or product
+   names may be trademarks or registered trademarks of their owners. Information
+   contained in this document is subject to change without notice.
+   www.transmitsecurity.com
+   ******************************************************************************/
 
   /******************************************************************************
-     Copyright (c) Microsoft Corporation.
+   Copyright (c) Microsoft Corporation.
 
-     Permission to use, copy, modify, and/or distribute this software for any
-     purpose with or without fee is hereby granted.
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted.
 
-     THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-     REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-     AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-     INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-     LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-     PERFORMANCE OF THIS SOFTWARE.
-     ***************************************************************************** */
+   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+   REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+   AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+   INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+   LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+   OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+   PERFORMANCE OF THIS SOFTWARE.
+   ***************************************************************************** */
   /* global Reflect, Promise */
 
   var extendStatics = function (d, b) {
@@ -1508,9 +1508,7 @@
   })();
 
   var AuthenticationHandler = (function () {
-    function AuthenticationHandler() {
-      this.abortController = new AbortController();
-    }
+    function AuthenticationHandler() {}
     AuthenticationHandler.prototype.modal = function (username) {
       return __awaiter(this, void 0, void 0, function () {
         var result, err_1;
@@ -1542,6 +1540,7 @@
       var onSuccess = params.onSuccess,
         onError = params.onError,
         username = params.username;
+      this.abortController = new AbortController();
       this.startAuthentication({
         username: username,
         mediationType: AuthenticationMediationType.InputAutofill,
@@ -1558,7 +1557,8 @@
     AuthenticationHandler.prototype.abortAutofill = function () {
       return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-          this.abortController.abort(ErrorCode.AutofillAuthenticationAborted);
+          if (this.abortController)
+            this.abortController.abort(ErrorCode.AutofillAuthenticationAborted);
           return [2];
         });
       });
@@ -1624,7 +1624,8 @@
       var mediatedCredentialRequestOptions = { publicKey: credentialRequestOptions };
       if (passkeysMediationType === AuthenticationMediationType.InputAutofill) {
         mediatedCredentialRequestOptions.mediation = 'conditional';
-        mediatedCredentialRequestOptions.signal = this.abortController.signal;
+        mediatedCredentialRequestOptions.signal =
+          this.abortController && this.abortController.signal;
       }
       return mediatedCredentialRequestOptions;
     };
