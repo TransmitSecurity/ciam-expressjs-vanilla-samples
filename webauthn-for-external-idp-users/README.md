@@ -1,4 +1,4 @@
-# Passkey login flow
+# Webauthn flow for external idp users
 
 This sample follows the following guide:
 https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/
