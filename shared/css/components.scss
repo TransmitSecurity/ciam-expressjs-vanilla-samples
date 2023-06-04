@@ -185,6 +185,11 @@ img {
   min-height: 20px;
 }
 
+#status-ok {
+  color: green;
+  min-height: 20px;
+}
+
 #spinner {
   display: block;
   border: 4px solid $primary;

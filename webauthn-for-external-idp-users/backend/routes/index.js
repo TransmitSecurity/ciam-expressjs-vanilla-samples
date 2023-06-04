@@ -7,11 +7,7 @@ const router = express.Router();
 let clientCredsToken;
 
 router.get(['/'], async function (req, res) {
-  if (!req.session?.tokens) {
-    res.redirect('/pages/login.html');
-  } else {
-    res.redirect('/pages/home.html');
-  }
+  res.redirect('/pages/validate.html');
 });
 
 router.post('/authenticate/complete', async function (req, res) {
@@ -66,27 +62,6 @@ router.post('/register/complete', async function (req, res) {
   } catch (e) {
     console.log(e);
   }
-});
-
-// Logout user
-router.post('/logout', async function (req, res) {
-  const accessToken = req.session.tokens.accessToken;
-  const url = common.config.apis.logout;
-
-  req.session.tokens = undefined;
-  req.session.save();
-
-  const data = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  const json = await data.json();
-  console.log('Logout', json);
-
-  res.send(json);
 });
 
 // Get a client credentials token

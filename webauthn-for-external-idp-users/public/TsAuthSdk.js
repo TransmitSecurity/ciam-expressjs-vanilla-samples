@@ -598,7 +598,7 @@
     error: console.error,
   };
 
-  function makeSdkRejection$1(errorCode, description, data) {
+  function makeSdkRejection(errorCode, description, data) {
     if (description === void 0) {
       description = '';
     }
@@ -608,7 +608,7 @@
       data: data,
     };
   }
-  function isSdkRejection$1(rejection) {
+  function isSdkRejection(rejection) {
     return typeof rejection.errorCode === 'string' && typeof rejection.description === 'string';
   }
 
@@ -727,7 +727,7 @@
         this._apiPaths =
           (_b = options.webauthnApiPaths) !== null && _b !== void 0 ? _b : this.getDefaultPaths();
       } catch (error) {
-        throw makeSdkRejection$1(ErrorCode$1.NotInitialized, 'Invalid options.serverPath', {
+        throw makeSdkRejection(ErrorCode$1.NotInitialized, 'Invalid options.serverPath', {
           error: error,
         });
       }
@@ -817,7 +817,7 @@
             case 1:
               response = _a.sent();
               if (!(response === null || response === void 0 ? void 0 : response.ok)) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.InvalidAuthSession,
                   'Failed to start restricted session',
                   response === null || response === void 0 ? void 0 : response.status,
@@ -863,7 +863,7 @@
             case 1:
               response = _a.sent();
               if (!(response === null || response === void 0 ? void 0 : response.ok)) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.RegistrationFailed,
                   'Failed to start register with status',
                   response === null || response === void 0 ? void 0 : response.status,
@@ -907,7 +907,7 @@
             case 1:
               response = _a.sent();
               if (!(response === null || response === void 0 ? void 0 : response.ok)) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.RegistrationFailed,
                   'Failed to complete registration with status',
                   response === null || response === void 0 ? void 0 : response.status,
@@ -946,7 +946,7 @@
             case 1:
               response = _a.sent();
               if (!(response === null || response === void 0 ? void 0 : response.ok)) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.AuthenticationFailed,
                   'Failed to start authentication with status',
                   response === null || response === void 0 ? void 0 : response.status,
@@ -990,7 +990,7 @@
             case 1:
               response = _a.sent();
               if (!(response === null || response === void 0 ? void 0 : response.ok)) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.AuthenticationFailed,
                   'Failed to complete authentication with status',
                   response === null || response === void 0 ? void 0 : response.status,
@@ -1059,7 +1059,7 @@
             case 1:
               response = _a.sent();
               if (!(response === null || response === void 0 ? void 0 : response.ok)) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.AttachDeviceFailed,
                   'Failed to attach device with status',
                   response === null || response === void 0 ? void 0 : response.status,
@@ -1097,7 +1097,7 @@
             case 1:
               response = _a.sent();
               if (!(response === null || response === void 0 ? void 0 : response.ok)) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.DetachDeviceFailed,
                   'Failed to detach device with status',
                   response === null || response === void 0 ? void 0 : response.status,
@@ -1133,7 +1133,7 @@
             case 1:
               response = _a.sent();
               if (!(response === null || response === void 0 ? void 0 : response.ok)) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.AuthenticationFailed,
                   'Failed to start passkey with status',
                   response === null || response === void 0 ? void 0 : response.status,
@@ -1177,7 +1177,7 @@
             case 1:
               response = _a.sent();
               if (!(response === null || response === void 0 ? void 0 : response.ok)) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.AuthenticationFailed,
                   'Failed to complete passkey with status',
                   response === null || response === void 0 ? void 0 : response.status,
@@ -1344,18 +1344,121 @@
     return EncodingUtils;
   })();
 
-  function makeSdkRejection(errorCode, description, data) {
-    if (description === void 0) {
-      description = '';
+  var BaseSdkError = (function (_super) {
+    __extends(BaseSdkError, _super);
+    function BaseSdkError(message, additionalData) {
+      var _this = _super.call(this, message) || this;
+      _this.errorCode = ErrorCode.NotInitialized;
+      _this.data = additionalData;
+      return _this;
     }
-    return {
-      errorCode: errorCode,
-      description: description,
-      data: data,
-    };
-  }
-  function isSdkRejection(rejection) {
-    return typeof rejection.errorCode === 'string' && typeof rejection.description === 'string';
+    return BaseSdkError;
+  })(Error);
+  var NotInitializedError = (function (_super) {
+    __extends(NotInitializedError, _super);
+    function NotInitializedError(message, additionalData) {
+      var _this =
+        _super.call(
+          this,
+          message !== null && message !== void 0 ? message : 'WebAuthnSdk is not initialized',
+          additionalData,
+        ) || this;
+      _this.errorCode = ErrorCode.NotInitialized;
+      return _this;
+    }
+    return NotInitializedError;
+  })(BaseSdkError);
+  var AuthenticationFailedError = (function (_super) {
+    __extends(AuthenticationFailedError, _super);
+    function AuthenticationFailedError(message, additionalData) {
+      var _this =
+        _super.call(
+          this,
+          message !== null && message !== void 0 ? message : 'Authentication failed with an error',
+          additionalData,
+        ) || this;
+      _this.errorCode = ErrorCode.AuthenticationFailed;
+      return _this;
+    }
+    return AuthenticationFailedError;
+  })(BaseSdkError);
+  var AuthenticationCanceledError = (function (_super) {
+    __extends(AuthenticationCanceledError, _super);
+    function AuthenticationCanceledError(message, additionalData) {
+      var _this =
+        _super.call(
+          this,
+          message !== null && message !== void 0
+            ? message
+            : 'Authentication was canceled by the user or got timeout',
+          additionalData,
+        ) || this;
+      _this.errorCode = ErrorCode.AuthenticationCanceled;
+      return _this;
+    }
+    return AuthenticationCanceledError;
+  })(BaseSdkError);
+  var RegistrationFailedError = (function (_super) {
+    __extends(RegistrationFailedError, _super);
+    function RegistrationFailedError(message, additionalData) {
+      var _this =
+        _super.call(
+          this,
+          message !== null && message !== void 0 ? message : 'Registration failed with an error',
+          additionalData,
+        ) || this;
+      _this.errorCode = ErrorCode.RegistrationFailed;
+      return _this;
+    }
+    return RegistrationFailedError;
+  })(BaseSdkError);
+  var RegistrationCanceledError = (function (_super) {
+    __extends(RegistrationCanceledError, _super);
+    function RegistrationCanceledError(message, additionalData) {
+      var _this =
+        _super.call(
+          this,
+          message !== null && message !== void 0
+            ? message
+            : 'Registration was canceled by the user or got timeout',
+          additionalData,
+        ) || this;
+      _this.errorCode = ErrorCode.RegistrationCanceled;
+      return _this;
+    }
+    return RegistrationCanceledError;
+  })(BaseSdkError);
+  var AutofillAuthenticationAbortedError = (function (_super) {
+    __extends(AutofillAuthenticationAbortedError, _super);
+    function AutofillAuthenticationAbortedError(message) {
+      var _this =
+        _super.call(
+          this,
+          message !== null && message !== void 0 ? message : 'Autofill flow was aborted',
+        ) || this;
+      _this.errorCode = ErrorCode.AutofillAuthenticationAborted;
+      return _this;
+    }
+    return AutofillAuthenticationAbortedError;
+  })(BaseSdkError);
+  var AuthenticationProcessAlreadyActiveError = (function (_super) {
+    __extends(AuthenticationProcessAlreadyActiveError, _super);
+    function AuthenticationProcessAlreadyActiveError(message, additionalData) {
+      var _this =
+        _super.call(
+          this,
+          message !== null && message !== void 0
+            ? message
+            : 'Authentication process is already active',
+          additionalData,
+        ) || this;
+      _this.errorCode = ErrorCode.AuthenticationProcessAlreadyActive;
+      return _this;
+    }
+    return AuthenticationProcessAlreadyActiveError;
+  })(BaseSdkError);
+  function isBaseSdkError(error) {
+    return error.errorCode && Object.values(ErrorCode).includes(error.errorCode);
   }
 
   var NEW_API_PATH_PREFIX = '/cis';
@@ -1395,9 +1498,7 @@
         this._apiPaths =
           (_b = options.webauthnApiPaths) !== null && _b !== void 0 ? _b : this.getDefaultPaths();
       } catch (error) {
-        throw makeSdkRejection(ErrorCode.NotInitialized, 'Invalid options.serverPath', {
-          error: error,
-        });
+        throw new NotInitializedError('Invalid options.serverPath', { error: error });
       }
     };
     SdkApiClient.getDefaultPaths = function () {
@@ -1449,10 +1550,9 @@
             case 1:
               response = _a.sent();
               if (!(response === null || response === void 0 ? void 0 : response.ok)) {
-                throw makeSdkRejection(
-                  ErrorCode.RegistrationFailed,
+                throw new AuthenticationFailedError(
                   'Failed to start registration',
-                  response === null || response === void 0 ? void 0 : response.status,
+                  response === null || response === void 0 ? void 0 : response.body,
                 );
               }
               return [4, response.json()];
@@ -1484,10 +1584,9 @@
             case 1:
               response = _a.sent();
               if (!(response === null || response === void 0 ? void 0 : response.ok)) {
-                throw makeSdkRejection(
-                  ErrorCode.AuthenticationFailed,
+                throw new AuthenticationFailedError(
                   'Failed to start authentication',
-                  response === null || response === void 0 ? void 0 : response.status,
+                  response === null || response === void 0 ? void 0 : response.body,
                 );
               }
               return [4, response.json()];
@@ -1661,38 +1760,26 @@
     AuthenticationHandler.prototype.getValidatedClientId = function () {
       var clientId = SdkStorage.get('clientId');
       if (!clientId) {
-        throw makeSdkRejection(ErrorCode.NotInitialized, 'Missing clientId');
+        throw new NotInitializedError('Missing clientId');
       }
       return clientId;
     };
     AuthenticationHandler.prototype.getSdkError = function (error) {
-      if (isSdkRejection(error)) {
+      if (isBaseSdkError(error)) {
         return error;
       }
       if (error.name === 'NotAllowedError') {
-        throw makeSdkRejection(
-          ErrorCode.AuthenticationCanceled,
-          'Authentication was canceled by the user or got timeout',
-          { error: error },
-        );
+        return new AuthenticationCanceledError();
       }
       if (error.name === 'OperationError') {
-        throw makeSdkRejection(
-          ErrorCode.AuthenticationProcessAlreadyActive,
-          'Authentication process is already active',
-          {
-            error: error,
-          },
-        );
+        return new AuthenticationProcessAlreadyActiveError();
       }
       if (error === ErrorCode.AutofillAuthenticationAborted) {
-        return makeSdkRejection(ErrorCode.AutofillAuthenticationAborted);
+        return new AutofillAuthenticationAbortedError();
       }
-      throw makeSdkRejection(
-        ErrorCode.AuthenticationFailed,
-        'Something went wrong during authentication',
-        { error: error },
-      );
+      return new AuthenticationFailedError('Something went wrong during authentication', {
+        error: error,
+      });
     };
     return AuthenticationHandler;
   })();
@@ -1721,7 +1808,7 @@
               );
               clientId = SdkStorage.get('clientId');
               if (!clientId) {
-                throw makeSdkRejection(ErrorCode.NotInitialized, 'Missing clientId');
+                throw new NotInitializedError('Missing clientId');
               }
               _a.label = 1;
             case 1:
@@ -1826,23 +1913,15 @@
       });
     };
     RegistrationHandler.prototype.getSdkError = function (error) {
-      if (isSdkRejection(error)) {
+      if (isBaseSdkError(error)) {
         return error;
       }
       if (error.name === 'NotAllowedError') {
-        throw makeSdkRejection(
-          ErrorCode.RegistrationCanceled,
-          'Registration was canceled by the user or got timeout',
-          {
-            error: error,
-          },
-        );
+        return new RegistrationCanceledError();
       }
-      throw makeSdkRejection(
-        ErrorCode.RegistrationFailed,
-        'Something went wrong during registration',
-        { error: error },
-      );
+      return new RegistrationFailedError('Something went wrong during registration', {
+        error: error,
+      });
     };
     return RegistrationHandler;
   })();
@@ -1850,6 +1929,7 @@
   var WebAuthnSdkImpl$1 = (function () {
     function WebAuthnSdkImpl() {
       var _this = this;
+      this._initialized = false;
       this._authenticationHandler = new AuthenticationHandler();
       this._registrationHandler = new RegistrationHandler();
       this.authenticate = {
@@ -1901,26 +1981,22 @@
                   Object.keys(defaultPaths),
                 ).length
               ) {
-                throw makeSdkRejection(ErrorCode.NotInitialized, 'Invalid custom paths', {
+                throw new NotInitializedError('Invalid custom paths', {
                   customApiPaths: options.webauthnApiPaths,
                 });
               }
             }
             SdkApiClient.init(options);
             if (!clientId) {
-              throw makeSdkRejection(ErrorCode.NotInitialized, 'Invalid clientId', {
-                clientId: clientId,
-              });
+              throw new NotInitializedError('Invalid clientId', { clientId: clientId });
             }
             SdkStorage.set('clientId', clientId);
-            WebAuthnSdkImpl._initialized = true;
+            this._initialized = true;
           } catch (error) {
-            if (isSdkRejection(error)) {
+            if (isBaseSdkError(error)) {
               throw error;
             } else {
-              throw makeSdkRejection(ErrorCode.NotInitialized, 'Something went wrong', {
-                error: error,
-              });
+              throw new NotInitializedError('Failed to initialize SDK');
             }
           }
           return [2];
@@ -1964,11 +2040,10 @@
       });
     };
     WebAuthnSdkImpl.prototype.initCheck = function () {
-      if (!WebAuthnSdkImpl._initialized) {
-        throw makeSdkRejection(ErrorCode.NotInitialized, 'WebAuthnSdk is not initialized');
+      if (!this._initialized) {
+        throw new NotInitializedError();
       }
     };
-    WebAuthnSdkImpl._initialized = false;
     return WebAuthnSdkImpl;
   })();
 
@@ -2010,7 +2085,7 @@
       this.authSessionId = authSessionId;
       this.handlers = handlers;
       if (!authSessionId) {
-        throw makeSdkRejection$1(ErrorCode$1.InvalidAuthSession, 'authSessionId is missing');
+        throw makeSdkRejection(ErrorCode$1.InvalidAuthSession, 'authSessionId is missing');
       }
       this._interval = new AsyncInterval(function () {
         return __awaiter(_this, void 0, void 0, function () {
@@ -2395,7 +2470,7 @@
                 err_1 instanceof Error &&
                 err_1.message === ErrorCode$1.PasskeyAuthenticationAborted
               ) {
-                throw makeSdkRejection$1(ErrorCode$1.PasskeyAuthenticationAborted);
+                throw makeSdkRejection(ErrorCode$1.PasskeyAuthenticationAborted);
               }
               throw err_1;
             case 6:
@@ -2546,13 +2621,13 @@
               if (
                 (err_1 === null || err_1 === void 0 ? void 0 : err_1.name) === 'NotAllowedError'
               ) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.UserCanceledWebAuthnRegistration,
                   'user canceled registration',
                   { err: err_1 },
                 );
               }
-              throw makeSdkRejection$1(ErrorCode$1.Unknown, 'webauthn registration failed', {
+              throw makeSdkRejection(ErrorCode$1.Unknown, 'webauthn registration failed', {
                 err: err_1,
               });
             case 6:
@@ -2591,7 +2666,7 @@
     }
     if (!validateApprovalMaxLength(approvalData) || !validateApprovalAllowedContent(approvalData)) {
       logger.error('Failed validating approval data');
-      throw makeSdkRejection$1(
+      throw makeSdkRejection(
         ErrorCode$1.InvalidApprovalData,
         'Provided approval data should have '.concat(
           approvalDataMaxLength,
@@ -2620,24 +2695,24 @@
                   Object.keys(defaultPaths),
                 ).length
               ) {
-                throw makeSdkRejection$1(ErrorCode$1.NotInitialized, 'Invalid custom paths', {
+                throw makeSdkRejection(ErrorCode$1.NotInitialized, 'Invalid custom paths', {
                   customApiPaths: options.webauthnApiPaths,
                 });
               }
             }
             SdkBindIdApiClient.init(options);
             if (!clientId) {
-              throw makeSdkRejection$1(ErrorCode$1.NotInitialized, 'Invalid clientId', {
+              throw makeSdkRejection(ErrorCode$1.NotInitialized, 'Invalid clientId', {
                 clientId: clientId,
               });
             }
             SdkStorage.set('clientId', clientId);
             this._initialized = true;
           } catch (error) {
-            if (isSdkRejection$1(error)) {
+            if (isSdkRejection(error)) {
               throw error;
             } else {
-              throw makeSdkRejection$1(ErrorCode$1.NotInitialized, 'Something went wrong', {
+              throw makeSdkRejection(ErrorCode$1.NotInitialized, 'Something went wrong', {
                 error: error,
               });
             }
@@ -2738,7 +2813,7 @@
         var storageAuthSessionId;
         return __generator(this, function (_a) {
           if (!this._initialized) {
-            throw makeSdkRejection$1(ErrorCode$1.NotInitialized);
+            throw makeSdkRejection(ErrorCode$1.NotInitialized);
           }
           if (authSessionId) {
             storageAuthSessionId = SdkStorage.get('authSessionId');
@@ -2749,7 +2824,7 @@
           } else {
             authSessionId = SdkStorage.get('authSessionId');
             if (!authSessionId) {
-              throw makeSdkRejection$1(
+              throw makeSdkRejection(
                 ErrorCode$1.InvalidAuthSession,
                 'authSessionId was not provided',
               );
@@ -2771,7 +2846,7 @@
           switch (_a.label) {
             case 0:
               if (!this._currentRegistrationSession) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.MissingPrepareStep,
                   'executeWebauthnRegistration() cannot be called before prepareWebauthnRegistration()',
                 );
@@ -2791,7 +2866,7 @@
               if (retries <= maxRetries) return [3, 1];
               _a.label = 4;
             case 4:
-              throw makeSdkRejection$1(
+              throw makeSdkRejection(
                 ErrorCode$1.MissingPrepareStep,
                 'executeWebauthnRegistration() cannot be called before prepareWebauthnRegistration() has completed successfully',
               );
@@ -2815,7 +2890,7 @@
           switch (_a.label) {
             case 0:
               if (!this._initialized) {
-                throw makeSdkRejection$1(ErrorCode$1.NotInitialized);
+                throw makeSdkRejection(ErrorCode$1.NotInitialized);
               }
               return [4, this._validateRegistrationPreparation()];
             case 1:
@@ -2847,7 +2922,7 @@
           switch (_a.label) {
             case 0:
               if (!this._initialized) {
-                throw makeSdkRejection$1(ErrorCode$1.NotInitialized);
+                throw makeSdkRejection(ErrorCode$1.NotInitialized);
               }
               validateApprovalData(approvalData);
               return [4, this._optionallyStartRestrictedSession(approvalData, redirectUri)];
@@ -2869,10 +2944,10 @@
           switch (_a.label) {
             case 0:
               if (!this._initialized) {
-                throw makeSdkRejection$1(ErrorCode$1.NotInitialized);
+                throw makeSdkRejection(ErrorCode$1.NotInitialized);
               }
               if (!this._currentAuthenticationSession) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.MissingPrepareStep,
                   'executeWebauthnAuthentication() cannot be called before prepareWebauthnAuthentication() has completed successfully',
                 );
@@ -2899,7 +2974,7 @@
           switch (_a.label) {
             case 0:
               if (!this._initialized) {
-                throw makeSdkRejection$1(ErrorCode$1.NotInitialized);
+                throw makeSdkRejection(ErrorCode$1.NotInitialized);
               }
               validateApprovalData(approvalData);
               this._currentRegistrationSession = undefined;
@@ -2970,7 +3045,7 @@
             case 0:
               authSessionId = SdkStorage.get('authSessionId');
               if (!authSessionId) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.InvalidAuthSession,
                   'authSessionId was not provided',
                 );
@@ -2997,7 +3072,7 @@
           switch (_a.label) {
             case 0:
               if (!this._initialized) {
-                throw makeSdkRejection$1(ErrorCode$1.NotInitialized);
+                throw makeSdkRejection(ErrorCode$1.NotInitialized);
               }
               validateApprovalData(approvalData);
               return [4, this._optionallyStartRestrictedSession(approvalData, redirectUri)];
@@ -3021,7 +3096,7 @@
           switch (_a.label) {
             case 0:
               if (!Object.values(PasskeysMediationType).includes(passkeysMediationType)) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.InvalidPasskeysMediationType,
                   'passkeysMediationType should be one of '.concat(
                     Object.values(PasskeysMediationType),
@@ -3029,10 +3104,10 @@
                 );
               }
               if (!this._initialized) {
-                throw makeSdkRejection$1(ErrorCode$1.NotInitialized);
+                throw makeSdkRejection(ErrorCode$1.NotInitialized);
               }
               if (!this._currentPasskeyAuthenticationSession) {
-                throw makeSdkRejection$1(
+                throw makeSdkRejection(
                   ErrorCode$1.MissingPrepareStep,
                   'executePasskeyAuthentication() cannot be called before preparePasskeyAuthentication() has completed successfully',
                 );
