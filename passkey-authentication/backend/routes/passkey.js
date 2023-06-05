@@ -1,10 +1,16 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
+import { rateLimit } from 'express-rate-limit';
 
 const router = express.Router();
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: process.env.TS_RATE_LIMIT || 10, // 10 requests per minute per IP
+  message: 'Too many requests from this IP, please try again in a minute',
+});
 
-router.post('/start-auth-session', async function (req, res) {
+router.post('/start-auth-session', limiter, async function (req, res) {
   const { username } = req.body;
 
   // In this sample we are demonstrating Passkey registration for users managed externally.

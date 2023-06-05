@@ -2,8 +2,14 @@ import express from 'express';
 import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 import * as querystring from 'querystring';
+import { rateLimit } from 'express-rate-limit';
 
 const router = express.Router();
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: process.env.TS_RATE_LIMIT || 10, // 10 requests per minute per IP
+  message: 'Too many requests from this IP, please try again in a minute',
+});
 
 /**
  * For more information see https://developer.transmitsecurity.com/guides/user/auth_mfa_guide/
@@ -26,7 +32,7 @@ router.get('/', function (req, res) {
   res.redirect('/pages/signup.html');
 });
 
-router.post('/create-user', async function (req, res) {
+router.post('/create-user', limiter, async function (req, res) {
   const username = req?.body?.username;
   const password = req?.body?.password;
   const phone = req?.body?.phone;
@@ -55,7 +61,7 @@ router.post('/create-user', async function (req, res) {
   }
 });
 
-router.post('/login', async function (req, res) {
+router.post('/login', limiter, async function (req, res) {
   const username = req?.body?.username;
   const password = req?.body?.password;
 
@@ -90,14 +96,14 @@ router.post('/login', async function (req, res) {
   }
 });
 
-router.post('/logout', async function (req, res) {
+router.post('/logout', limiter, async function (req, res) {
   const accessToken = req.session.tokens.accessToken;
   req.session.destroy(err => console.log(err));
   const logoutResult = await logout(accessToken);
   res.status(logoutResult.status).send({ ...logoutResult.data });
 });
 
-router.post('/verify-sms-otp', async function (req, res) {
+router.post('/verify-sms-otp', limiter, async function (req, res) {
   const otpCode = req?.body?.otpCode;
   console.log('received body is', req?.body);
 

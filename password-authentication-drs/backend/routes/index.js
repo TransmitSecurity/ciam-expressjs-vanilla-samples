@@ -3,8 +3,14 @@ import { login, signUp } from '../lib/passwords';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 import { getUser, logout } from '../lib/management.js';
 import { getRiskRecommendation } from '../lib/risk.js';
+import { rateLimit } from 'express-rate-limit';
 
 const router = Router();
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: process.env.TS_RATE_LIMIT || 10, // 10 requests per minute per IP
+  message: 'Too many requests from this IP, please try again in a minute',
+});
 
 // Render home page
 router.get(['/'], async function (req, res) {
@@ -38,7 +44,7 @@ router.get('/complete', async function (req, res) {
 });
 
 // Create a user with a username and password
-router.post('/signup', async function (req, res) {
+router.post('/signup', limiter, async function (req, res) {
   console.log(JSON.stringify(req.body));
   const { username, password } = req.body;
   const signupResponse = await signUp(username, password);
@@ -54,7 +60,7 @@ router.post('/signup', async function (req, res) {
 });
 
 // Authenticate a user with a password
-router.post('/login', async function (req, res) {
+router.post('/login', limiter, async function (req, res) {
   console.log(JSON.stringify(req.body));
   const { username, password } = req.body;
 
@@ -73,7 +79,7 @@ router.get('/user', async function (req, res) {
 });
 
 // Logout user
-router.post('/logout', async function (req, res) {
+router.post('/logout', limiter, async function (req, res) {
   const accessToken = req.session.tokens.accessToken;
   req.session.destroy(err => console.log(err));
   const result = await logout(accessToken);
@@ -81,7 +87,7 @@ router.post('/logout', async function (req, res) {
 });
 
 // Get a risk recommendation
-router.get('/risk/recommendation', async function (req, res) {
+router.get('/risk/recommendation', limiter, async function (req, res) {
   const params = new URLSearchParams(req.query);
   const actionToken = params.get('actionToken');
   const userId = params.get('userId');

@@ -2,8 +2,14 @@ import express from 'express';
 import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 import * as querystring from 'querystring';
+import { rateLimit } from 'express-rate-limit';
 
 const router = express.Router();
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: process.env.TS_RATE_LIMIT || 10, // 10 requests per minute per IP
+  message: 'Too many requests from this IP, please try again in a minute',
+});
 
 /**
  * For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp
@@ -19,7 +25,7 @@ router.get('/', function (req, res) {
   res.redirect('/pages/email-otp.html');
 });
 
-router.post('/email-otp', async function (req, res) {
+router.post('/email-otp', limiter, async function (req, res) {
   const email = req?.body?.email;
 
   if (!email) {
@@ -52,7 +58,7 @@ router.post('/email-otp', async function (req, res) {
   }
 });
 
-router.post('/verify', async function (req, res) {
+router.post('/verify', limiter, async function (req, res) {
   const email = req.body?.email;
   const otpCode = req?.body?.otpCode;
   console.log('received body is', req?.body);
@@ -79,7 +85,7 @@ router.get('/complete', function (req, res) {
   res.redirect(`/pages/complete.html?${querystring.stringify(req.query)}`);
 });
 
-router.post('/exchange-and-validate', async function (req, res) {
+router.post('/exchange-and-validate', limiter, async function (req, res) {
   try {
     const code = req.body.code;
     const token = await exchangeCode(code);

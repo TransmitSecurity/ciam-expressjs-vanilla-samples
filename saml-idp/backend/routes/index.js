@@ -1,7 +1,14 @@
 import { Router } from 'express';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 import fetch from 'node-fetch';
+import { rateLimit } from 'express-rate-limit';
+
 const router = Router();
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: process.env.TS_RATE_LIMIT || 10, // 10 requests per minute per IP
+  message: 'Too many requests from this IP, please try again in a minute',
+});
 
 // In a production server, you would cache the access token,
 // and regenerate whenever it expires.
@@ -18,7 +25,7 @@ router.get('/saml/authn', function (req, res) {
   }
 });
 
-router.get('/complete', async function (req, res) {
+router.get('/complete', limiter, async function (req, res) {
   if (req.query.code) {
     const params = new URLSearchParams(req.query);
     const tokens = await common.tokens.getUserTokens(params.get('code'));
@@ -52,7 +59,7 @@ router.get('/login-sms', function (req, res) {
   res.redirect('pages/sms-otp.html');
 });
 
-router.post('/login-sms/sms-otp', async function (req, res) {
+router.post('/login-sms/sms-otp', limiter, async function (req, res) {
   const phone = req?.body?.phone;
 
   if (!phone) {
@@ -85,7 +92,7 @@ router.post('/login-sms/sms-otp', async function (req, res) {
   }
 });
 
-router.post('/login-sms/verify', async function (req, res) {
+router.post('/login-sms/verify', limiter, async function (req, res) {
   const phone = req.body?.phone;
   const otpCode = req?.body?.otpCode;
   console.log('received body is', req?.body);

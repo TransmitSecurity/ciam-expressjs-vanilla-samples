@@ -2,8 +2,14 @@ import express from 'express';
 import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 import * as querystring from 'querystring';
+import { rateLimit } from 'express-rate-limit';
 
 const router = express.Router();
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: process.env.TS_RATE_LIMIT || 10, // 10 requests per minute per IP
+  message: 'Too many requests from this IP, please try again in a minute',
+});
 
 /**
  * For more information see https://developer.transmitsecurity.com/guides/user/auth_email_magic_link/
@@ -19,7 +25,7 @@ router.get('/', function (req, res) {
   res.redirect('/pages/magiclink.html');
 });
 
-router.post('/send-magic-link', async function (req, res) {
+router.post('/send-magic-link', limiter, async function (req, res) {
   const email = req?.body?.email;
 
   if (!email) {

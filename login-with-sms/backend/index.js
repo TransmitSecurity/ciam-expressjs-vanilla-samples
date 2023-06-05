@@ -2,8 +2,14 @@ import express from 'express';
 import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 import querystring from 'querystring';
+import { rateLimit } from 'express-rate-limit';
 
 const router = express.Router();
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: process.env.TS_RATE_LIMIT || 10, // 10 requests per minute per IP
+  message: 'Too many requests from this IP, please try again in a minute',
+});
 
 /**
  * For more information see https://developer.transmitsecurity.com/guides/user/auth_sms_otp
@@ -19,7 +25,7 @@ router.get('/', function (req, res) {
   res.redirect('/pages/sms-otp.html');
 });
 
-router.post('/sms-otp', async function (req, res) {
+router.post('/sms-otp', limiter, async function (req, res) {
   const phone = req?.body?.phone;
 
   if (!phone) {
@@ -52,7 +58,7 @@ router.post('/sms-otp', async function (req, res) {
   }
 });
 
-router.post('/verify', async function (req, res) {
+router.post('/verify', limiter, async function (req, res) {
   const phone = req.body?.phone;
   const otpCode = req?.body?.otpCode;
   console.log('received body is', req?.body);
