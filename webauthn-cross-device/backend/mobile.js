@@ -1,19 +1,13 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
-import { rateLimit } from 'express-rate-limit';
 
 const router = express.Router();
-const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: process.env.TS_RATE_LIMIT || 10, // 10 requests per minute per IP
-  message: 'Too many requests from this IP, please try again in a minute',
-});
 
 // Endpoint for proxying auth-session-id and authorizing it for webauthn registration
 // The input access token in this sample app is a client credentials token which we generate ad-hoc, however could also use access tokens
 // that are obtained via user authentication, e.g. password login or email OTP.
-router.post('/authorize-session-user', limiter, async function (req, res) {
+router.post('/authorize-session-user', common.utils.rateLimiter(), async function (req, res) {
   try {
     console.log(JSON.stringify(req.body));
     const accessToken = await common.tokens.getClientCredsToken();

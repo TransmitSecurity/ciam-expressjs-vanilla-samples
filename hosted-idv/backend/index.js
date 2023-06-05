@@ -1,14 +1,8 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
-import { rateLimit } from 'express-rate-limit';
 
 const router = express.Router();
-const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: process.env.TS_RATE_LIMIT || 10, // 10 requests per minute per IP
-  message: 'Too many requests from this IP, please try again in a minute',
-});
 
 /**
  * For more information see https://developer.transmitsecurity.com/guides/user/auth_email_otp
@@ -25,7 +19,7 @@ router.get('/', function (req, res) {
   res.redirect('/pages/hosted-idv-experience.html');
 });
 
-router.post('/start-verification-session', limiter, async function (req, res) {
+router.post('/start-verification-session', common.utils.rateLimiter(), async function (req, res) {
   // state should be kept for validation on the call to /complete, for code simplicity we are not demonstrating it
   const state = (Math.floor(Math.random() * (100000 - 1)) + 1).toString();
 
@@ -78,7 +72,7 @@ router.post('/start-verification-session', limiter, async function (req, res) {
   }
 });
 
-router.get('/complete', limiter, async function (req, res) {
+router.get('/complete', common.utils.rateLimiter(), async function (req, res) {
   // state should be kept for validation on the call to /complete, for code simplicity we are not demonstrating it
   const sessionId = req?.query.sessionId;
   const state = req?.query.state;

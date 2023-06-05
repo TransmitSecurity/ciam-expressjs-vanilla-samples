@@ -1,13 +1,8 @@
 import { Router } from 'express';
 import { login, signUp } from '../lib/passwords';
-import { rateLimit } from 'express-rate-limit';
+import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const hubRouter = Router();
-const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: process.env.TS_RATE_LIMIT || 10, // 10 requests per minute per IP
-  message: 'Too many requests from this IP, please try again in a minute',
-});
 
 // Render verification page
 hubRouter.get('/complete', async function (req, res) {
@@ -22,7 +17,7 @@ hubRouter.get(['/', '/login'], async function (req, res) {
 });
 
 // Authenticate a user with a password
-hubRouter.post('/login', limiter, async function (req, res) {
+hubRouter.post('/login', common.utils.rateLimiter(), async function (req, res) {
   console.log(JSON.stringify(req.body));
   const { username, password } = req.body;
 
@@ -36,7 +31,7 @@ hubRouter.get('/signup', async function (req, res) {
 });
 
 // Create a user with a username and password
-hubRouter.post('/signup', limiter, async function (req, res) {
+hubRouter.post('/signup', common.utils.rateLimiter(), async function (req, res) {
   console.log(JSON.stringify(req.body));
   const { username, password } = req.body;
   const signupResponse = await signUp(username, password);
