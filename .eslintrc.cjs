@@ -14,7 +14,7 @@ module.exports = {
     node: true,
     browser: true,
   },
-  ignorePatterns: ['**/node_modules/**', '**/**/TsAuthSdk.js'],
+  ignorePatterns: ['**/node_modules/**'],
   rules: {
     quotes: ['error', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
     'no-var': 'error',
