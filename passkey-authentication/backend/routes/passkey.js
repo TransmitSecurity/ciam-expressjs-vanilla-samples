@@ -4,7 +4,7 @@ import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const router = express.Router();
 
-router.post('/start-auth-session', async function (req, res) {
+router.post('/start-auth-session', common.utils.rateLimiter(), async function (req, res) {
   const { username } = req.body;
 
   // In this sample we are demonstrating Passkey registration for users managed externally.

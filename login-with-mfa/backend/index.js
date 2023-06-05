@@ -26,7 +26,7 @@ router.get('/', function (req, res) {
   res.redirect('/pages/signup.html');
 });
 
-router.post('/create-user', async function (req, res) {
+router.post('/create-user', common.utils.rateLimiter(), async function (req, res) {
   const username = req?.body?.username;
   const password = req?.body?.password;
   const phone = req?.body?.phone;
@@ -55,7 +55,7 @@ router.post('/create-user', async function (req, res) {
   }
 });
 
-router.post('/login', async function (req, res) {
+router.post('/login', common.utils.rateLimiter(), async function (req, res) {
   const username = req?.body?.username;
   const password = req?.body?.password;
 
@@ -90,14 +90,14 @@ router.post('/login', async function (req, res) {
   }
 });
 
-router.post('/logout', async function (req, res) {
+router.post('/logout', common.utils.rateLimiter(), async function (req, res) {
   const accessToken = req.session.tokens.accessToken;
   req.session.destroy(err => console.log(err));
   const logoutResult = await logout(accessToken);
   res.status(logoutResult.status).send({ ...logoutResult.data });
 });
 
-router.post('/verify-sms-otp', async function (req, res) {
+router.post('/verify-sms-otp', common.utils.rateLimiter(), async function (req, res) {
   const otpCode = req?.body?.otpCode;
   console.log('received body is', req?.body);
 

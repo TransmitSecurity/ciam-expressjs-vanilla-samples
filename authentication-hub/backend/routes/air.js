@@ -30,7 +30,7 @@ airRouter.get('/login', async function (req, res) {
 });
 
 // Logout user
-airRouter.post('/logout', async function (req, res) {
+airRouter.post('/logout', common.utils.rateLimiter(), async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   try {
     const accessToken = req.session.airTokens.accessToken;
@@ -46,7 +46,7 @@ airRouter.post('/logout', async function (req, res) {
 // The following endpoint is used by views/complete.html when a flow is completed, for token exchange
 // SECURITY NOTES: Normally the ID token SHOULD NOT reach the UI, however this is a sample app and we want to display it for clarity.
 // For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-6-get-user-tokens
-airRouter.post('/fetch-tokens', async function (req, res) {
+airRouter.post('/fetch-tokens', common.utils.rateLimiter(), async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   console.log(JSON.stringify(req.body));
   const tokens = await common.tokens.getUserTokens(
@@ -76,7 +76,7 @@ airRouter.post('/fetch-tokens', async function (req, res) {
 });
 
 // Get an authenticated user's saved ID Token or return a not found error
-airRouter.get('/user-info', async function (req, res) {
+airRouter.get('/user-info', common.utils.rateLimiter(), async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   console.log('/user-info', req.session.airTokens);
   if (req.session.airTokens) {

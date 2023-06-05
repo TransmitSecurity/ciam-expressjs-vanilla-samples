@@ -45,7 +45,7 @@ router.get('/user', async function (req, res) {
 });
 
 // Logout user
-router.post('/logout', async function (req, res) {
+router.post('/logout', common.utils.rateLimiter(), async function (req, res) {
   const accessToken = req.session.tokens.accessToken;
   const url = common.config.apis.logout;
 

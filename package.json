@@ -8,7 +8,11 @@
     "login-with-sms",
     "passkey-authentication",
     "password-authentication",
+    "password-authentication-drs",
     "webauthn-cross-device",
+    "hosted-idv",
+    "login-with-magiclink",
+    "login-with-mfa",
     "saml-idp",
     "shared"
   ],

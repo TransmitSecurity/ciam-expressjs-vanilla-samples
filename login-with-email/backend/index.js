@@ -19,7 +19,7 @@ router.get('/', function (req, res) {
   res.redirect('/pages/email-otp.html');
 });
 
-router.post('/email-otp', async function (req, res) {
+router.post('/email-otp', common.utils.rateLimiter(), async function (req, res) {
   const email = req?.body?.email;
 
   if (!email) {
@@ -52,7 +52,7 @@ router.post('/email-otp', async function (req, res) {
   }
 });
 
-router.post('/verify', async function (req, res) {
+router.post('/verify', common.utils.rateLimiter(), async function (req, res) {
   const email = req.body?.email;
   const otpCode = req?.body?.otpCode;
   console.log('received body is', req?.body);
@@ -79,7 +79,7 @@ router.get('/complete', function (req, res) {
   res.redirect(`/pages/complete.html?${querystring.stringify(req.query)}`);
 });
 
-router.post('/exchange-and-validate', async function (req, res) {
+router.post('/exchange-and-validate', common.utils.rateLimiter(), async function (req, res) {
   try {
     const code = req.body.code;
     const token = await exchangeCode(code);

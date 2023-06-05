@@ -19,7 +19,7 @@ router.get('/', function (req, res) {
   res.redirect('/pages/sms-otp.html');
 });
 
-router.post('/sms-otp', async function (req, res) {
+router.post('/sms-otp', common.utils.rateLimiter(), async function (req, res) {
   const phone = req?.body?.phone;
 
   if (!phone) {
@@ -52,7 +52,7 @@ router.post('/sms-otp', async function (req, res) {
   }
 });
 
-router.post('/verify', async function (req, res) {
+router.post('/verify', common.utils.rateLimiter(), async function (req, res) {
   const phone = req.body?.phone;
   const otpCode = req?.body?.otpCode;
   console.log('received body is', req?.body);
@@ -75,7 +75,7 @@ router.post('/verify', async function (req, res) {
   }
 });
 
-router.get('/complete', function (req, res) {
+router.get('/complete', common.utils.rateLimiter(), function (req, res) {
   res.redirect(`/pages/complete.html?${querystring.stringify(req.query)}`);
 });
 
