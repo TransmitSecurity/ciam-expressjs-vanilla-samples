@@ -93,19 +93,19 @@
       </header>
       <main>
         <div class="content column gap">
-          <h3>Welcome</h3>
+          <h3>Authenticate with Passkey</h3>
           <input
             id="passkeyInput"
             type="text"
             size="40"
-            placeholder="Select a passkey"
+            placeholder="Enter username or choose passkey"
             autocomplete="username webauthn"
           />
           <button id="passkeyButton" onclick="passkeyModal()" class="full-width">
-            Validate Passkey
+            Continue with passkey
           </button>
           <div class="row">
-            Don&apos;t have one registered yet? <a href="/pages/register.html">Register</a>
+            Dont have a passkey enrolled? Enroll <a href="/pages/register.html">here</a>
           </div>
           <div id="status"></div>
           <div id="status-ok"></div>

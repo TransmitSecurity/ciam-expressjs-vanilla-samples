@@ -7,7 +7,7 @@ const router = express.Router();
 let clientCredsToken;
 
 router.get(['/'], async function (req, res) {
-  res.redirect('/pages/validate.html');
+  res.redirect('/pages/authenticate.html');
 });
 
 router.post('/authenticate/complete', async function (req, res) {
