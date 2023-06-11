@@ -12,13 +12,13 @@
     <title>ACME</title>
     <script
       type="text/javascript"
-      src="https://cdn.identity.security/authentication-sdk-v2/2.10.1-3083314.0/TsAuthSdk.min.js"
+      src="https://cdn.identity.security/authentication-sdk-v2/2.10.1-050b356.0/TsAuthSdk.min.js"
     ></script>
     <script type="module" src="./init.js"></script>
     <script>
       async function initPage() {
         try {
-          await window.WebAuthnSdk.auth.init(window.env.VITE_TS_CLIENT_ID, {
+          await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
             serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
           });
         } catch (ex) {
@@ -30,16 +30,11 @@
         try {
           window.pageUtils.showLoading();
 
-          await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
-            serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
-          });
-
           const usernameInput = document.getElementById('username');
           const username = usernameInput.value;
 
           if (username) {
-            const encodedResult = await window.WebAuthnSdk.auth.register(username);
-
+            const encodedResult = await window.WebAuthnSdk.register(username);
             const registrationResult = await fetch(`/register/complete`, {
               method: 'POST',
               headers: {

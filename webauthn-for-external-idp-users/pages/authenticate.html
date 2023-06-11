@@ -12,13 +12,13 @@
     <title>ACME</title>
     <script
       type="text/javascript"
-      src="https://cdn.identity.security/authentication-sdk-v2/2.10.1-3083314.0/TsAuthSdk.min.js"
+      src="https://cdn.identity.security/authentication-sdk-v2/2.10.1-050b356.0/TsAuthSdk.min.js"
     ></script>
     <script type="module" src="./init.js"></script>
     <script>
       async function init() {
         try {
-          await window.WebAuthnSdk.auth.init(window.env.VITE_TS_CLIENT_ID, {
+          await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
             serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
           });
           activatePasskeyAutofill();
@@ -29,14 +29,14 @@
 
       /* Passkey Logic */
       function activatePasskeyAutofill() {
-        window.WebAuthnSdk.auth.authenticate.autofill.activate({
+        window.WebAuthnSdk.authenticate.autofill.activate({
           onSuccess: handleSuccessfulAutofill,
           onError: handleAutofillError,
         });
       }
 
       async function abortPasskeyAutofill() {
-        await window.WebAuthnSdk.auth.authenticate.autofill.abort();
+        await window.WebAuthnSdk.authenticate.autofill.abort();
       }
 
       async function passkeyModal() {
@@ -44,9 +44,7 @@
         const username = document.getElementById('passkeyInput').value;
 
         try {
-          const webauthn_encoded_result = await window.WebAuthnSdk.auth.authenticate.modal(
-            username,
-          );
+          const webauthn_encoded_result = await window.WebAuthnSdk.authenticate.modal(username);
           await handleSuccessfulPasskeyValidation(webauthn_encoded_result);
         } catch (err) {
           if (err.errorCode == 'webauthn_authentication_canceled') {
