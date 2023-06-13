@@ -2095,9 +2095,9 @@ picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.3.1:
   resolved "https://registry.npmjs.org/picomatch/-/picomatch-2.3.1.tgz"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
 
-postcss@^8.4.21:
+postcss@^8.4.21, postcss@^8.4.23:
   version "8.4.24"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.24.tgz#f714dba9b2284be3cc07dbd2fc57ee4dc972d2df"
+  resolved "https://transmitsecurity.jfrog.io/artifactory/api/npm/ts-npm-repo/postcss/-/postcss-8.4.24.tgz#f714dba9b2284be3cc07dbd2fc57ee4dc972d2df"
   integrity sha512-M0RzbcI0sO/XJNucsGjvWU9ERWxb/ytp1w6dKtxTKgixdtQDq4rmx/g8W1hnaheq9jgwL/oyEdH5Bc4WwJKMqg==
   dependencies:
     nanoid "^3.3.6"
@@ -2252,6 +2252,13 @@ rollup@^3.18.0:
   version "3.23.1"
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-3.23.1.tgz#a6e50cb86a17fc2e3248d8ec12ff8666992b0780"
   integrity sha512-ybRdFVHOoljGEFILHLd2g/qateqUdjE6YS41WXq4p3C/WwD3xtWxV4FYWETA1u9TeXQc5K8L8zHE5d/scOvrOQ==
+  optionalDependencies:
+    fsevents "~2.3.2"
+
+rollup@^3.21.0:
+  version "3.25.1"
+  resolved "https://transmitsecurity.jfrog.io/artifactory/api/npm/ts-npm-repo/rollup/-/rollup-3.25.1.tgz#9fff79d22ff1a904b2b595a2fb9bc3793cb987d8"
+  integrity sha512-tywOR+rwIt5m2ZAWSe5AIJcTat8vGlnPFAv15ycCrw33t6iFsXZ6mzHVFh2psSjxQPmI+xgzMZZizUAukBI4aQ==
   optionalDependencies:
     fsevents "~2.3.2"
 
@@ -2600,6 +2607,17 @@ vite-plugin-mix@0.4.0:
   integrity sha512-9X8hiwhl0RbtEXBB0XqnQ5suheAtP3VHn794WcWwjU5ziYYWdlqpMh/2J8APpx/YdpvQ2CZT7dlcGGd/31ya3w==
   dependencies:
     "@vercel/nft" "^0.10.1"
+
+vite@4.3.9:
+  version "4.3.9"
+  resolved "https://transmitsecurity.jfrog.io/artifactory/api/npm/ts-npm-repo/vite/-/vite-4.3.9.tgz#db896200c0b1aa13b37cdc35c9e99ee2fdd5f96d"
+  integrity sha512-qsTNZjO9NoJNW7KnOrgYwczm0WctJ8m/yqYAMAK9Lxt4SoySUfS5S8ia9K7JHpa3KEeMfyF8LoJ3c5NeBJy6pg==
+  dependencies:
+    esbuild "^0.17.5"
+    postcss "^8.4.23"
+    rollup "^3.21.0"
+  optionalDependencies:
+    fsevents "~2.3.2"
 
 vite@^4.2.3:
   version "4.2.3"
