@@ -38,7 +38,7 @@ router.get('/complete', async function (req, res) {
 });
 
 // Create a user with a username and password
-router.post('/signup', async function (req, res) {
+router.post('/signup', common.utils.rateLimiter(), async function (req, res) {
   console.log(JSON.stringify(req.body));
   const { username, password } = req.body;
   const signupResponse = await signUp(username, password);
@@ -54,7 +54,7 @@ router.post('/signup', async function (req, res) {
 });
 
 // Authenticate a user with a password
-router.post('/login', async function (req, res) {
+router.post('/login', common.utils.rateLimiter(), async function (req, res) {
   console.log(JSON.stringify(req.body));
   const { username, password } = req.body;
 
@@ -73,7 +73,7 @@ router.get('/user', async function (req, res) {
 });
 
 // Logout user
-router.post('/logout', async function (req, res) {
+router.post('/logout', common.utils.rateLimiter(), async function (req, res) {
   const accessToken = req.session.tokens.accessToken;
   req.session.destroy(err => console.log(err));
   const result = await logout(accessToken);
@@ -81,7 +81,7 @@ router.post('/logout', async function (req, res) {
 });
 
 // Get a risk recommendation
-router.get('/risk/recommendation', async function (req, res) {
+router.get('/risk/recommendation', common.utils.rateLimiter(), async function (req, res) {
   const params = new URLSearchParams(req.query);
   const actionToken = params.get('actionToken');
   const userId = params.get('userId');

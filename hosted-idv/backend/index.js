@@ -19,7 +19,7 @@ router.get('/', function (req, res) {
   res.redirect('/pages/hosted-idv-experience.html');
 });
 
-router.post('/start-verification-session', async function (req, res) {
+router.post('/start-verification-session', common.utils.rateLimiter(), async function (req, res) {
   // state should be kept for validation on the call to /complete, for code simplicity we are not demonstrating it
   const state = (Math.floor(Math.random() * (100000 - 1)) + 1).toString();
 
@@ -72,7 +72,7 @@ router.post('/start-verification-session', async function (req, res) {
   }
 });
 
-router.get('/complete', async function (req, res) {
+router.get('/complete', common.utils.rateLimiter(), async function (req, res) {
   // state should be kept for validation on the call to /complete, for code simplicity we are not demonstrating it
   const sessionId = req?.query.sessionId;
   const state = req?.query.state;

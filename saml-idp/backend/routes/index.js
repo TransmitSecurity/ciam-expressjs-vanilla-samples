@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 import fetch from 'node-fetch';
+
 const router = Router();
 
 // In a production server, you would cache the access token,
@@ -18,7 +19,7 @@ router.get('/saml/authn', function (req, res) {
   }
 });
 
-router.get('/complete', async function (req, res) {
+router.get('/complete', common.utils.rateLimiter(), async function (req, res) {
   if (req.query.code) {
     const params = new URLSearchParams(req.query);
     const tokens = await common.tokens.getUserTokens(params.get('code'));
@@ -52,7 +53,7 @@ router.get('/login-sms', function (req, res) {
   res.redirect('pages/sms-otp.html');
 });
 
-router.post('/login-sms/sms-otp', async function (req, res) {
+router.post('/login-sms/sms-otp', common.utils.rateLimiter(), async function (req, res) {
   const phone = req?.body?.phone;
 
   if (!phone) {
@@ -85,7 +86,7 @@ router.post('/login-sms/sms-otp', async function (req, res) {
   }
 });
 
-router.post('/login-sms/verify', async function (req, res) {
+router.post('/login-sms/verify', common.utils.rateLimiter(), async function (req, res) {
   const phone = req.body?.phone;
   const otpCode = req?.body?.otpCode;
   console.log('received body is', req?.body);
