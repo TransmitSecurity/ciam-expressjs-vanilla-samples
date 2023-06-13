@@ -12,7 +12,7 @@
     <title>ACME</title>
     <script
       type="text/javascript"
-      src="https://cdn.identity.security/authentication-sdk-v2/2.10.1-050b356.0/TsAuthSdk.min.js"
+      src="https://cdn.identity.security/authentication-sdk-v2/2.10.1-851b0b3.0/TsAuthSdk.min.js"
     ></script>
     <script type="module" src="./init.js"></script>
     <script>
@@ -61,7 +61,7 @@
           }
         } catch (ex) {
           console.log(ex);
-          window.pageUtils.updateElementText('status', `${ex.description}`);
+          window.pageUtils.updateElementText('status', `${ex.description ?? ex.message}`);
         }
 
         window.pageUtils.hideLoading();
