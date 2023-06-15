@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { login, signUp } from '../lib/passwords';
+import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const hubRouter = Router();
 
@@ -16,7 +17,7 @@ hubRouter.get(['/', '/login'], async function (req, res) {
 });
 
 // Authenticate a user with a password
-hubRouter.post('/login', async function (req, res) {
+hubRouter.post('/login', common.utils.rateLimiter(), async function (req, res) {
   console.log(JSON.stringify(req.body));
   const { username, password } = req.body;
 
@@ -30,7 +31,7 @@ hubRouter.get('/signup', async function (req, res) {
 });
 
 // Create a user with a username and password
-hubRouter.post('/signup', async function (req, res) {
+hubRouter.post('/signup', common.utils.rateLimiter(), async function (req, res) {
   console.log(JSON.stringify(req.body));
   const { username, password } = req.body;
   const signupResponse = await signUp(username, password);

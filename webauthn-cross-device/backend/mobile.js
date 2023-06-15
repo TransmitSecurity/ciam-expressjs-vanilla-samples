@@ -7,7 +7,7 @@ const router = express.Router();
 // Endpoint for proxying auth-session-id and authorizing it for webauthn registration
 // The input access token in this sample app is a client credentials token which we generate ad-hoc, however could also use access tokens
 // that are obtained via user authentication, e.g. password login or email OTP.
-router.post('/authorize-session-user', async function (req, res) {
+router.post('/authorize-session-user', common.utils.rateLimiter(), async function (req, res) {
   try {
     console.log(JSON.stringify(req.body));
     const accessToken = await common.tokens.getClientCredsToken();

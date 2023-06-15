@@ -19,7 +19,7 @@ router.get('/', function (req, res) {
   res.redirect('/pages/magiclink.html');
 });
 
-router.post('/send-magic-link', async function (req, res) {
+router.post('/send-magic-link', common.utils.rateLimiter(), async function (req, res) {
   const email = req?.body?.email;
 
   if (!email) {

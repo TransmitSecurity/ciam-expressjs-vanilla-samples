@@ -30,7 +30,7 @@ carsRouter.get('/login', async function (req, res) {
 });
 
 // Logout user
-carsRouter.post('/logout', async function (req, res) {
+carsRouter.post('/logout', common.utils.rateLimiter(), async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   try {
     const accessToken = req.session.carTokens.accessToken;
@@ -46,7 +46,7 @@ carsRouter.post('/logout', async function (req, res) {
 // The following endpoint is used by views/complete.html when a flow is completed, for token exchange
 // SECURITY NOTES: Normally the ID token SHOULD NOT reach the UI, however this is a sample app and we want to display it for clarity.
 // For more information see https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/#step-6-get-user-tokens
-carsRouter.post('/fetch-tokens', async function (req, res) {
+carsRouter.post('/fetch-tokens', common.utils.rateLimiter(), async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   console.log(JSON.stringify(req.body));
   const tokens = await common.tokens.getUserTokens(
