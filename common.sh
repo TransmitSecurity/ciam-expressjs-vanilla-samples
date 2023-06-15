@@ -95,8 +95,8 @@ optdir=(
     "saml-idp"
     "passkey-authentication"
     "webauthn-cross-device"
-    "webauthn-external-idp-users"
-    "webauthn-internal-idp-users"
+    "webauthn-for-external-idp-users"
+    "webauthn-for-internal-idp-users"
 )
 
 select_option "${options[@]} "

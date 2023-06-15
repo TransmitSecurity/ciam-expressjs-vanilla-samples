@@ -30,7 +30,7 @@ router.post('/authenticate/complete', async function (req, res) {
     const json = await data.json();
     console.log('Complete response', json);
 
-    res.send(json);
+    res.status(data.status).send(json);
   } catch (e) {
     console.log(e);
   }
@@ -58,7 +58,7 @@ router.post('/register/complete', async function (req, res) {
     const json = await data.json();
     console.log('register response', json);
 
-    res.send(json);
+    res.status(data.status).send(json);
   } catch (e) {
     console.log(e);
   }

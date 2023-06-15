@@ -60,7 +60,7 @@ router.post('/token', async function (req, res) {
       req.session.save();
     }
 
-    res.send(json);
+    res.status(data.status).send(json);
   } catch (e) {
     console.log(e);
   }
