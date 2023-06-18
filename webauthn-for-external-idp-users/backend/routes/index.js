@@ -41,7 +41,10 @@ router.post('/register/complete', async function (req, res) {
     const webauthnEncodedResult = req.body.webauthn_encoded_result;
     const url = common.config.apis.webauthnRegisterCompleteExternal;
     const token = await getClientCredsToken();
+
+    // This is your internal user identifier that will be associated to the WebAuthn credential.
     const user_identifier = randomUUID();
+
     const request = {
       method: 'POST',
       headers: {

@@ -30,8 +30,5 @@
     "start": "yarn --cwd $SAMPLE start",
     "lint": "eslint \"**/*.{js,html}\"",
     "format": "prettier .  --write"
-  },
-  "dependencies": {
-    "vite": "4.3.9"
   }
 }
