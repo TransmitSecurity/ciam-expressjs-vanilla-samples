@@ -63,6 +63,7 @@ router.post('/token', async function (req, res) {
     res.status(data.status).send(json);
   } catch (e) {
     console.log(e);
+    res.status(500).send({ error: JSON.stringify(e) });
   }
 });
 
@@ -89,6 +90,7 @@ router.post('/register/complete', async function (req, res) {
     res.status(data.status).send(json);
   } catch (e) {
     console.log(e);
+    res.status(500).send({ error: JSON.stringify(e) });
   }
 });
 

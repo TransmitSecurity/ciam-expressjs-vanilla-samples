@@ -33,6 +33,7 @@ router.post('/authenticate/complete', async function (req, res) {
     res.status(data.status).send(json);
   } catch (e) {
     console.log(e);
+    res.status(500).send({ error: JSON.stringify(e) });
   }
 });
 
@@ -64,10 +65,12 @@ router.post('/register/complete', async function (req, res) {
     res.status(data.status).send(json);
   } catch (e) {
     console.log(e);
+    res.status(500).send({ error: JSON.stringify(e) });
   }
 });
 
-// Get a client credentials token
+// Get and cash a client credentials token
+// Usually client credential tokens are valid for 1 hour, you will need to refresh them
 async function getClientCredsToken() {
   if (!clientCredsToken) {
     clientCredsToken = await common.tokens.getClientCredsToken();

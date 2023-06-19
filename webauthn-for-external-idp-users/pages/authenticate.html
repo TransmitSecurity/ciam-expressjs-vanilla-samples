@@ -30,7 +30,7 @@
       /* Passkey Logic */
       function activatePasskeyAutofill() {
         window.WebAuthnSdk.authenticate.autofill.activate({
-          onSuccess: handleSuccessfulAutofill,
+          onSuccess: handleSuccessfulPasskeyValidation,
           onError: handleAutofillError,
         });
       }
@@ -49,12 +49,10 @@
         } catch (err) {
           if (err.errorCode == 'webauthn_authentication_canceled') {
             activatePasskeyAutofill();
+            return;
           }
+          window.pageUtils.updateElementText('status', `${err.message}`);
         }
-      }
-
-      async function handleSuccessfulAutofill(webauthn_encoded_result) {
-        await handleSuccessfulPasskeyValidation(webauthn_encoded_result);
       }
 
       async function handleSuccessfulPasskeyValidation(webauthn_encoded_result) {
@@ -74,13 +72,12 @@
         if (data.error_code) {
           window.pageUtils.updateElementText('status', `Error during login: ${data.message}`);
           return;
-        } else {
-          window.pageUtils.updateElementText('status-ok', `Passkey validated successfully!`);
         }
+        window.pageUtils.updateElementText('status-ok', `Passkey validated successfully!`);
       }
 
       async function handleAutofillError(error) {
-        console.log(error);
+        window.pageUtils.updateElementText('status', `Error during login: ${error}`);
       }
     </script>
   </head>

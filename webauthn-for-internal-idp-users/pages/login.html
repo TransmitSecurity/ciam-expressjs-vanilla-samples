@@ -33,7 +33,9 @@
               autocomplete="username webauthn"
             />
             <button id="sendEmailButton" onclick="sendOTP()" class="full-width">Continue</button>
-            <div class="center" style="font-size: 14px">---Or---</div>
+            <div class="divider">
+              <span class="divider-text">or</span>
+            </div>
             <button id="passkeyButton" onclick="passkeyModal()" class="full-width">
               Use Passkey
             </button>
@@ -151,7 +153,7 @@
       /* Passkey Logic */
       function activatePasskeyAutofill() {
         window.WebAuthnSdk.authenticate.autofill.activate({
-          onSuccess: handleSuccessfulAutofill,
+          onSuccess: handleSuccessfulPasskeyValidation,
           onError: handleAutofillError,
         });
       }
@@ -170,12 +172,10 @@
         } catch (err) {
           if (err.errorCode == 'webauthn_authentication_canceled') {
             activatePasskeyAutofill();
+            return;
           }
+          window.pageUtils.updateElementText('status', `${err.message}`);
         }
-      }
-
-      async function handleSuccessfulAutofill(webauthn_encoded_result) {
-        await handleSuccessfulPasskeyValidation(webauthn_encoded_result);
       }
 
       async function handleSuccessfulPasskeyValidation(webauthn_encoded_result) {
@@ -201,7 +201,7 @@
       }
 
       async function handleAutofillError(error) {
-        console.log(error);
+        window.pageUtils.updateElementText('status', `Error during login: ${error}`);
       }
     </script>
   </body>
