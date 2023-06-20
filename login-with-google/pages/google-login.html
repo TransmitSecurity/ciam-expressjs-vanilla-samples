@@ -33,11 +33,13 @@
         window.pageUtils.showLoading();
         window.pageUtils.updateElementText('status', '');
 
+        //eslint-disable-next-line no-undef
+        await startGoogleLogin(handleVerifyOtpResponse);
         //await startGoogleLogin(handleVerifyOtpResponse);
       }
 
-      /* const handleVerifyOtpResponse = googleLoginResponse => {
-      console.log('Google Login Response', googleLoginResponse);
+      const handleVerifyOtpResponse = googleLoginResponse => {
+        /*console.log('Google Login Response', googleLoginResponse);
 
       if (googleLoginResponse?.status === 200) {
         // success!!!!!! use the result to redirect to completion page
@@ -45,8 +47,8 @@
       } else {
         window.pageUtils.updateElementText('status', googleLoginResponse.data.message);
         window.pageUtils.hideLoading();
-      }
-    };*/
+      }*/
+      };
     </script>
   </body>
 </html>
