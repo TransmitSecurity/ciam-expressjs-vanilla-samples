@@ -1,13 +1,11 @@
 # Webauthn flow for external idp users
 
-This sample follows the following guide:
-https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk/
+This sample follows the following guide: **New SDK documentation will be added soon**
 
 In this sample we are demonstrating Passkey registration and authentication (using autofill and
 modal flows ) for users managed externally.
 
-For more information see **change link**
-[Implement login with WebAuthn API](https://developer.transmitsecurity.com/guides/webauthn/basic_login_scenarios/)
+For more information see **Documentation will be added soon**
 
 Set up this example using the instruction in the [main README file](../README.md)
 

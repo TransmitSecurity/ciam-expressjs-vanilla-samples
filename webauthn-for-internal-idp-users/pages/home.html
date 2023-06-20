@@ -99,7 +99,7 @@
           if (!registrationResult.ok) throw new Error('Registration failed');
 
           window.pageUtils.updateElementText(
-            'passkeyStatus',
+            'status-ok',
             'Passkey registered successfully!' +
               ' Try to logout and login again with your new Passkey.',
           );
@@ -127,7 +127,7 @@
           <div>You are logged in!</div>
           <div id="status"></div>
           <button id="registerPasskeyButton" onclick="registerPasskey()">Register Passkey</button>
-          <div id="passkeyStatus"></div>
+          <div id="status-ok"></div>
         </div>
       </main>
     </div>

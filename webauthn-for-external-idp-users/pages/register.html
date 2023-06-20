@@ -48,7 +48,12 @@
             console.log(registrationResult);
 
             if (registrationResult.ok) {
-              window.location.replace('/');
+              window.pageUtils.updateElementText(
+                'status-ok',
+                'Passkey registered successfully!' +
+                  ' Try to go to the authentication page and login with your new Passkey.',
+              );
+              window.pageUtils.hideLoading();
               return;
             }
 
@@ -85,6 +90,7 @@
             <a href="/pages/authenticate.html">here</a>
           </div>
           <div id="status"></div>
+          <div id="status-ok"></div>
         </div>
       </main>
     </div>

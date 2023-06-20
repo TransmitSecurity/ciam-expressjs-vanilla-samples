@@ -1,12 +1,11 @@
 # Webauthn flow for Transmit Security's IDP users
 
-This sample follows the following guide: **_Add link_**
+This sample follows the following guide: **New SDK documentation will be added soon**
 
 In this sample we are demonstrating Passkey registration and authentication (using autofill and
 modal flows) for users managed internally.
 
-For more information see **change link**
-[Implement login with WebAuthn API](https://developer.transmitsecurity.com/guides/webauthn/basic_login_scenarios/)
+For more information see **Documentation will be added soon**
 
 Set up this example using the instruction in the [main README file](../README.md)
 
