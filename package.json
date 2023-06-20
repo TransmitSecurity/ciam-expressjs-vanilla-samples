@@ -5,6 +5,7 @@
   "private": true,
   "workspaces": [
     "login-with-email",
+    "login-with-google",
     "login-with-sms",
     "passkey-authentication",
     "password-authentication",
