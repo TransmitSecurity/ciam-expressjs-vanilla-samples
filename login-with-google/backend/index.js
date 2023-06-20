@@ -1,5 +1,6 @@
 import express from 'express';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
+import querystring from 'querystring';
 
 const router = express.Router();
 
@@ -26,6 +27,10 @@ router.get('/google-login', common.utils.rateLimiter(), async function (req, res
       error,
     });
   }
+});
+
+router.get('/complete', function (req, res) {
+  res.redirect(`/pages/complete.html?${querystring.stringify(req.query)}`);
 });
 
 async function googleLogin() {
