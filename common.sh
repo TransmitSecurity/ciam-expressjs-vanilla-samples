@@ -81,7 +81,6 @@ options=(
     "SAML IDP"
     "WebAuthn Passkey Authentication (autocomplete)"
     "WebAuthn Cross Device"
-    "WebAuthn External IDP Users"
     "WebAuthn Internal IDP Users"
 )
 optdir=(
@@ -97,7 +96,6 @@ optdir=(
     "saml-idp"
     "passkey-authentication"
     "webauthn-cross-device"
-    "webauthn-for-external-idp-users"
     "webauthn-for-internal-idp-users"
 )
 
