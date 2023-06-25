@@ -81,6 +81,7 @@ options=(
     "SAML IDP"
     "WebAuthn Passkey Authentication (autocomplete)"
     "WebAuthn Cross Device"
+    "WebAuthn Internal IDP Users"
 )
 optdir=(
     "authentication-hub"
@@ -95,6 +96,7 @@ optdir=(
     "saml-idp"
     "passkey-authentication"
     "webauthn-cross-device"
+    "webauthn-for-internal-idp-users"
 )
 
 select_option "${options[@]} "
