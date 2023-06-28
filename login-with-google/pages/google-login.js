@@ -1,9 +1,21 @@
-//eslint-disable-next-line no-unused-vars
-async function startGoogleLogin(handleResponse) {
-  const response = await fetch('/google-login', { method: 'GET' });
+//import {common} from "@ciam-expressjs-vanilla-samples/shared";
 
-  const status = response.status;
-  const data = await response.json();
-  console.log('Response from /google-login', { status, data });
-  handleResponse({ status, data });
+//eslint-disable-next-line no-unused-vars
+function getGoogleUrl() {
+  console.log('getGoogleUrl');
+
+  /*
+    const googleLoginUrl = common.config.apis.googleLogin;
+
+    const queryParams = new URLSearchParams({
+        client_id: process.env.VITE_TS_CLIENT_ID,
+        redirect_uri: process.env.TS_REDIRECT_URI,
+        create_new_user: true,
+    });
+
+    const url = `${googleLoginUrl}?${queryParams.toString()}`;
+    console.log('about to call ' + url);
+*/
+
+  return '';
 }
