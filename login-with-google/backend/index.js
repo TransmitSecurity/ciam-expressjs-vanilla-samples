@@ -1,5 +1,6 @@
 import express from 'express';
 import querystring from 'querystring';
+import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const router = express.Router();
 
@@ -17,22 +18,16 @@ router.get('/complete', function (req, res) {
 });
 
 router.get('/google-url', function (req, res) {
-  res.send({
-    url: 'blaaaaaaaaaa',
+  const googleLoginUrl = common.config.apis.googleLogin;
+
+  const queryParams = new URLSearchParams({
+    client_id: process.env.VITE_TS_CLIENT_ID,
+    redirect_uri: process.env.TS_REDIRECT_URI,
+    create_new_user: true,
   });
 
-  /*
-      const googleLoginUrl = common.config.apis.googleLogin;
-  
-      const queryParams = new URLSearchParams({
-          client_id: process.env.VITE_TS_CLIENT_ID,
-          redirect_uri: process.env.TS_REDIRECT_URI,
-          create_new_user: true,
-      });
-  
-      const url = `${googleLoginUrl}?${queryParams.toString()}`;
-      console.log('about to call ' + url);
-  */
+  const url = `${googleLoginUrl}?${queryParams.toString()}`;
+  res.send({ url });
 });
 
 export const indexRouter = router;
