@@ -31,9 +31,16 @@
     <script>
       async function login() {
         //eslint-disable-next-line no-undef
-        const url = getGoogleUrl();
-        console.log('url is', url);
+        await getGoogleUrl(handleEmailOtpResponse);
       }
+
+      const handleEmailOtpResponse = getGoogleUrlResponse => {
+        console.log('Google URL Response', getGoogleUrlResponse);
+
+        if (getGoogleUrlResponse?.url) {
+          //window.location.replace(getGoogleUrlResponse.url)
+        }
+      };
     </script>
   </body>
 </html>
