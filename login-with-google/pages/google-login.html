@@ -31,14 +31,13 @@
     <script>
       async function login() {
         //eslint-disable-next-line no-undef
-        await getGoogleUrl(handleEmailOtpResponse);
+        await getGoogleUrl(handleGoogleUrlResponse);
       }
 
-      const handleEmailOtpResponse = getGoogleUrlResponse => {
-        console.log('Google URL Response', getGoogleUrlResponse);
-
+      const handleGoogleUrlResponse = getGoogleUrlResponse => {
         if (getGoogleUrlResponse?.url) {
-          //window.location.replace(getGoogleUrlResponse.url)
+          console.log('about to redirect to google URL', getGoogleUrlResponse.url);
+          window.location.assign(getGoogleUrlResponse.url);
         }
       };
     </script>
