@@ -1,12 +1,12 @@
 import { pageUtils } from '../../shared/pageUtils.js';
 import { IdoServiceResponseType, ClientResponseOptionType } from './sdk_interface.js';
-import { tsPlatform } from '../../node_modules/ido-sdk-web/web-sdk-ido.js'; // remove
+// import { tsPlatform } from '../../node_modules/ido-sdk-web/web-sdk-ido.js'; // remove
 
 let sdk = null;
 
 async function init(clientId, serverPath, appId) {
   if (!sdk) {
-    sdk = tsPlatform.ido.sdk; // window.tsPlatform.ido.sdk;
+    sdk = window.tsPlatform.ido.sdk;
     await sdk.init(clientId, { serverPath, appId });
   }
 }
