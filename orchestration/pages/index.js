@@ -148,7 +148,8 @@ async function showOtpForm(actionData) {
   });
 }
 
-// This function is tailored for displaying the 'kba_input' action
+// This function is tailored for displaying the 'kba_input' action.
+// MAY collect more than one Q/A
 async function showKbaForm() {
   return new Promise((resolve /*reject*/) => {
     function submitKba() {
@@ -159,10 +160,12 @@ async function showKbaForm() {
       resolve({
         option: ClientResponseOptionType.ClientInput,
         data: {
-          kba: {
-            question: question_value,
-            answer: answer_value,
-          },
+          kba: [
+            {
+              question: question_value,
+              answer: answer_value,
+            },
+          ],
         },
       });
     }
