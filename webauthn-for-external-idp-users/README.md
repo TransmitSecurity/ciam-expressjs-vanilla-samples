@@ -1,5 +1,7 @@
 # Webauthn flow for external idp users
 
+Users that are authenticated with a non Transmit IDP before registering credentials.
+
 This sample follows the following guide: **New SDK documentation will be added soon**
 
 In this sample we are demonstrating Passkey registration and authentication (using autofill and

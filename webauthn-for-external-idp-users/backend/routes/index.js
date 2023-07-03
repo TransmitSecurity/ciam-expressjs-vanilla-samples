@@ -4,7 +4,6 @@ import crypto from 'crypto';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const router = express.Router();
-let clientCredsToken;
 
 router.get(['/'], async function (req, res) {
   if (!req.session?.tokens) {
@@ -70,7 +69,12 @@ router.post('/webauthn/register', async function (req, res) {
   try {
     const webauthnEncodedResult = req.body.webauthn_encoded_result;
     const url = common.config.apis.webauthnRegisterExternal;
-    const token = await getClientCredsToken();
+    const token = await common.tokens.getClientCredsToken();
+
+    /**
+      In a production code the user should be authenticated with a 3rd part IDP before using client credentials to
+      register webauthn credentials. Otherwise, we have no proof of user identity.
+    **/
 
     // This is your internal user identifier that will be associated to the WebAuthn credential.
     const user_identifier = crypto.randomUUID();
@@ -118,15 +122,5 @@ router.post('/logout', async function (req, res) {
 
   res.send(json);
 });
-
-// Get and cash a client credentials token
-// Usually client credential tokens are valid for 1 hour, you will need to refresh them
-async function getClientCredsToken() {
-  if (!clientCredsToken) {
-    clientCredsToken = await common.tokens.getClientCredsToken();
-  }
-
-  return clientCredsToken;
-}
 
 export const indexRouter = router;
