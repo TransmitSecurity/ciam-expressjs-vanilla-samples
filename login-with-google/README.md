@@ -8,6 +8,10 @@ https://developer.transmitsecurity.com/guides/user/validate_tokens/
 
 Set up this example using the instruction in the [main README file](../README.md)
 
+> **Note**
+>
+> This sample code will NOT work from GitHub Codespaces, only from local environment
+
 ## Sample user experience
 
 - Open a browser tab on <domain:port>/ - redirects to the demo's start Google login page
