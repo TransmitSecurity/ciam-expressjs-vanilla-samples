@@ -1,5 +1,6 @@
 import express from 'express';
 import fetch from 'node-fetch';
+import crypto from 'crypto';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const router = express.Router();
@@ -12,22 +13,19 @@ router.get(['/'], async function (req, res) {
   }
 });
 
-router.get('/complete', async function (req, res) {
-  const params = new URLSearchParams(req.query);
-  const tokens = await common.tokens.getUserTokens(params.get('code'));
-  console.log('Tokens', tokens);
-
-  if (tokens.id_token) {
-    const idToken = common.tokens.parseJwt(tokens.id_token);
-    req.session.tokens = {
-      accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token,
-      idToken,
-    };
-    req.session.save();
+// Get an authenticated user's saved ID Token or return a not found error
+router.get('/user', async function (req, res) {
+  // TODO add error handling, omitted for sample clarity
+  console.log('/user', req.session.tokens);
+  if (req.session.tokens) {
+    res.status(200).send({
+      idToken: req.session.tokens.idToken,
+    });
+  } else {
+    res.status(404).send({
+      idToken: null,
+    });
   }
-
-  res.redirect('/pages/home.html');
 });
 
 router.post('/token', async function (req, res) {
@@ -70,8 +68,17 @@ router.post('/token', async function (req, res) {
 router.post('/webauthn/register', async function (req, res) {
   try {
     const webauthnEncodedResult = req.body.webauthn_encoded_result;
-    const url = common.config.apis.webauthnRegister;
-    const token = req.session.tokens.accessToken;
+    const url = common.config.apis.webauthnRegisterExternal;
+    const token = await common.tokens.getClientCredsToken();
+
+    /**
+      In a production code the user should be authenticated with a 3rd part IDP before using client credentials to
+      register webauthn credentials. Otherwise, we have no proof of user identity.
+    **/
+
+    // This is your internal user identifier that will be associated to the WebAuthn credential.
+    const user_identifier = crypto.randomUUID();
+
     const request = {
       method: 'POST',
       headers: {
@@ -79,6 +86,7 @@ router.post('/webauthn/register', async function (req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        external_user_identifier: user_identifier,
         webauthn_encoded_result: webauthnEncodedResult,
       }),
     };
@@ -91,21 +99,6 @@ router.post('/webauthn/register', async function (req, res) {
   } catch (e) {
     console.log(e);
     res.status(500).send({ error: JSON.stringify(e) });
-  }
-});
-
-// Get an authenticated user's saved ID Token or return a not found error
-router.get('/user', async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
-  console.log('/user', req.session.tokens);
-  if (req.session.tokens) {
-    res.status(200).send({
-      idToken: req.session.tokens.idToken,
-    });
-  } else {
-    res.status(404).send({
-      idToken: null,
-    });
   }
 });
 

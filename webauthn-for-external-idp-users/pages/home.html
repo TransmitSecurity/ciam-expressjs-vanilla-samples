@@ -76,42 +76,6 @@
           window.pageUtils.updateElementText('status', `${ex.description}`);
         }
       }
-
-      async function registerPasskey() {
-        try {
-          window.pageUtils.showLoading();
-
-          const username = userData.email;
-
-          const encodedResult = await window.WebAuthnSdk.register(username);
-
-          const registrationResult = await fetch(`/webauthn/register`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              webauthn_encoded_result: encodedResult,
-            }),
-          });
-
-          console.log(registrationResult);
-
-          if (!registrationResult.ok) throw new Error('Registration failed');
-
-          window.pageUtils.updateElementText(
-            'status-ok',
-            'Passkey registered successfully!' +
-              ' Try to logout and login again with your new Passkey.',
-          );
-          return;
-        } catch (ex) {
-          console.log(ex);
-          window.pageUtils.updateElementText('status', `${ex.description || ex.message}`);
-        } finally {
-          window.pageUtils.hideLoading();
-        }
-      }
     </script>
   </head>
 
@@ -126,8 +90,6 @@
           <h3>Welcome <span id="email"></span></h3>
           <img src="/shield.svg" alt="Logged in" />
           <div id="status"></div>
-          <button id="registerPasskeyButton" onclick="registerPasskey()">Register Passkey</button>
-          <div id="status-ok"></div>
           <div>Login token data</div>
           <textarea disabled id="tokenData" class="dataTextArea"></textarea>
         </div>
