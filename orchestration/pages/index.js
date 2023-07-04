@@ -157,7 +157,7 @@ async function showKbaForm() {
   return new Promise((resolve /*reject*/) => {
     function submitKba() {
       const question_value = pageUtils.extractInputValue('kba_question_form_input');
-      const answer_value = pageUtils.extractInputValue('kba_question_form_input');
+      const answer_value = pageUtils.extractInputValue('kba_answer_form_input');
       pageUtils.hide('kba_form');
       pageUtils.hide('action_response_error');
       resolve({
