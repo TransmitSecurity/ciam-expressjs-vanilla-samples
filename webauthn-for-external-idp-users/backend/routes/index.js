@@ -86,7 +86,7 @@ router.post('/webauthn/register', async function (req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        external_user_identifier: user_identifier,
+        external_user_id: user_identifier,
         webauthn_encoded_result: webauthnEncodedResult,
       }),
     };
