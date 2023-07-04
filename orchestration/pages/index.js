@@ -1,13 +1,16 @@
 import { pageUtils } from '../../shared/pageUtils.js';
 import { IdoServiceResponseType, ClientResponseOptionType } from './sdk_interface.js';
 // import { tsPlatform } from '../../node_modules/ido-sdk-web/web-sdk-ido.js'; // remove
+// import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // remove
 
 let sdk = null;
 
 async function init(clientId, serverPath, appId) {
   if (!sdk) {
     sdk = window.tsPlatform.ido.sdk;
-    await sdk.init(clientId, { serverPath, appId });
+    await sdk.init(clientId, { serverPath, applicationId: appId });
+    // await tsPlatform.initialize({ clientId, ido: { serverPath, applicationId: appId } });
+    // sdk = tsPlatform.ido;
   }
 }
 
@@ -18,7 +21,7 @@ document.querySelector('#start_journey_button').addEventListener('click', startJ
 // Start the journey
 async function startJourney() {
   // initialize SDK first time this is called
-  await init('demo-client-id', 'https://demo.ido-service.io', 'demo-app');
+  await init('demo-client-id', 'https://ts1.tsec-stg.com', 'idosdk');
 
   // Reset UI
   pageUtils.hide('journey_start');
@@ -27,7 +30,7 @@ async function startJourney() {
 
   try {
     pageUtils.showLoading();
-    let idoResponse = await sdk.startJourney('demo', {
+    let idoResponse = await sdk.startJourney('skeleton', {
       flowId: 'random',
       additionalParams: { username: 'John Doe' },
     });
@@ -45,8 +48,8 @@ async function startJourney() {
           pageUtils.hideLoading();
           break;
         case IdoServiceResponseType.JourneyRejection:
-          console.log(`FlexID Server Error: ${idoResponse.getErrorMessage()}`);
-          pageUtils.updateElementText('action_response_error', idoResponse.getErrorMessage());
+          console.log(`FlexID Server Error: ${idoResponse}`);
+          pageUtils.updateElementText('action_response_error', idoResponse);
           pageUtils.show('action_response_error');
           inJourney = false;
           break;
@@ -134,7 +137,7 @@ async function showOtpForm(actionData) {
 
     pageUtils.updateElementText(
       'otp_form_text',
-      actionData?.message || 'Empty message from server',
+      actionData?.app_data?.message || 'Empty message from server',
     );
     document.getElementById('otp_form_input').value = '';
     pageUtils.show('otp_form');
