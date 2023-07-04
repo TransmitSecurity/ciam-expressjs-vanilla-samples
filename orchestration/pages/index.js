@@ -7,7 +7,7 @@ let sdk = null;
 
 async function init(clientId, serverPath, appId) {
   if (!sdk) {
-    sdk = window.tsPlatform.ido.sdk;
+    sdk = window.tsPlatform.ido;
     await sdk.init(clientId, { serverPath, applicationId: appId });
     // await tsPlatform.initialize({ clientId, ido: { serverPath, applicationId: appId } });
     // sdk = tsPlatform.ido;
