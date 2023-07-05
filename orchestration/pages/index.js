@@ -172,6 +172,14 @@ async function showKbaForm() {
         },
       });
     }
+    function submitSkip() {
+      pageUtils.hide('kba_form');
+      pageUtils.hide('action_response_error');
+      resolve({
+        option: 'skip_question_registration',
+        data: {},
+      });
+    }
 
     document.getElementById('kba_question_form_input').value = '';
     document.getElementById('kba_answer_form_input').value = '';
@@ -179,10 +187,12 @@ async function showKbaForm() {
 
     // clear all handlers, this handles multiple runs of the same action
     document.querySelector('#kba_form_button').removeEventListener('click', submitKba);
+    document.querySelector('#kba_skip_button').removeEventListener('click', submitSkip);
 
     // Handle input field and main submit
     // eslint-disable-next-line no-unused-vars
     document.querySelector('#kba_form_button').addEventListener('click', submitKba);
+    document.querySelector('#kba_skip_button').addEventListener('click', submitSkip);
   });
 }
 
