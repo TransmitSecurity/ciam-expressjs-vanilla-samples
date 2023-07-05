@@ -1,0 +1,14 @@
+{
+  "name": "@ciam-expressjs-vanilla-samples/orchestration",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": ""
+  },
+  "dependencies": {
+    "@ciam-expressjs-vanilla-samples/shared": "1.0.0"
+  },
+  "devDependencies": {
+    "sass": "1.58.3"
+  }
+}
