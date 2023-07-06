@@ -13,8 +13,8 @@ async function init(clientId, serverPath, appId) {
   if (!sdk) {
     sdk = window.tsPlatform.ido;
     await window.tsPlatform.initialize({ clientId, ido: { serverPath, applicationId: appId } });
-    // await sdk.init(clientId, { serverPath, applicationId: appId });
     // sdk = tsPlatform.ido;
+    // await sdk.init(clientId, { serverPath, applicationId: appId });
   }
 }
 
@@ -53,7 +53,7 @@ async function startJourney() {
           break;
         case IdoServiceResponseType.JourneyRejection:
           console.log(`FlexID Server Error: ${idoResponse}`);
-          pageUtils.updateElementText('action_response_error', idoResponse);
+          pageUtils.updateElementText('action_response_error', JSON.stringify(idoResponse));
           pageUtils.show('action_response_error');
           inJourney = false;
           break;
