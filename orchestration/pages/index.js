@@ -1,5 +1,9 @@
 import { pageUtils } from '../../shared/pageUtils.js';
-import { IdoServiceResponseType, ClientResponseOptionType } from './sdk_interface.js';
+import {
+  IdoServiceResponseType,
+  ClientResponseOptionType,
+  IdoJourneyActionType,
+} from './sdk_interface.js';
 // import { tsPlatform } from '../../node_modules/ido-sdk-web/web-sdk-ido.js'; // remove
 // import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // remove
 
@@ -32,7 +36,7 @@ async function startJourney() {
     pageUtils.showLoading();
     let idoResponse = await sdk.startJourney('skeleton', {
       flowId: 'random',
-      additionalParams: { username: 'John Doe' },
+      additionalParams: { username: 'John Doe', plus: true },
     });
     pageUtils.hideLoading();
     let inJourney = true;
@@ -81,6 +85,9 @@ async function handleJourneyActionUI(idoResponse) {
   }
 
   switch (stepId) {
+    case IdoJourneyActionType.Information:
+      clientResponse = await showInformation(actionData, responseOptions);
+      break;
     case 'phone_input':
       clientResponse = await showPhoneForm(actionData, responseOptions);
       break;
@@ -97,8 +104,31 @@ async function handleJourneyActionUI(idoResponse) {
   return clientResponse;
 }
 
+async function showInformation() {
+  return new Promise((resolve /*reject*/) => {
+    function submit() {
+      pageUtils.hide('information_form');
+      pageUtils.hide('action_response_error');
+      resolve({
+        option: ClientResponseOptionType.ClientInput,
+        data: {},
+      });
+    }
+
+    document.getElementById('phone_form_input').value = '';
+    pageUtils.show('information_form');
+
+    // clear all handlers, this handles multiple runs of the same action
+    document.querySelector('#information_form_button').removeEventListener('click', submit);
+
+    // Handle input field and main submit
+    // eslint-disable-next-line no-unused-vars
+    document.querySelector('#information_form_button').addEventListener('click', submit);
+  });
+}
+
 // This function is tailored for displaying the 'phone_input' action
-async function showPhoneForm() {
+async function showPhoneForm(actionData) {
   return new Promise((resolve /*reject*/) => {
     function submitPhone() {
       const input_value = pageUtils.extractInputValue('phone_form_input');
@@ -110,7 +140,15 @@ async function showPhoneForm() {
       });
     }
 
-    document.getElementById('phone_form_input').value = '';
+    pageUtils.updateElementText(
+      'information_form_title',
+      actionData?.title || 'Empty title from server',
+    );
+    pageUtils.updateElementText(
+      'information_form_text',
+      actionData?.text || 'Empty text from server',
+    );
+    pageUtils.updateElementText('information_form_button', actionData?.button_text || 'OK');
     pageUtils.show('phone_form');
 
     // clear all handlers, this handles multiple runs of the same action

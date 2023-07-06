@@ -8,7 +8,7 @@ export var ErrorCode;
   /**
    * @description The init options object is invalid.
    */
-  ErrorCode['InvalidOptions'] = 'invalid_options';
+  ErrorCode['InvalidInitOptions'] = 'invalid_initialization_options';
   /**
    * @description The sdk is not initialized.
    */
@@ -74,3 +74,10 @@ export var IdoServiceResponseType;
    */
   IdoServiceResponseType['JourneyRejection'] = 'journey_rejection';
 })(IdoServiceResponseType || (IdoServiceResponseType = {}));
+// eslint-disable-next-line no-var
+export var IdoJourneyActionType;
+(function (IdoJourneyActionType) {
+  IdoJourneyActionType['Rejection'] = 'action:rejection';
+  IdoJourneyActionType['Information'] = 'action:information';
+  IdoJourneyActionType['DebugBreak'] = 'action:debug_break';
+})(IdoJourneyActionType || (IdoJourneyActionType = {}));
