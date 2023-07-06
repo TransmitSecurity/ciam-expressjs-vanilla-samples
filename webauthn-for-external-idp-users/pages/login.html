@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script
+      type="text/javascript"
+      src="https://cdn.identity.security/authentication-sdk-v2/2.10.1-851b0b3.0/TsAuthSdk.min.js"
+    ></script>
+    <script type="module" src="./init.js"></script>
+    <script>
+      async function init() {
+        try {
+          await window.WebAuthnSdk.init(window.env.VITE_TS_CLIENT_ID, {
+            serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
+          });
+          activatePasskeyAutofill();
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `${ex.description}`);
+        }
+      }
+
+      /* Passkey Logic */
+      function activatePasskeyAutofill() {
+        window.WebAuthnSdk.authenticate.autofill.activate({
+          onSuccess: handleSuccessfulPasskeyValidation,
+          onError: handleAutofillError,
+        });
+      }
+
+      async function abortPasskeyAutofill() {
+        await window.WebAuthnSdk.authenticate.autofill.abort();
+      }
+
+      async function passkeyModal() {
+        await abortPasskeyAutofill();
+        const username = document.getElementById('passkeyInput').value;
+
+        try {
+          const webauthn_encoded_result = await window.WebAuthnSdk.authenticate.modal(username);
+          await handleSuccessfulPasskeyValidation(webauthn_encoded_result);
+        } catch (err) {
+          if (err.errorCode == 'webauthn_authentication_canceled') {
+            activatePasskeyAutofill();
+            return;
+          }
+          window.pageUtils.updateElementText('status', `${err.message}`);
+        }
+      }
+
+      async function handleSuccessfulPasskeyValidation(webauthn_encoded_result) {
+        const token = await fetch(`/token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            webauthn_encoded_result,
+          }),
+        });
+
+        const data = await token.json();
+        console.log('Response from /token: ', data);
+
+        if (data.error_code) {
+          window.pageUtils.updateElementText('status', `Error during login: ${data.message}`);
+          return;
+        }
+        window.location.replace('/pages/home.html');
+        window.pageUtils.updateElementText('status-ok', `Passkey validated successfully!`);
+      }
+
+      async function handleAutofillError(error) {
+        if (error.errorCode === 'autofill_authentication_aborted') return;
+        window.pageUtils.updateElementText('status', `Error during login: ${error}`);
+      }
+    </script>
+  </head>
+  <body onload="init()">
+    <div class="page" id="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3>Authenticate with Passkey</h3>
+          <input
+            id="passkeyInput"
+            type="text"
+            size="40"
+            placeholder="Enter username or choose passkey"
+            autocomplete="username webauthn"
+          />
+          <button id="passkeyButton" onclick="passkeyModal()" class="full-width">
+            Continue with passkey
+          </button>
+          <div class="row">
+            Dont have a passkey enrolled? Enroll <a href="/pages/register.html">here</a>
+          </div>
+          <div id="status"></div>
+          <div id="status-ok"></div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
