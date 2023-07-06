@@ -88,6 +88,12 @@ async function handleJourneyActionUI(idoResponse) {
     case IdoJourneyActionType.Information:
       clientResponse = await showInformation(actionData, responseOptions);
       break;
+    case IdoJourneyActionType.DebugBreak:
+      clientResponse = await showInformation({
+        title: 'Breakpoint',
+        text: 'Journey is holding on breakpoint',
+      });
+      break;
     case 'phone_input':
       clientResponse = await showPhoneForm(actionData, responseOptions);
       break;
@@ -104,7 +110,7 @@ async function handleJourneyActionUI(idoResponse) {
   return clientResponse;
 }
 
-async function showInformation() {
+async function showInformation(actionData) {
   return new Promise((resolve /*reject*/) => {
     function submit() {
       pageUtils.hide('information_form');
@@ -116,6 +122,15 @@ async function showInformation() {
     }
 
     document.getElementById('phone_form_input').value = '';
+    pageUtils.updateElementText(
+      'information_form_title',
+      actionData?.title || 'Empty title from server',
+    );
+    pageUtils.updateElementText(
+      'information_form_text',
+      actionData?.text || 'Empty text from server',
+    );
+    pageUtils.updateElementText('information_form_button', actionData?.button_text || 'OK');
     pageUtils.show('information_form');
 
     // clear all handlers, this handles multiple runs of the same action
@@ -128,7 +143,7 @@ async function showInformation() {
 }
 
 // This function is tailored for displaying the 'phone_input' action
-async function showPhoneForm(actionData) {
+async function showPhoneForm() {
   return new Promise((resolve /*reject*/) => {
     function submitPhone() {
       const input_value = pageUtils.extractInputValue('phone_form_input');
@@ -140,15 +155,6 @@ async function showPhoneForm(actionData) {
       });
     }
 
-    pageUtils.updateElementText(
-      'information_form_title',
-      actionData?.title || 'Empty title from server',
-    );
-    pageUtils.updateElementText(
-      'information_form_text',
-      actionData?.text || 'Empty text from server',
-    );
-    pageUtils.updateElementText('information_form_button', actionData?.button_text || 'OK');
     pageUtils.show('phone_form');
 
     // clear all handlers, this handles multiple runs of the same action
