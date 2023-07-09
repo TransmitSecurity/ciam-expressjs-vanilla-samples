@@ -36,7 +36,7 @@ async function startJourney() {
     pageUtils.showLoading();
     let idoResponse = await sdk.startJourney('skeleton', {
       flowId: 'random',
-      additionalParams: { username: 'John Doe', plus: true },
+      additionalParams: { username: 'John Doe', plus: false },
     });
     pageUtils.hideLoading();
     let inJourney = true;
@@ -197,12 +197,13 @@ async function showOtpForm(actionData) {
 
 // This function is tailored for displaying the 'kba_input' action.
 // MAY collect more than one Q/A
-async function showKbaForm() {
+async function showKbaForm(actionData, responseOptions) {
   return new Promise((resolve /*reject*/) => {
     function submitKba() {
       const question_value = pageUtils.extractInputValue('kba_question_form_input');
       const answer_value = pageUtils.extractInputValue('kba_answer_form_input');
       pageUtils.hide('kba_form');
+      pageUtils.hide('kba_skip_button');
       pageUtils.hide('action_response_error');
       resolve({
         option: ClientResponseOptionType.ClientInput,
@@ -227,6 +228,9 @@ async function showKbaForm() {
 
     document.getElementById('kba_question_form_input').value = '';
     document.getElementById('kba_answer_form_input').value = '';
+    if (responseOptions.get('skip_question_registration')) {
+      pageUtils.show('kba_skip_button');
+    }
     pageUtils.show('kba_form');
 
     // clear all handlers, this handles multiple runs of the same action
