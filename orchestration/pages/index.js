@@ -1,5 +1,9 @@
 import { pageUtils } from '../../shared/pageUtils.js';
-import { IdoServiceResponseType, ClientResponseOptionType } from './sdk_interface.js';
+import {
+  IdoServiceResponseType,
+  ClientResponseOptionType,
+  IdoJourneyActionType,
+} from './sdk_interface.js';
 // import { tsPlatform } from '../../node_modules/ido-sdk-web/web-sdk-ido.js'; // remove
 // import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // remove
 
@@ -8,9 +12,9 @@ let sdk = null;
 async function init(clientId, serverPath, appId) {
   if (!sdk) {
     sdk = window.tsPlatform.ido;
-    await sdk.init(clientId, { serverPath, applicationId: appId });
-    // await tsPlatform.initialize({ clientId, ido: { serverPath, applicationId: appId } });
+    await window.tsPlatform.initialize({ clientId, ido: { serverPath, applicationId: appId } });
     // sdk = tsPlatform.ido;
+    // await sdk.init(clientId, { serverPath, applicationId: appId });
   }
 }
 
@@ -32,7 +36,7 @@ async function startJourney() {
     pageUtils.showLoading();
     let idoResponse = await sdk.startJourney('skeleton', {
       flowId: 'random',
-      additionalParams: { username: 'John Doe' },
+      additionalParams: { username: 'John Doe', plus: false },
     });
     pageUtils.hideLoading();
     let inJourney = true;
@@ -49,7 +53,7 @@ async function startJourney() {
           break;
         case IdoServiceResponseType.JourneyRejection:
           console.log(`FlexID Server Error: ${idoResponse}`);
-          pageUtils.updateElementText('action_response_error', idoResponse);
+          pageUtils.updateElementText('action_response_error', JSON.stringify(idoResponse));
           pageUtils.show('action_response_error');
           inJourney = false;
           break;
@@ -81,6 +85,15 @@ async function handleJourneyActionUI(idoResponse) {
   }
 
   switch (stepId) {
+    case IdoJourneyActionType.Information:
+      clientResponse = await showInformation(actionData, responseOptions);
+      break;
+    case IdoJourneyActionType.DebugBreak:
+      clientResponse = await showInformation({
+        title: 'Breakpoint',
+        text: 'Journey is holding on breakpoint',
+      });
+      break;
     case 'phone_input':
       clientResponse = await showPhoneForm(actionData, responseOptions);
       break;
@@ -97,6 +110,38 @@ async function handleJourneyActionUI(idoResponse) {
   return clientResponse;
 }
 
+async function showInformation(actionData) {
+  return new Promise((resolve /*reject*/) => {
+    function submit() {
+      pageUtils.hide('information_form');
+      pageUtils.hide('action_response_error');
+      resolve({
+        option: ClientResponseOptionType.ClientInput,
+        data: {},
+      });
+    }
+
+    document.getElementById('phone_form_input').value = '';
+    pageUtils.updateElementText(
+      'information_form_title',
+      actionData?.title || 'Empty title from server',
+    );
+    pageUtils.updateElementText(
+      'information_form_text',
+      actionData?.text || 'Empty text from server',
+    );
+    pageUtils.updateElementText('information_form_button', actionData?.button_text || 'OK');
+    pageUtils.show('information_form');
+
+    // clear all handlers, this handles multiple runs of the same action
+    document.querySelector('#information_form_button').removeEventListener('click', submit);
+
+    // Handle input field and main submit
+    // eslint-disable-next-line no-unused-vars
+    document.querySelector('#information_form_button').addEventListener('click', submit);
+  });
+}
+
 // This function is tailored for displaying the 'phone_input' action
 async function showPhoneForm() {
   return new Promise((resolve /*reject*/) => {
@@ -110,7 +155,6 @@ async function showPhoneForm() {
       });
     }
 
-    document.getElementById('phone_form_input').value = '';
     pageUtils.show('phone_form');
 
     // clear all handlers, this handles multiple runs of the same action
@@ -153,12 +197,13 @@ async function showOtpForm(actionData) {
 
 // This function is tailored for displaying the 'kba_input' action.
 // MAY collect more than one Q/A
-async function showKbaForm() {
+async function showKbaForm(actionData, responseOptions) {
   return new Promise((resolve /*reject*/) => {
     function submitKba() {
       const question_value = pageUtils.extractInputValue('kba_question_form_input');
       const answer_value = pageUtils.extractInputValue('kba_answer_form_input');
       pageUtils.hide('kba_form');
+      pageUtils.hide('kba_skip_button');
       pageUtils.hide('action_response_error');
       resolve({
         option: ClientResponseOptionType.ClientInput,
@@ -172,17 +217,30 @@ async function showKbaForm() {
         },
       });
     }
+    function submitSkip() {
+      pageUtils.hide('kba_form');
+      pageUtils.hide('action_response_error');
+      resolve({
+        option: 'skip_question_registration',
+        data: {},
+      });
+    }
 
     document.getElementById('kba_question_form_input').value = '';
     document.getElementById('kba_answer_form_input').value = '';
+    if (responseOptions.get('skip_question_registration')) {
+      pageUtils.show('kba_skip_button');
+    }
     pageUtils.show('kba_form');
 
     // clear all handlers, this handles multiple runs of the same action
     document.querySelector('#kba_form_button').removeEventListener('click', submitKba);
+    document.querySelector('#kba_skip_button').removeEventListener('click', submitSkip);
 
     // Handle input field and main submit
     // eslint-disable-next-line no-unused-vars
     document.querySelector('#kba_form_button').addEventListener('click', submitKba);
+    document.querySelector('#kba_skip_button').addEventListener('click', submitSkip);
   });
 }
 

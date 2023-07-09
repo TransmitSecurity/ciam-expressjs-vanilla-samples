@@ -12,11 +12,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ACME</title>
     <!-- <script
-      src="https://platform-websdk.idsec-dev.com/platform-websdk/1.3.1-alpha-5456495156.0/ts-platform-websdk.js"
+      src="https://platform-websdk.idsec-dev.com/platform-websdk/1.3.2-alpha-5476146393.0/ts-platform-websdk.js"
       id="platform-sdk"
     ></script> -->
     <script
-      src="https://platform-websdk.transmitsecurity.io/platform-websdk/1.3.0/ts-platform-websdk.js"
+      src="https://platform-websdk.transmitsecurity.io/platform-websdk/1.3.1/ts-platform-websdk.js"
       id="platform-sdk"
     ></script>
     <script type="module" src="./index.js"></script>
@@ -36,6 +36,20 @@
           </div>
           <div id="journey_start" class="column gap">
             <button id="start_journey_button" class="full-width">Start Journey</button>
+          </div>
+          <div id="information_form" class="column gap hidden">
+            <div class="column gap">
+              <h3 id="information_form_title" style="font-weight: bold">Title</h3>
+              <div
+                id="information_form_text"
+                style="font-family: Sans-serif"
+                class="column long-text"
+              >
+                Text here
+              </div>
+              <button id="information_form_button" class="full-width" type="submit">OK</button>
+              <!--button id="intro_form_cancel_button" class="full-width" type="cancel"></button-->
+            </div>
           </div>
           <div id="phone_form" class="column gap hidden">
             <div class="column gap">
@@ -102,7 +116,9 @@
                 placeholder="Answer"
               />
               <button id="kba_form_button" class="full-width" type="submit">Send Questions</button>
-              <!--button id="intro_form_cancel_button" class="full-width" type="cancel"></button-->
+              <button id="kba_skip_button" class="full-width hidden" type="cancel">
+                Next Time
+              </button>
             </div>
           </div>
 

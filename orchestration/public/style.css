@@ -101,6 +101,11 @@ button:disabled {
   color: #666666;
   pointer-events: none;
 }
+button[type='cancel'] {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #cccccc;
+}
 
 a {
   color: #2383fe;
