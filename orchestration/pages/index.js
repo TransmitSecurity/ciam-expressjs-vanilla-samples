@@ -104,7 +104,7 @@ async function handleJourneyActionUI(idoResponse) {
       clientResponse = await showKbaForm(actionData, responseOptions);
       break;
     default:
-      throw `Unexpectind action id: ${stepId}`;
+      throw `Unexpected step id: ${stepId}`;
   }
 
   return clientResponse;
