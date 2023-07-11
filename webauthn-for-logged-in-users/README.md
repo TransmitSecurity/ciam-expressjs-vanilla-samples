@@ -1,4 +1,4 @@
-# Webauthn flow for Transmit Security's IDP users
+# Webauthn flow for Logged In users
 
 This sample follows the following guide: **New SDK documentation will be added soon**
 

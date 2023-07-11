@@ -1,5 +1,5 @@
 {
-  "name": "@ciam-expressjs-vanilla-samples/webauthn-external-idp-users",
+  "name": "@ciam-expressjs-vanilla-samples/webauthn-for-logged-out-users",
   "version": "1.0.0",
   "private": true,
   "scripts": {

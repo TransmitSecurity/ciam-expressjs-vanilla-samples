@@ -1,4 +1,4 @@
-# Webauthn flow for external idp users
+# Webauthn flow for logged out users
 
 Users that are authenticated with a non Transmit IDP before registering credentials.
 
