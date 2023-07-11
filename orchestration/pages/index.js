@@ -25,7 +25,7 @@ document.querySelector('#start_journey_button').addEventListener('click', startJ
 // Start the journey
 async function startJourney() {
   // initialize SDK first time this is called
-  await init('demo-client-id', 'https://ts1.tsec-stg.com', 'idosdk');
+  await init('demo-client-id', 'https://appclips.poc.transmit-field.com', 'idosdk');
 
   // Reset UI
   pageUtils.hide('journey_start');
@@ -34,9 +34,9 @@ async function startJourney() {
 
   try {
     pageUtils.showLoading();
-    let idoResponse = await sdk.startJourney('skeleton', {
+    let idoResponse = await sdk.startJourney('ciam_orch_1', {
       flowId: 'random',
-      additionalParams: { username: 'John Doe', plus: false },
+      additionalParams: { username: 'John Doe' },
     });
     pageUtils.hideLoading();
     let inJourney = true;
