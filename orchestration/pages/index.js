@@ -37,7 +37,7 @@ async function initSdk(clientId, serverPath, appId) {
 // Start the journey
 async function startJourney(restoreState) {
   // initialize SDK first time this is called
-  await initSdk('demo-client-id', 'https://ts1.tsec-stg.com', 'idosdk');
+  await initSdk('demo-client-id', 'https://appclips.poc.transmit-field.com', 'idosdk');
 
   // Reset UI
   pageUtils.hide('journey_start');
@@ -48,7 +48,7 @@ async function startJourney(restoreState) {
     let idoResponse = null;
     if (!restoreState) {
       pageUtils.showLoading();
-      idoResponse = await sdk.startJourney('skeleton', {
+      idoResponse = await sdk.startJourney('ciam_orch_1', {
         flowId: 'random',
         additionalParams: { username: 'John Doe', plus: true },
       });
@@ -128,7 +128,7 @@ async function handleJourneyActionUI(idoResponse) {
       clientResponse = await showKbaForm(actionData, responseOptions);
       break;
     default:
-      throw `Unexpectind action id: ${stepId}`;
+      throw `Unexpected step id: ${stepId}`;
   }
 
   return clientResponse;
