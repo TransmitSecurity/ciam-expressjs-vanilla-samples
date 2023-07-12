@@ -9,23 +9,35 @@ import {
 
 let sdk = null;
 
-async function init(clientId, serverPath, appId) {
+// Register event handlers for buttons
+document.querySelector('#restart_journey_button').addEventListener('click', onClick);
+document.querySelector('#start_journey_button').addEventListener('click', onClick);
+
+const state = localStorage.getItem('serializedState');
+const parsedState = state ? JSON.parse(state) : null;
+if (parsedState && parsedState.expires > new Date().getTime()) {
+  startJourney(parsedState.state);
+} else {
+  localStorage.removeItem('serializedState');
+}
+
+function onClick() {
+  startJourney();
+}
+
+async function initSdk(clientId, serverPath, appId) {
   if (!sdk) {
     sdk = window.tsPlatform.ido;
     await window.tsPlatform.initialize({ clientId, ido: { serverPath, applicationId: appId } });
-    // sdk = tsPlatform.ido;
-    // await sdk.init(clientId, { serverPath, applicationId: appId });
+    //sdk = tsPlatform.ido;
+    //await sdk.init(clientId, { serverPath, applicationId: appId });
   }
 }
 
-// Register event handlers for buttons
-document.querySelector('#restart_journey_button').addEventListener('click', startJourney);
-document.querySelector('#start_journey_button').addEventListener('click', startJourney);
-
 // Start the journey
-async function startJourney() {
+async function startJourney(restoreState) {
   // initialize SDK first time this is called
-  await init('demo-client-id', 'https://appclips.poc.transmit-field.com', 'idosdk');
+  await initSdk('demo-client-id', 'https://appclips.poc.transmit-field.com', 'idosdk');
 
   // Reset UI
   pageUtils.hide('journey_start');
@@ -33,16 +45,27 @@ async function startJourney() {
   pageUtils.hide('action_response_error');
 
   try {
-    pageUtils.showLoading();
-    let idoResponse = await sdk.startJourney('ciam_orch_1', {
-      flowId: 'random',
-      additionalParams: { username: 'John Doe' },
-    });
-    pageUtils.hideLoading();
+    let idoResponse = null;
+    if (!restoreState) {
+      pageUtils.showLoading();
+      idoResponse = await sdk.startJourney('ciam_orch_1', {
+        flowId: 'random',
+        additionalParams: { username: 'John Doe', plus: false },
+      });
+      pageUtils.hideLoading();
+    } else {
+      idoResponse = sdk.restoreFromSerializedState(restoreState);
+    }
     let inJourney = true;
     let uiResponse = null;
 
     while (inJourney) {
+      // write to local store, non expired. Clean manually if needed
+      localStorage.setItem(
+        'serializedState',
+        JSON.stringify({ state: sdk.serializeState(), expires: new Date().getTime() + 10 * 1000 }),
+      );
+
       switch (idoResponse.type) {
         case IdoServiceResponseType.ClientInputRequired:
         case IdoServiceResponseType.ClientInputUpdateRequired:
@@ -70,6 +93,7 @@ async function startJourney() {
   } catch (error) {
     showFatalError(error);
   }
+  localStorage.removeItem('serializedState');
 }
 
 async function handleJourneyActionUI(idoResponse) {
