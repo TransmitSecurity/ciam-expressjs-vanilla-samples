@@ -1,5 +1,5 @@
 {
-  "name": "@ciam-expressjs-vanilla-samples/webauthn-internal-idp-users",
+  "name": "@ciam-expressjs-vanilla-samples/webauthn-for-logged-in-users",
   "version": "1.0.0",
   "private": true,
   "scripts": {

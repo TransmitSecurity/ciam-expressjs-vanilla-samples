@@ -1,11 +1,9 @@
-# Webauthn flow for external idp users
-
-Users that are authenticated with a non Transmit IDP before registering credentials.
+# Webauthn flow for Logged In users
 
 This sample follows the following guide: **New SDK documentation will be added soon**
 
 In this sample we are demonstrating Passkey registration and authentication (using autofill and
-modal flows ) for users managed externally.
+modal flows) for users managed internally.
 
 For more information see **Documentation will be added soon**
 
@@ -17,10 +15,10 @@ Set up this example using the instruction in the [main README file](../README.md
   - If you already registered a passkey you will be able to select it from the input box using
     autofill flow or, click the Validate Passkey button (with or without filling a username) to
     activate modal flow.
-  - If you didn't, you will be able to register one by clicking the Register link to redirect to the
-    registration page
-- Once registration completes, you will be redirected to the passkey verification page
-- Once verification completes you will get a success message
+  - If you didn't, you'll first need to login using Email OTP, and register one from the home page
+- Once registration completes you will be redirected to a login page
+- Once authentication completes you will be redirected to a home page
+- To logout click on the button in the top right corner
 
 ## Notes
 
