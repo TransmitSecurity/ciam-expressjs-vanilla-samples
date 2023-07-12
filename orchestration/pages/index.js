@@ -5,7 +5,7 @@ import {
   IdoJourneyActionType,
 } from './sdk_interface.js';
 // import { tsPlatform } from '../../node_modules/ido-sdk-web/web-sdk-ido.js'; // remove
-import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // remove
+// import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // remove
 
 let sdk = null;
 
@@ -27,10 +27,10 @@ function onClick() {
 
 async function initSdk(clientId, serverPath, appId) {
   if (!sdk) {
-    //sdk = window.tsPlatform.ido;
-    //await window.tsPlatform.initialize({ clientId, ido: { serverPath, applicationId: appId } });
-    sdk = tsPlatform.ido;
-    await sdk.init(clientId, { serverPath, applicationId: appId });
+    sdk = window.tsPlatform.ido;
+    await window.tsPlatform.initialize({ clientId, ido: { serverPath, applicationId: appId } });
+    //sdk = tsPlatform.ido;
+    //await sdk.init(clientId, { serverPath, applicationId: appId });
   }
 }
 
@@ -50,7 +50,7 @@ async function startJourney(restoreState) {
       pageUtils.showLoading();
       idoResponse = await sdk.startJourney('ciam_orch_1', {
         flowId: 'random',
-        additionalParams: { username: 'John Doe', plus: true },
+        additionalParams: { username: 'John Doe', plus: false },
       });
       pageUtils.hideLoading();
     } else {
