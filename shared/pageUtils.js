@@ -16,6 +16,13 @@ export const pageUtils = {
       console.log(ex);
     }
   },
+  extractInputValue: function (name) {
+    try {
+      return document.getElementById(name).value;
+    } catch (ex) {
+      console.log(ex);
+    }
+  },
   hide: function (id) {
     try {
       document.getElementById(id).classList.add('hidden');

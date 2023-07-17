@@ -1,4 +1,5 @@
 **/.env
+**/.env.*
 **/node_modules
 **/package-lock.json
 */dist
@@ -9,4 +10,6 @@ yarn-error.log
 .husky/
 **/.DS_Store
 .DS_Store
+.history
+.vscode
 .history
