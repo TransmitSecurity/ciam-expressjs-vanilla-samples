@@ -2,12 +2,12 @@
 
 Users that are authenticated with a non Transmit IDP before registering credentials.
 
-This sample follows the following guide: **New SDK documentation will be added soon**
+This sample follows the following guide:
+https://developer.transmitsecurity.com/guides/webauthn/quick_start_sdk
 
 In this sample we are demonstrating Passkey registration and authentication (using autofill and
-modal flows ) for users managed externally.
-
-For more information see **Documentation will be added soon**
+modal flows ) for users managed externally. For more information see
+[Implement login with WebAuthn API](https://developer.transmitsecurity.com/guides/webauthn/basic_login_scenarios/)
 
 Set up this example using the instruction in the [main README file](../README.md)
 
@@ -25,4 +25,4 @@ Set up this example using the instruction in the [main README file](../README.md
 ## Notes
 
 - You can use the browser's password manager to delete passkeys associated with this page. For
-  example in Chrome, the auto-fill list will contain a "Manage passwords and Passkeys" section.
+  example in Chrome, the autofill list will contain a "Manage passwords and Passkeys" section.
