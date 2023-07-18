@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <div id="googleDiv" class="column gap">
+            <h3>Login with Google</h3>
+            <button id="loginWithGoogleButton" onclick="login()" class="full-width">Login</button>
+          </div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
+    <script type="application/javascript" src="google-login.js"></script>
+    <script>
+      async function login() {
+        //eslint-disable-next-line no-undef
+        await getGoogleUrl(handleGoogleUrlResponse);
+      }
+
+      const handleGoogleUrlResponse = getGoogleUrlResponse => {
+        if (getGoogleUrlResponse?.url) {
+          console.log('about to redirect to google URL', getGoogleUrlResponse.url);
+          window.location.assign(getGoogleUrlResponse.url);
+        }
+      };
+    </script>
+  </body>
+</html>
