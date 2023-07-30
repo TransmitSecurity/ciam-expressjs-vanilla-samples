@@ -4,8 +4,7 @@ import {
   ClientResponseOptionType,
   IdoJourneyActionType,
 } from './sdk_interface.js';
-// import { tsPlatform } from '../../node_modules/ido-sdk-web/web-sdk-ido.js'; // remove
-// import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // remove
+// import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 
 let sdk = null;
 
@@ -29,8 +28,6 @@ async function initSdk(clientId, serverPath, appId) {
   if (!sdk) {
     sdk = window.tsPlatform.ido;
     await window.tsPlatform.initialize({ clientId, ido: { serverPath, applicationId: appId } });
-    //sdk = tsPlatform.ido;
-    //await sdk.init(clientId, { serverPath, applicationId: appId });
   }
 }
 
@@ -116,6 +113,12 @@ async function handleJourneyActionUI(idoResponse) {
       clientResponse = await showInformation({
         title: 'Breakpoint',
         text: 'Journey is holding on breakpoint',
+      });
+      break;
+    case IdoJourneyActionType.CryptoBindingRegistration:
+      clientResponse = await showInformation({
+        title: 'Crypto Binding',
+        text: 'About to register a device key',
       });
       break;
     case 'phone_input':
