@@ -1,5 +1,17 @@
 /**
  * @enum
+ * @description The enum for the log levels.
+ */
+// eslint-disable-next-line no-var
+export var LogLevel;
+(function (LogLevel) {
+  LogLevel[(LogLevel['Debug'] = 0)] = 'Debug';
+  LogLevel[(LogLevel['Info'] = 1)] = 'Info';
+  LogLevel[(LogLevel['Warning'] = 2)] = 'Warning';
+  LogLevel[(LogLevel['Error'] = 3)] = 'Error';
+})(LogLevel || (LogLevel = {}));
+/**
+ * @enum
  * @description The enum for the sdk error codes.
  */
 // eslint-disable-next-line no-var
@@ -29,6 +41,10 @@ export var ErrorCode;
    * @description The server returned an unexpected error.
    */
   ErrorCode['ServerError'] = 'server_error';
+  /**
+   * @description The provided state string is not valid for SDK state recovery.
+   */
+  ErrorCode['InvalidStateString'] = 'invalid_state_string';
 })(ErrorCode || (ErrorCode = {}));
 /**
  * @enum
@@ -80,4 +96,5 @@ export var IdoJourneyActionType;
   IdoJourneyActionType['Rejection'] = 'action:rejection';
   IdoJourneyActionType['Information'] = 'action:information';
   IdoJourneyActionType['DebugBreak'] = 'action:debug_break';
+  IdoJourneyActionType['CryptoBindingRegistration'] = 'action:crypto_binding_registration';
 })(IdoJourneyActionType || (IdoJourneyActionType = {}));
