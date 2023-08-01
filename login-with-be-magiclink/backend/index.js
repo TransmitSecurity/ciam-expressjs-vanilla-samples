@@ -1,7 +1,7 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
-import * as querystring from 'querystring';
+import querystring from 'querystring';
 
 const router = express.Router();
 
@@ -42,7 +42,7 @@ router.post('/send-magic-link', common.utils.rateLimiter(), async function (req,
     } catch (error) {
       console.log(error);
       res.status(500).send({
-        received_email: req.body.email,
+        received_email: email,
         message: 'Error in the magic link flow',
         error,
       });
