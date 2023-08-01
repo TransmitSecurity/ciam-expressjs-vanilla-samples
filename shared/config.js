@@ -27,6 +27,9 @@ export const config = {
 
     sendMagicLink: `${baseUrl()}/cis/v1/auth/links/email`,
 
+    sendBackendMagicLink: `${baseUrl()}/cis/v1/auth/link/email/send`,
+    authenticateBackendMagicLink: `${baseUrl()}/cis/v1/auth/link/email/authenticate`,
+
     googleLogin: `${baseUrl()}/cis/v1/auth/google`,
 
     webauthnAuthorize: `${baseUrl()}/cis/v1/auth-session/authorize`,
