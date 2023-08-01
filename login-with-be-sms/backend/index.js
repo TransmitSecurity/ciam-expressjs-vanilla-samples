@@ -43,7 +43,7 @@ router.post('/send-sms-otp', common.utils.rateLimiter(), async function (req, re
     } catch (error) {
       console.log(error);
       res.status(500).send({
-        received_phone: req.body.phone_number,
+        received_phone: phone,
         message: 'Error in the sms-otp flow',
         error,
       });
@@ -52,8 +52,7 @@ router.post('/send-sms-otp', common.utils.rateLimiter(), async function (req, re
 });
 
 router.post('/authenticate', common.utils.rateLimiter(), async function (req, res) {
-  const phone = req.body?.phone_number;
-  const otpCode = req?.body?.otpCode;
+  const { phone_number: phone, otpCode } = req?.body ?? {};
   console.log('received body is', req?.body);
 
   if (!otpCode || !phone || !accessToken) {

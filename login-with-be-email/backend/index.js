@@ -43,7 +43,7 @@ router.post('/send-email-otp', common.utils.rateLimiter(), async function (req, 
     } catch (error) {
       console.log(error);
       res.status(500).send({
-        received_email: req.body.email,
+        received_email: email,
         message: 'Error in the email-otp flow',
         error,
       });
@@ -52,8 +52,7 @@ router.post('/send-email-otp', common.utils.rateLimiter(), async function (req, 
 });
 
 router.post('/authenticate', common.utils.rateLimiter(), async function (req, res) {
-  const email = req.body?.email;
-  const otpCode = req?.body?.otpCode;
+  const { email, otpCode } = req?.body ?? {};
   console.log('received body is', req?.body);
 
   if (!otpCode || !email || !accessToken) {
