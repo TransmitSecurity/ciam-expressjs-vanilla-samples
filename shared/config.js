@@ -12,12 +12,14 @@ export const config = {
     token: `${baseUrl()}/oidc/token`,
     jwks: `${baseUrl()}/cis/oidc/jwks`,
     logout: `${baseUrl()}/cis/v1/auth/logout`,
+    backendLogout: `${baseUrl()}/cis/v1/auth/session/logout`,
 
     createUser: `${baseUrl()}/cis/v1/users`,
     getUser: userId => `${baseUrl()}/cis/v1/users/${userId}`,
     getUserByUsername: userName => `${baseUrl()}/cis/v1/users/username/${userName}`,
 
     passwordLogin: `${baseUrl()}/cis/v1/auth/password/login`,
+    passwordBackendAuthentication: `${baseUrl()}/cis/v1/auth/password/authenticate`,
 
     sendOtpEmail: `${baseUrl()}/cis/v1/auth/otp/email`,
     validateOtpEmail: `${baseUrl()}/cis/v1/auth/otp/email/validation`,
