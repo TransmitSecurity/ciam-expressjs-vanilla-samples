@@ -24,6 +24,9 @@ export const config = {
     sendOtpEmail: `${baseUrl()}/cis/v1/auth/otp/email`,
     validateOtpEmail: `${baseUrl()}/cis/v1/auth/otp/email/validation`,
 
+    sendBackendOtp: `${baseUrl()}/cis/v1/auth/otp/send`,
+    authenticateBackendOtp: `${baseUrl()}/cis/v1/auth/otp/authenticate`,
+
     sendOtpSMS: `${baseUrl()}/cis/v1/auth/otp/sms`,
     validateOtpSMS: `${baseUrl()}/cis/v1/auth/otp/sms/validation`,
 
