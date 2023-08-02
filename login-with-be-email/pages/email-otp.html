@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
+  </head>
+  <body onload="loadPage()">
+    <div class="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <div id="emailDiv" class="column gap">
+            <h3>Enter your email</h3>
+            <input id="emailInput" type="text" size="40" placeholder="you@example.com" />
+            <button id="sendEmailButton" onclick="sendOTP()" class="full-width">
+              Send Email OTP
+            </button>
+          </div>
+          <div id="otpDiv" class="column gap hidden">
+            <h3>Enter the OTP code</h3>
+            <input id="otpInput" type="text" size="20" />
+            <button id="loginButton" onclick="login()" class="full-width">Login</button>
+            <div id="otpText" class="text"></div>
+          </div>
+          <div id="tokenDiv" class="column hidden">
+            <h3 id="title">Authentication complete</h3>
+            <div>Token signature validation passed successfully!</div>
+            <div>You should also validate the data on your end.</div>
+            <pre id="tokenData" class="column gap"></pre>
+            <button onclick="restart()" class="full-width">Restart</button>
+          </div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
+    <script type="application/javascript" src="./email-otp.js"></script>
+    <script>
+      const emailInput = document.getElementById('emailInput');
+      const otpInput = document.getElementById('otpInput');
+      const otpText = document.getElementById('otpText');
+      const otpDiv = document.getElementById('otpDiv');
+      const emailDiv = document.getElementById('emailDiv');
+      const tokenDiv = document.getElementById('tokenDiv');
+
+      function loadPage() {
+        emailDiv.classList.remove('hidden');
+        otpDiv.classList.add('hidden');
+        tokenDiv.classList.add('hidden');
+      }
+
+      function restart() {
+        window.location.replace('/');
+      }
+
+      async function sendOTP() {
+        window.pageUtils.showLoading();
+        window.pageUtils.updateElementText('status', '');
+
+        await sendEmailOtp(emailInput.value, handleEmailOtpResponse);
+      }
+
+      async function login() {
+        window.pageUtils.showLoading();
+        window.pageUtils.updateElementText('status', '');
+
+        await authenticateOtp(emailInput.value, otpInput.value, handleAuthenticateOtpResponse);
+      }
+
+      const handleEmailOtpResponse = emailOtpResponse => {
+        console.log('Email Otp Response', emailOtpResponse);
+
+        if (emailOtpResponse?.status === 200) {
+          emailDiv.classList.add('hidden');
+          otpDiv.classList.remove('hidden');
+
+          otpText.textContent = `We sent a code to ${emailInput.value}`;
+        } else {
+          window.pageUtils.updateElementText('status', emailOtpResponse.data.message);
+        }
+
+        window.pageUtils.hideLoading();
+      };
+
+      const handleAuthenticateOtpResponse = authOtpResponse => {
+        console.log('Authenticate Response', authOtpResponse);
+
+        if (authOtpResponse?.status === 200) {
+          otpDiv.classList.add('hidden');
+          tokenDiv.classList.remove('hidden');
+          window.pageUtils.updateElementText(
+            'tokenData',
+            JSON.stringify(authOtpResponse.data, undefined, 2),
+          );
+        } else {
+          window.pageUtils.updateElementText('status', authOtpResponse.data.message);
+        }
+
+        window.pageUtils.hideLoading();
+      };
+    </script>
+  </body>
+</html>
