@@ -10,7 +10,9 @@ Set up this example using the instruction in the [main README file](../README.md
 
 ## Sample user experience
 
-- Open a browser tab on <domain:port>/ - redirects to an email input login page
+- Open a browser tab on <domain:port>/ - redirects to a user signup page
+- Enter your email and click Create User (https://developer.transmitsecurity.com/openapi/user/user/)
+- The user will be created and you will be prompted to login
 - Enter your email and click the button - the page changes to OTP input
 - Go to your email and copy the code
 - Enter the code and click the button

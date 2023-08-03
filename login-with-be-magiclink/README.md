@@ -7,7 +7,9 @@ Set up this example using the instruction in the [main README file](../README.md
 
 ## Sample user experience
 
-- Open a browser tab on <domain:port>/ - redirects to an email input login page
+- Open a browser tab on <domain:port>/ - redirects to a user signup page
+- Enter your email and click Create User (https://developer.transmitsecurity.com/openapi/user/user/)
+- The user will be created and you will be prompted to login
 - Enter your email and click the Send Magic Link button
 - Go to your email and click the Magic Link
 - The browser will redirect to the completion page, and then authenticates the code from the magic
