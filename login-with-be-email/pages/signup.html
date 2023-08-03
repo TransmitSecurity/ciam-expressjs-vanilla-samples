@@ -1,0 +1,75 @@
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME Signup</title>
+    <script type="module" src="./init.js"></script>
+  </head>
+
+  <body>
+    <div class="page" id="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3>Create New User</h3>
+          <div id="createUserDiv" class="column gap">
+            <input type="text" name="email" id="email" size="40" placeholder="Enter your email" />
+            <button class="full-width" onclick="createUser()">Create User</button>
+
+            <div class="row">
+              Already have an account? <a href="/pages/email-otp.html">Login</a>
+            </div>
+          </div>
+          <div id="createUserText" class="text"></div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
+    <script>
+      const createUserText = document.getElementById('createUserText');
+      const createUserDiv = document.getElementById('createUserDiv');
+
+      async function createUser() {
+        window.pageUtils.showLoading();
+        window.pageUtils.updateElementText('status', '');
+
+        const email = document.getElementById('email').value;
+
+        const result = await fetch('/create-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+          }),
+        });
+
+        const status = result.status;
+        const data = await result.json();
+        console.log('Response from /create-user', { status, data });
+        handleCreateUserResponse({ status, data });
+      }
+
+      const handleCreateUserResponse = createResponse => {
+        console.log('Create User Response', createResponse);
+
+        if (createResponse?.status === 201) {
+          createUserDiv.classList.add('hidden');
+          createUserText.innerHTML = `<span>User created please <a href="/pages/email-otp.html">Login</a></span`;
+        } else {
+          window.pageUtils.updateElementText('status', createResponse.data.message);
+        }
+        window.pageUtils.hideLoading();
+      };
+    </script>
+  </body>
+</html>

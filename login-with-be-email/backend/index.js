@@ -13,9 +13,35 @@ const router = express.Router();
 // This parameter emulates this 'cache' with a static variable for simplicity.
 let accessToken = null;
 
-// GET login page
+// GET signup page
 router.get('/', function (req, res) {
-  res.redirect('/pages/email-otp.html');
+  res.redirect('/pages/signup.html');
+});
+
+router.post('/create-user', common.utils.rateLimiter(), async function (req, res) {
+  const { email } = req.body;
+  if (!email) {
+    res.status(401).send({
+      message: 'Received email is empty',
+    });
+  } else {
+    try {
+      // create the user
+      const createUserResponse = await createUser(email);
+
+      res.status(createUserResponse.status).send({
+        received_email: email,
+        ...createUserResponse,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        received_email: email,
+        message: 'Error in the create user flow',
+        error,
+      });
+    }
+  }
 });
 
 router.post('/send-email-otp', common.utils.rateLimiter(), async function (req, res) {
@@ -120,6 +146,27 @@ async function authenticateEmailOtp(email, otpCode) {
   const data = await resp.json();
   console.log('response is ', { status, data });
   return data.access_token;
+}
+
+async function createUser(email) {
+  if (!accessToken) {
+    accessToken = await common.tokens.getClientCredsToken();
+  }
+
+  const resp = await fetch(common.config.apis.createUser, {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
+      email,
+    }),
+  });
+  const status = resp.status;
+  const data = await resp.json();
+  console.log('response of creating user is ', { status, data });
+  return { status, ...data };
 }
 
 async function validateToken(token) {
