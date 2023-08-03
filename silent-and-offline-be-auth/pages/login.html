@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
+  </head>
+
+  <body onload="loadPage()">
+    <div class="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <div id="emailDiv" class="column gap">
+            <h3>Enter your email</h3>
+            <input id="emailInput" type="text" size="40" placeholder="you@example.com" />
+            <button id="sendMagicLinkButton" onclick="sendMagicLink()" class="full-width">
+              Send Magic Link
+            </button>
+          </div>
+          <div id="magicLinkText" class="text"></div>
+          <div id="status"></div>
+          <div class="row">
+            Don&apos;t have an account? <a href="/pages/signup.html">Sign up</a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const emailInput = document.getElementById('emailInput');
+      const magicLinkText = document.getElementById('magicLinkText');
+      const emailDiv = document.getElementById('emailDiv');
+
+      function loadPage() {
+        emailDiv.classList.remove('hidden');
+      }
+
+      async function sendMagicLink() {
+        window.pageUtils.showLoading();
+        window.pageUtils.updateElementText('status', '');
+
+        const response = await fetch('/send-magic-link', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: emailInput.value,
+          }),
+        });
+
+        const status = response.status;
+        const data = await response.json();
+        console.log('Response from /send-magic-link', { status, data });
+        handleMagicLinkResponse({ status, data });
+      }
+
+      const handleMagicLinkResponse = magicLinkResponse => {
+        console.log('Magic Link Response', magicLinkResponse);
+
+        if (magicLinkResponse?.status === 200) {
+          emailDiv.classList.add('hidden');
+          magicLinkText.textContent = `We sent a magic link to ${emailInput.value}`;
+        } else {
+          window.pageUtils.updateElementText('status', magicLinkResponse.data.message);
+        }
+        window.pageUtils.hideLoading();
+      };
+    </script>
+  </body>
+</html>

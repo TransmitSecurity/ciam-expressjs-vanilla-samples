@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
+    <script>
+      async function initPage() {
+        const error = window.pageUtils.extractUrlParameter('error');
+
+        if (error) {
+          window.pageUtils.updateElementText('title', error);
+        } else {
+          await getLoggedUser();
+        }
+      }
+
+      async function getLoggedUser() {
+        window.pageUtils.showLoading();
+        const response = await fetch('/user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const status = response.status;
+        const data = await response.json();
+        console.log('Response from /user', { status, data });
+
+        if (status === 200) {
+          window.pageUtils.show('tokenDiv');
+          window.pageUtils.updateElementText('tokenData', JSON.stringify(data, undefined, 2));
+        } else {
+          window.pageUtils.updateElementText('status', data.message);
+        }
+
+        window.pageUtils.hideLoading();
+      }
+
+      /**
+       * Implement all session authentication logic here.
+       * https://developer.transmitsecurity.com/openapi/user/backend-sessions/
+       */
+      async function refreshToken() {
+        try {
+          window.pageUtils.showLoading();
+
+          await fetch('/refresh-token', {
+            method: 'POST',
+          });
+
+          // Reload the page
+          window.location.reload();
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during refresh token: ${ex}`);
+        }
+
+        window.pageUtils.hideLoading();
+      }
+
+      async function sessionAuth() {
+        try {
+          window.pageUtils.showLoading();
+
+          await fetch('/session-auth', {
+            method: 'POST',
+          });
+
+          // Reload the page
+          window.location.reload();
+        } catch (ex) {
+          window.pageUtils.updateElementText(
+            'status',
+            `Error during session authentication: ${ex}`,
+          );
+        }
+
+        window.pageUtils.hideLoading();
+      }
+
+      async function logout() {
+        try {
+          window.pageUtils.showLoading();
+
+          await fetch('/logout', {
+            method: 'POST',
+          });
+
+          // Redirect the user to the login page
+          window.location.replace('/pages/login.html');
+          return;
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
+        }
+
+        window.pageUtils.hideLoading();
+      }
+    </script>
+  </head>
+  <body onload="initPage()">
+    <div class="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3 id="title">Welcome</h3>
+          <div id="tokenDiv" class="column hidden gap">
+            <div>
+              <p>Token info:</p>
+              <pre id="tokenData" class="column gap"></pre>
+            </div>
+            <button onclick="refreshToken()" class="full-width">Refresh token</button>
+            <button onclick="sessionAuth()" class="full-width">Session authentication</button>
+            <button onclick="logout()" class="full-width">Logout</button>
+          </div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
