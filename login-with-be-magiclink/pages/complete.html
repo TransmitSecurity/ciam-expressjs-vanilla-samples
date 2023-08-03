@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
+    <script>
+      async function initPage() {
+        const code = window.pageUtils.extractUrlParameter('code');
+
+        if (code) {
+          window.pageUtils.showLoading();
+          const response = await fetch('/authenticate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code: code }),
+          });
+
+          const status = response.status;
+          const data = await response.json();
+          console.log('Response from /authenticate', { status, data });
+          handleAuthenticationResponse({ status, data });
+        } else {
+          window.pageUtils.updateElementText('title', 'No code found');
+        }
+      }
+
+      const handleAuthenticationResponse = response => {
+        if (response.status === 200) {
+          window.pageUtils.show('tokenDiv');
+          window.pageUtils.updateElementText(
+            'tokenData',
+            JSON.stringify(response.data, undefined, 2),
+          );
+        } else {
+          window.pageUtils.updateElementText('status', response.data.message);
+        }
+
+        window.pageUtils.hideLoading();
+      };
+
+      function restart() {
+        window.location.replace('/');
+      }
+    </script>
+  </head>
+  <body onload="initPage()">
+    <div class="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3 id="title">Authentication complete</h3>
+          <div id="tokenDiv" class="column hidden">
+            <div>Token signature validation passed successfully!</div>
+            <div>You should also validate the data on your end.</div>
+            <pre id="tokenData" class="column gap"></pre>
+            <button onclick="restart()" class="full-width">Restart</button>
+          </div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
