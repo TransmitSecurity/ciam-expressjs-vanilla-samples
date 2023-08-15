@@ -47,7 +47,7 @@ async function startJourney(restoreState) {
       pageUtils.showLoading();
       idoResponse = await sdk.startJourney('ciam_orch_1', {
         flowId: 'random',
-        additionalParams: { username: 'John Doe', plus: false },
+        additionalParams: { username: 'John Doe', plus: true },
       });
       pageUtils.hideLoading();
     } else {
@@ -148,7 +148,6 @@ async function showInformation(actionData) {
       });
     }
 
-    document.getElementById('phone_form_input').value = '';
     pageUtils.updateElementText(
       'information_form_title',
       actionData?.title || 'Empty title from server',
@@ -182,6 +181,7 @@ async function showPhoneForm() {
       });
     }
 
+    document.getElementById('phone_form_input').value = '';
     pageUtils.show('phone_form');
 
     // clear all handlers, this handles multiple runs of the same action
