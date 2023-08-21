@@ -20,7 +20,7 @@ function showFatalError(error) {
 }
 
 // Start the journey
-export async function startJourney(
+export async function executeJourney(
   journeyName,
   handleJourneyActionUI,
   additionalParams,

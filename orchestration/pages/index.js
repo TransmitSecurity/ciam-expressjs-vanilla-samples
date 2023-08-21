@@ -1,5 +1,5 @@
 import { pageUtils } from '../../shared/pageUtils.js';
-import { showInformation, startJourney } from './commonUtils.js';
+import { showInformation, executeJourney } from './commonUtils.js';
 import { ClientResponseOptionType, IdoJourneyActionType } from './sdk_interface.js';
 // import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 
@@ -16,13 +16,13 @@ const JOURNEY_ADDITIONAL_PARAMS = {
 const state = localStorage.getItem('serializedState');
 const parsedState = state ? JSON.parse(state) : null;
 if (parsedState && parsedState.expires > new Date().getTime()) {
-  startJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, parsedState.state);
+  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, parsedState.state);
 } else {
   localStorage.removeItem('serializedState');
 }
 
 function onClick() {
-  startJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
+  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
 }
 async function handleJourneyActionUI(idoResponse) {
   const actionData = idoResponse?.data;

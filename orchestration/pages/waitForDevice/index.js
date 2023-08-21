@@ -1,4 +1,4 @@
-import { showInformation, startJourney } from '../commonUtils.js';
+import { showInformation, executeJourney } from '../commonUtils.js';
 import { IdoJourneyActionType } from '../sdk_interface.js';
 
 // Register event handlers for buttons
@@ -14,13 +14,13 @@ const JOURNEY_ADDITIONAL_PARAMS = {
 const state = localStorage.getItem('serializedState');
 const parsedState = state ? JSON.parse(state) : null;
 if (parsedState && parsedState.expires > new Date().getTime()) {
-  startJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, parsedState.state);
+  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, parsedState.state);
 } else {
   localStorage.removeItem('serializedState');
 }
 
 function onClick() {
-  startJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
+  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
 }
 
 async function handleJourneyActionUI(idoResponse) {
@@ -47,8 +47,8 @@ async function handleJourneyActionUI(idoResponse) {
       break;
     case IdoJourneyActionType.WaitForAnotherDevice:
       clientResponse = await showInformation({
-        title: 'Wait for ticket',
-        text: 'Journey is waiting for a ticket',
+        title: 'Wait for another device',
+        text: 'Journey is waiting for another device',
       });
       break;
     default:
