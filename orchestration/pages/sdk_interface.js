@@ -42,9 +42,9 @@ export var ErrorCode;
    */
   ErrorCode['ServerError'] = 'server_error';
   /**
-   * @description The provided state string is not valid for SDK state recovery.
+   * @description The provided state is not valid for SDK state recovery.
    */
-  ErrorCode['InvalidStateString'] = 'invalid_state_string';
+  ErrorCode['InvalidState'] = 'invalid_state';
 })(ErrorCode || (ErrorCode = {}));
 /**
  * @enum
@@ -90,11 +90,41 @@ export var IdoServiceResponseType;
    */
   IdoServiceResponseType['JourneyRejection'] = 'journey_rejection';
 })(IdoServiceResponseType || (IdoServiceResponseType = {}));
+/**
+ * @enum
+ * @description The enum for the Journey step ID, when the journey step is a known action and not a custom form.
+ */
 // eslint-disable-next-line no-var
 export var IdoJourneyActionType;
 (function (IdoJourneyActionType) {
+  /**
+   * @description `journeyStepId` for a Rejection action.
+   */
   IdoJourneyActionType['Rejection'] = 'action:rejection';
+  /**
+   * @description `journeyStepId` for an Information action.
+   */
   IdoJourneyActionType['Information'] = 'action:information';
+  /**
+   * @description `journeyStepId` for a server side debugger breakpoint.
+   */
   IdoJourneyActionType['DebugBreak'] = 'action:debug_break';
+  /**
+   * @description `journeyStepId` for a wait for Cross Session Message.
+   */
+  IdoJourneyActionType['WaitForAnotherDevice'] = 'action:wait_for_another_device';
+  /**
+   * @description `journeyStepId` for device crypto binding action.
+   * This action is presented to the client side when the journey has a form with the ID `"action:crypto_binding_registration"`.
+   * On submission of `clientResponse` - the SDK will generate a key and respond in the following format:
+   * ```json
+   * {
+   *   "ts:idosdk:device": {
+   *     "platform_device_key": "base64 encoded public key",
+   *     "platform_device_id": "an opaque key ID",
+   *  }
+   * ```
+   * The server should store the key and the ID for future device identity validation.
+   */
   IdoJourneyActionType['CryptoBindingRegistration'] = 'action:crypto_binding_registration';
 })(IdoJourneyActionType || (IdoJourneyActionType = {}));
