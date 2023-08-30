@@ -6,7 +6,11 @@ let sdk = null;
 
 export async function initSdk(clientId, serverPath, appId) {
   if (!sdk) {
-    await window.tsPlatform.initialize({ clientId, ido: { serverPath, applicationId: appId } });
+    await window.tsPlatform.initialize({
+      clientId,
+      ido: { serverPath, applicationId: appId },
+      webauthn: { serverPath: 'https://api.transmitsecurity.io' },
+    });
     sdk = window.tsPlatform.ido;
   }
 }
@@ -25,9 +29,10 @@ export async function executeJourney(
   handleJourneyActionUI,
   additionalParams,
   restoreState,
+  clientId = 'demo-client-id',
 ) {
   // initialize SDK first time this is called
-  await initSdk('demo-client-id', 'https://appclips.poc.transmit-field.com', 'idosdk');
+  await initSdk(clientId, 'https://appclips.poc.transmit-field.com', 'idosdk');
 
   // Reset UI
   pageUtils.hide('journey_start');
