@@ -1,16 +1,23 @@
 import { showInformation, executeJourney } from '../commonUtils.js';
 import { IdoJourneyActionType } from '../sdk_interface.js';
-// import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
-
-const JOURNEY_NAME = 'cross_device';
-const JOURNEY_ADDITIONAL_PARAMS = {
-  flowId: 'random',
-  additionalParams: { messageId: new URLSearchParams(window.location.search).get('messageId') },
-};
 
 // Register event handlers for buttons
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
+
+const JOURNEY_NAME = 'crypto_binding';
+const JOURNEY_ADDITIONAL_PARAMS = {
+  flowId: 'random',
+  additionalParams: {},
+};
+
+const state = localStorage.getItem('serializedState');
+const parsedState = state ? JSON.parse(state) : null;
+if (parsedState && parsedState.expires > new Date().getTime()) {
+  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, parsedState.state);
+} else {
+  localStorage.removeItem('serializedState');
+}
 
 function onClick() {
   executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
@@ -32,10 +39,16 @@ async function handleJourneyActionUI(idoResponse) {
     case IdoJourneyActionType.Information:
       clientResponse = await showInformation(actionData, responseOptions);
       break;
-    case IdoJourneyActionType.DebugBreak:
+    case IdoJourneyActionType.CryptoBindingRegistration:
       clientResponse = await showInformation({
-        title: 'Breakpoint',
-        text: 'Journey is holding on breakpoint',
+        title: 'Crypto Binding',
+        text: 'About to register a device key',
+      });
+      break;
+    case IdoJourneyActionType.CryptoBindingValidation:
+      clientResponse = await showInformation({
+        title: 'Crypto Binding validation',
+        text: 'About to validate a device key',
       });
       break;
     default:
