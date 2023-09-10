@@ -63,4 +63,9 @@ export const config = {
 
     samlIdpUrl: `${baseUrl()}/cis/v1/serviceprovider/saml2/sso/${serviceProviderId()}`,
   },
+  hosts: {
+    webServer: `${process.env.VITE_SAMPLE_WEB_SERVICE_DOMAIN || 'http://localhost'}:${
+      process.env.POST || 8080
+    }`,
+  },
 };
