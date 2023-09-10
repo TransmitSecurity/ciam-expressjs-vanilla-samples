@@ -9,6 +9,7 @@ function serviceProviderId() {
 export const config = {
   apis: {
     auth: `${baseUrl()}/cis/oidc/auth`,
+    authRequest: `${baseUrl()}/cis/oidc/request`,
     token: `${baseUrl()}/oidc/token`,
     jwks: `${baseUrl()}/cis/oidc/jwks`,
     logout: `${baseUrl()}/cis/v1/auth/logout`,
@@ -55,6 +56,8 @@ export const config = {
       `${baseUrl()}/cis/oidc/auth?response_type=code&client_id=${clientId}&login_hint=${encodeURIComponent(
         username,
       )}&redirect_uri=${redirectUri}&scope=openid+email`,
+    hostedPasskeyTransactionUrl: (requestUri, clientId) =>
+      `${baseUrl()}/cis/oidc/auth?request_uri=${requestUri}&client_id=${clientId}&scope=openid+email`,
 
     getRiskRecommendation: query => `${baseUrl()}/risk/v1/recommendation?${query}`,
 

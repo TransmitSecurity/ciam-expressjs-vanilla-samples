@@ -58,7 +58,8 @@
   }
 }
 
-input {
+input,
+textarea {
   padding: 17px 12px;
   border: $border;
   border-radius: $border-radius;
@@ -66,6 +67,12 @@ input {
   &:focus-visible {
     outline: $primary auto 1px;
   }
+}
+
+select {
+  padding: 17px 12px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
 }
 
 button {
