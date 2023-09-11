@@ -84,6 +84,9 @@ router.post('/webauthn/transaction', async function (req, res) {
       scope: 'openid',
       response_type: 'code',
       redirect_uri: transactionRedirectUri,
+      // You can add the identifier of the user that should approve the transaction. keeping this parameter
+      // undefined will allow the user to pick any available passkey.
+      login_hint: undefined,
     };
 
     const formBody = new URLSearchParams(body).toString();
