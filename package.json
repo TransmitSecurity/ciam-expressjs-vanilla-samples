@@ -5,7 +5,6 @@
   "private": true,
   "workspaces": [
     "hosted-webauthn-for-logged-out-users",
-    "hosted-webauthn-transaction-signing",
     "login-with-email",
     "login-with-google",
     "login-with-sms",
