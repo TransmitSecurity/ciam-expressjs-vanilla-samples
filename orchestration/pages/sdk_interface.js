@@ -127,4 +127,9 @@ export var IdoJourneyActionType;
    * The server should store the key and the ID for future device identity validation.
    */
   IdoJourneyActionType['CryptoBindingRegistration'] = 'action:crypto_binding_registration';
+  /**
+   * @description `journeyStepId` for device crypto binding validation action.
+   * This action is presented to the client side when the journey has a form with the ID `"action:crypto_binding_validation"`.
+   */
+  IdoJourneyActionType['CryptoBindingValidation'] = 'action:crypto_binding_validation';
 })(IdoJourneyActionType || (IdoJourneyActionType = {}));
