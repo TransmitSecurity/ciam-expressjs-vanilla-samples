@@ -4,8 +4,9 @@ Users that are authenticated with a non Transmit IDP before registering credenti
 
 This sample follows the following guide: **TODO: add link to guide**
 
-In this sample we are demonstrating Passkey registration and authentication, for users managed
-externally, using the hosted experience. For more information see **TODO: add link to guide**
+In this sample we are demonstrating Passkey registration, authentication and transaction signing
+flows, for users managed externally, using the hosted experience. For more information see **TODO:
+add link to guide**
 
 Set up this example using the instruction in the [main README file](../README.md)
 
@@ -31,8 +32,17 @@ Set up this example using the instruction in the [main README file](../README.md
   - Browse to the authentication page by clicking the "here" link below the registration button
   - Enter the username you used to register and click on "Continue with passkey"
   - You'll be redirected to the hosted passkey authentication page
-  - complete the authentication flow, and you'll be redirected back to a complete page with
-    authentication data
+  - complete the authentication flow, and you'll be redirected back to a home page with the ID
+    token.
+- Transaction Signing
+  - From the login page, Browse to the Transaction page by clicking the "here" link below the
+    authentication button
+  - Fill the transaction details, money transfer or custom, and click on "Continue to transaction
+    page"
+  - You'll be redirected to the hosted confirm transaction page
+  - Click confirm, select the passkey you want to sign with, and complete the transaction flow
+  - You'll be redirected back to a complete page with ID Token containing the "approval_data"
+    details.
 
 ## Notes
 
