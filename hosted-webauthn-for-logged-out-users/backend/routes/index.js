@@ -14,7 +14,7 @@ router.post('/webauthn/register', async function (req, res) {
     const webauthnUsername = req.body.username;
     const registrationHintUrl = common.config.apis.webauthnRegisterExternalHint;
     const token = await common.tokens.getClientCredsToken();
-    const registrationRedirectUri = `${common.config.hosts.webServer}/pages/register.html`;
+    const registrationRedirectUri = `${req.headers.origin}/pages/complete.html`;
 
     // This is your internal user identifier that will be associated to the WebAuthn credential.
 
@@ -37,8 +37,8 @@ router.post('/webauthn/register', async function (req, res) {
     const json = await data.json();
 
     if (!data.ok) {
-      res.status(500).send({ error: JSON.stringify(json) });
-      return;
+      console.log(json.message);
+      throw new Error();
     }
 
     const hostedWebauthnRegisterUrl = common.config.apis.hostedPasskeyRegistrationUrl(
@@ -55,7 +55,7 @@ router.post('/webauthn/authenticate', async function (req, res) {
   try {
     const webauthnUsername = req.body.username;
     const clientId = process.env.VITE_TS_CLIENT_ID;
-    const authenticationRedirectUri = `${common.config.hosts.webServer}/pages/complete.html`;
+    const authenticationRedirectUri = `${req.headers.origin}/pages/complete.html`;
 
     const uri = common.config.apis.hostedPasskeyAuthenticationUrl(
       webauthnUsername,
