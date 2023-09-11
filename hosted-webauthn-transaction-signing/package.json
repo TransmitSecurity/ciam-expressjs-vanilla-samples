@@ -1,5 +1,5 @@
 {
-  "name": "@ciam-expressjs-vanilla-samples/hosted-webauthn-transaction-signin",
+  "name": "@ciam-expressjs-vanilla-samples/hosted-webauthn-transaction-signing",
   "version": "1.0.0",
   "private": true,
   "scripts": {

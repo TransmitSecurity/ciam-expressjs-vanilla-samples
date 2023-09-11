@@ -14,6 +14,7 @@ router.post('/webauthn/register', async function (req, res) {
     const webauthnUsername = req.body.username;
     const registrationHintUrl = common.config.apis.webauthnRegisterExternalHint;
     const token = await common.tokens.getClientCredsToken();
+    const registrationRedirectUri = `${req.headers.origin}/pages/complete.html`;
 
     // This is your internal user identifier that will be associated to the WebAuthn credential.
     const user_identifier = crypto.randomUUID();
@@ -27,7 +28,7 @@ router.post('/webauthn/register', async function (req, res) {
       body: JSON.stringify({
         external_user_id: user_identifier,
         webauthn_identifier: webauthnUsername,
-        redirect_uri: `http://localhost:8888/pages/register.html`,
+        redirect_uri: registrationRedirectUri,
       }),
     };
 
@@ -54,6 +55,7 @@ router.post('/webauthn/transaction', async function (req, res) {
     const clientId = process.env.VITE_TS_CLIENT_ID;
     const clientSecret = process.env.TS_CLIENT_SECRET;
     const authRequestUrl = common.config.apis.authRequest;
+    const transactionRedirectUri = `${req.headers.origin}/pages/complete.html`;
     const { type, payee, amount, currency, method, customData } = req.body;
 
     const approvalData =
@@ -81,7 +83,7 @@ router.post('/webauthn/transaction', async function (req, res) {
       claims: JSON.stringify(claims),
       scope: 'openid',
       response_type: 'code',
-      redirect_uri: `http://localhost:8888/pages/complete.html`,
+      redirect_uri: transactionRedirectUri,
     };
 
     const formBody = new URLSearchParams(body).toString();

@@ -12,15 +12,6 @@
     <title>ACME</title>
     <script type="module" src="./init.js"></script>
     <script>
-      async function init() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const params = Object.fromEntries(urlParams.entries());
-        if (Object.keys(params).length) {
-          window.pageUtils.updateElementText('status-ok', 'Passkey enrolled successfully.');
-          window.pageUtils.updateElementText('status-details', JSON.stringify(params, null, 2));
-          window.pageUtils.show('status-ok-details');
-        }
-      }
       async function registerPasskey() {
         try {
           window.pageUtils.showLoading();
