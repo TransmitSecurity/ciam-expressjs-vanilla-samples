@@ -23,20 +23,20 @@ Set up this example using the instruction in the [main README file](../README.md
     - Click on Applications tab and select your app
     - Under "Redirect URIs" add <domain:port>/pages/complete.html
 - Open a browser tab on <domain:port>/
-  - You will be redirected to the registration page
-  - Enter a username and click on "Enroll Passkey"
-  - You'll be redirected to the hosted passkey registration page
-  - complete the registration flow, and you'll be redirected back to the registration page with
-    registration data
-- Authenticate
-  - Browse to the authentication page by clicking the "here" link below the registration button
+  - You will be redirected to the login page
   - Enter the username you used to register and click on "Continue with passkey"
   - You'll be redirected to the hosted passkey authentication page
   - complete the authentication flow, and you'll be redirected back to a home page with the ID
     token.
+- Registration
+  - Browse to the Registration page by clicking the "here" link below the login button
+  - Enter a username and click on "Enroll Passkey"
+  - You'll be redirected to the hosted passkey registration page
+  - complete the registration flow, and you'll be redirected back to the registration page with
+    registration data
 - Transaction Signing
-  - From the login page, Browse to the Transaction page by clicking the "here" link below the
-    authentication button
+  - From the login page, Browse to the Transaction page by clicking the "here" link below the login
+    button
   - Fill the transaction details, money transfer or custom, and click on "Continue to transaction
     page"
   - You'll be redirected to the hosted confirm transaction page
