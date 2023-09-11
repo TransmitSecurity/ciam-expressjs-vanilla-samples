@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
+    <script>
+      async function registerPasskey() {
+        try {
+          window.pageUtils.showLoading();
+
+          const usernameInput = document.getElementById('username');
+          const username = usernameInput.value;
+
+          if (!username) {
+            window.pageUtils.updateElementText('status', `Username required`);
+            return;
+          }
+
+          const registrationStartResult = await fetch(`/webauthn/register`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username,
+            }),
+          });
+
+          if (registrationStartResult.ok) {
+            const data = await registrationStartResult.json();
+            window.location.href = data.redirect_uri;
+            return;
+          }
+
+          window.pageUtils.updateElementText(
+            'status',
+            `Error during registration: ${registrationStartResult.statusText}`,
+          );
+        } catch (ex) {
+          console.log(ex);
+          window.pageUtils.updateElementText('status', `${ex.description ?? ex.message}`);
+        }
+
+        window.pageUtils.hideLoading();
+      }
+    </script>
+  </head>
+  <body>
+    <div class="page" id="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3>Enroll passkey</h3>
+          <input autofocus id="username" type="text" size="40" placeholder="Enter username" />
+          <button id="registerPasskey" onclick="registerPasskey()" class="full-width">
+            Enroll Passkey
+          </button>
+          <div class="row">
+            Already have a passkey enrolled? Use it to authenticate
+            <a href="/pages/login.html">here</a>
+          </div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

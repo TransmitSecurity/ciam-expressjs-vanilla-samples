@@ -45,9 +45,16 @@ export const config = {
     webauthnToken: `${baseUrl()}/cis/v1/auth/webauthn/authenticate`,
     webauthnRegister: `${baseUrl()}/cis/v1/auth/webauthn/register`,
     webauthnRegisterExternal: `${baseUrl()}/cis/v1/auth/webauthn/external/register`,
+    webauthnRegisterExternalHint: `${baseUrl()}/cis/v1/auth/webauthn/external/register/hint`,
 
     hostedIDVSessionUrl: `${baseUrl()}/verify/api/v1/verification`,
     hostedIDVVerifyUrl: `${baseUrl()}/verify/app`,
+    hostedPasskeyRegistrationUrl: registerWebauthnCredToken =>
+      `${baseUrl()}/cis/hosted/passkey/passkey-registration?register_webauthn_cred_token=${registerWebauthnCredToken}`,
+    hostedPasskeyAuthenticationUrl: (username, redirectUri, clientId) =>
+      `${baseUrl()}/cis/oidc/auth?response_type=code&client_id=${clientId}&login_hint=${encodeURIComponent(
+        username,
+      )}&redirect_uri=${redirectUri}&scope=openid+email`,
 
     getRiskRecommendation: query => `${baseUrl()}/risk/v1/recommendation?${query}`,
 
