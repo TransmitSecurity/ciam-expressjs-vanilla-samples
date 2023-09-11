@@ -41,7 +41,6 @@ router.get('/complete', async function (req, res) {
 });
 
 router.get('/user', async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
   console.log('/user', req.session.tokens);
   if (req.session.tokens) {
     res.status(200).send({
@@ -103,13 +102,13 @@ router.post('/webauthn/register', async function (req, res) {
 
     if (!data.ok) {
       console.log(json.message);
-      throw new Error();
+      throw new Error(json.message);
     }
 
-    const hostedWebauthnRegisterUrl = common.config.apis.hostedPasskeyRegistrationUrl(
+    const redirectUri = common.config.apis.hostedPasskeyRegistrationUrl(
       json.register_webauthn_cred_token,
     );
-    res.status(200).send({ redirect_uri: hostedWebauthnRegisterUrl });
+    res.status(200).send({ redirect_uri: redirectUri });
   } catch (e) {
     console.log(e);
     res.status(500).send({ error: JSON.stringify(e) });
@@ -186,17 +185,14 @@ router.post('/webauthn/transaction', async function (req, res) {
 
     const data = await fetch(authRequestUrl, request);
     const json = await data.json();
-    console.log('register response', json);
+    console.log('transaction response', json);
     if (!data.ok) {
-      res.status(500).send({ error: JSON.stringify(json) });
-      return;
+      console.log(json.message);
+      throw new Error(json.message);
     }
 
-    const hostedWebauthnRegisterUrl = common.config.apis.hostedPasskeyTransactionUrl(
-      json.request_uri,
-      clientId,
-    );
-    res.status(200).send({ redirect_uri: hostedWebauthnRegisterUrl });
+    const redirectUri = common.config.apis.hostedPasskeyTransactionUrl(json.request_uri, clientId);
+    res.status(200).send({ redirect_uri: redirectUri });
   } catch (e) {
     console.log(e);
     res.status(500).send({ error: JSON.stringify(e) });
