@@ -34,10 +34,10 @@ The video describes the following steps:
   the video shows.
 - (0:29) Copy the URL of the codespace - and paste it into the new `.env` file as the value for
   `TS_REDIRECT_URI`. Add `/complete` at the end (make sure you only have a single slash here
-  `/complete`), and add `-8080.preview.app` before the `github.dev` suffix. For example:
+  `/complete`), and add `-8080.app` before the `github.dev` suffix. For example:
 
   `https://ts-ron-legendary-waddle-rx7774944x4cwwrv.github.dev` will be edited to
-  `https://ts-ron-legendary-waddle-rx7774944x4cwwrv-8080.preview.app.github.dev/complete`.
+  `https://ts-ron-legendary-waddle-rx7774944x4cwwrv-8080.app.github.dev/complete`.
 
 - Copy the above value to be used in the next steps
 
