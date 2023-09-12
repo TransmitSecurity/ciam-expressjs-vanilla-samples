@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script
+      type="text/javascript"
+      src="https://platform-websdk.transmitsecurity.io/platform-websdk/1.4.0/ts-platform-websdk.js"
+    ></script>
+    <script type="module" src="./init.js"></script>
+    <script>
+      let transactionType = 'money_transfer';
+
+      function onTransactionChange(event) {
+        transactionType = event.value;
+        if (transactionType === 'money_transfer') {
+          window.pageUtils.hide('custom-form');
+          window.pageUtils.show('money-transfer-form');
+        } else {
+          window.pageUtils.show('custom-form');
+          window.pageUtils.hide('money-transfer-form');
+        }
+      }
+
+      async function startTransaction() {
+        window.pageUtils.updateElementText('status', '');
+        let body;
+        if (transactionType === 'money_transfer') {
+          const payee = document.getElementById('payee').value;
+          if (!payee) {
+            window.pageUtils.updateElementText('status', 'Payee is required');
+            return;
+          }
+
+          body = {
+            type: 'money_transfer',
+            payee: payee,
+            amount: document.getElementById('amount').value,
+            currency: document.getElementById('currency').value,
+            method: document.getElementById('method').value,
+          };
+        } else {
+          const customData = document.getElementById('custom-data').value;
+          try {
+            JSON.parse(customData);
+          } catch (e) {
+            window.pageUtils.updateElementText('status', 'Custom data must be a valid JSON');
+            return;
+          }
+
+          body = {
+            type: 'custom',
+            customData,
+          };
+        }
+
+        const registrationStartResult = await fetch(`/webauthn/transaction`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (registrationStartResult.ok) {
+          const data = await registrationStartResult.json();
+          window.location.href = data.redirect_uri;
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="page" id="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3>Create a Transaction</h3>
+          <div class="column gap">
+            <div class="gap">
+              <div>
+                <input
+                  type="radio"
+                  id="money-transfer"
+                  name="transaction-type"
+                  onclick="onTransactionChange(this)"
+                  value="money_transfer"
+                  checked
+                />
+                <label for="money-transfer">Money transfer</label><br />
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  id="custom"
+                  name="transaction-type"
+                  onclick="onTransactionChange(this)"
+                  value="custom"
+                />
+                <label for="custom">Custom</label><br />
+              </div>
+            </div>
+            <div id="money-transfer-form" class="column gap">
+              <input id="payee" type="text" size="40" placeholder="Payee" />
+              <input id="amount" value="1000" type="number" size="40" placeholder="amount" />
+              <select name="currency" id="currency">
+                <option value="USD">USD</option>
+                <option value="Euro">Euro</option>
+                <option value="GBP">GBP</option>
+              </select>
+              <select name="method" id="method">
+                <option value="Credit Card">Credit Card</option>
+                <option value="Wire">Wire</option>
+                <option value="PayPal">PayPal</option>
+              </select>
+            </div>
+            <div id="custom-form" class="column gap hidden">
+              <textarea id="custom-data" placeholder="Custom claims in JSON format"></textarea>
+            </div>
+            <button id="passkeyButton" class="full-width" onclick="startTransaction()">
+              Continue to transaction page
+            </button>
+          </div>
+          <div class="row">
+            Dont have a passkey enrolled? Enroll <a href="/pages/register.html">here</a>
+          </div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

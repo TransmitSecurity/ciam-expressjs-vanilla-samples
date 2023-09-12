@@ -4,6 +4,7 @@
   "license": "MIT",
   "private": true,
   "workspaces": [
+    "hosted-webauthn-for-logged-out-users",
     "login-with-email",
     "login-with-google",
     "login-with-sms",

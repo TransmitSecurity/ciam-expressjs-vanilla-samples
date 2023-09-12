@@ -1,0 +1,92 @@
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script
+      type="text/javascript"
+      src="https://platform-websdk.transmitsecurity.io/platform-websdk/1.4.0/ts-platform-websdk.js"
+    ></script>
+    <script type="module" src="./init.js"></script>
+    <script>
+      let userData;
+
+      async function getUserData() {
+        try {
+          const response = await fetch('/user', {
+            method: 'GET',
+            credentials: 'include',
+          });
+
+          const data = await response.json();
+          console.log('Response from /user endpoint: ', data);
+          window.pageUtils.updateElementText('tokenData', JSON.stringify(data, undefined, 2));
+          return data.idToken;
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during session check: ${ex}`);
+        }
+      }
+
+      async function logout() {
+        try {
+          window.pageUtils.showLoading();
+
+          const response = await fetch('/logout', {
+            method: 'POST',
+          });
+
+          const data = await response.json();
+          // You can get the number of sessions that were terminated with
+          // data.result.sessions_count
+          console.log('Response from /logout endpoint: ', data);
+
+          // Redirect the user to the login page
+          window.location.replace('/pages/login.html');
+
+          return;
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
+        }
+
+        window.pageUtils.hideLoading();
+      }
+
+      async function init() {
+        // Check if the user is authenticated
+        userData = await getUserData();
+
+        // If not, redirect to login page
+        if (!userData) {
+          window.location.replace('/pages/login.html');
+          return;
+        }
+      }
+    </script>
+  </head>
+
+  <body onload="init()">
+    <div class="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
+        <button onclick="logout()">Logout</button>
+      </header>
+      <main>
+        <div class="content column centered gap">
+          <img src="/shield.svg" alt="Logged in" />
+          <div id="status"></div>
+          <div>Login token data</div>
+          <textarea disabled id="tokenData" class="dataTextArea"></textarea>
+          <div class="row">
+            Want to perform transaction signing? Click <a href="/pages/transaction.html">here</a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -58,7 +58,9 @@
   }
 }
 
-input {
+input,
+textarea,
+select {
   padding: 17px 12px;
   border: $border;
   border-radius: $border-radius;

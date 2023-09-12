@@ -1,0 +1,41 @@
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script
+      type="text/javascript"
+      src="https://platform-websdk.transmitsecurity.io/platform-websdk/1.4.0/ts-platform-websdk.js"
+    ></script>
+    <script type="module" src="./init.js"></script>
+    <script>
+      async function init() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const params = Object.fromEntries(urlParams.entries());
+        window.pageUtils.updateElementText('tokenData', JSON.stringify(params, undefined, 2));
+      }
+    </script>
+  </head>
+
+  <body onload="init()">
+    <div class="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
+      </header>
+      <main>
+        <div class="content column centered gap">
+          <img src="/shield.svg" alt="Logged in" />
+          <div>Registration response data</div>
+          <textarea disabled id="tokenData" class="dataTextArea"></textarea>
+          <div class="row">Back to <a href="/pages/login.html">login page</a></div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

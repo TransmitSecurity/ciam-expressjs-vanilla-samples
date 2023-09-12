@@ -18,6 +18,7 @@
       async function init() {
         const urlParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlParams.entries());
+        window.pageUtils.updateElementText('status', params.error);
         window.pageUtils.updateElementText('tokenData', JSON.stringify(params, undefined, 2));
       }
     </script>
@@ -30,9 +31,7 @@
       </header>
       <main>
         <div class="content column centered gap">
-          <img src="/shield.svg" alt="Logged in" />
           <div id="status"></div>
-          <div>Returned Data</div>
           <textarea disabled id="tokenData" class="dataTextArea"></textarea>
         </div>
       </main>
