@@ -46,7 +46,7 @@ export const config = {
     webauthnToken: `${baseUrl()}/cis/v1/auth/webauthn/authenticate`,
     webauthnRegister: `${baseUrl()}/cis/v1/auth/webauthn/register`,
     webauthnRegisterExternal: `${baseUrl()}/cis/v1/auth/webauthn/external/register`,
-    webauthnRegisterExternalHint: `${baseUrl()}/cis/v1/auth/webauthn/external/register/hint`,
+    webauthnRegisterExternalHint: `${baseUrl()}/cis/v1/auth/webauthn/external/register/hosted/hint`,
 
     hostedIDVSessionUrl: `${baseUrl()}/verify/api/v1/verification`,
     hostedIDVVerifyUrl: `${baseUrl()}/verify/app`,
