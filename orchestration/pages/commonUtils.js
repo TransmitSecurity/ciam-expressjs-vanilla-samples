@@ -4,6 +4,7 @@ import { ClientResponseOptionType, IdoServiceResponseType } from './sdk_interfac
 
 let sdk = null;
 
+// Initialize the SDK
 export async function initSdk(clientId, serverPath, appId) {
   if (!sdk) {
     await window.tsPlatform.initialize({ clientId, ido: { serverPath, applicationId: appId } });
