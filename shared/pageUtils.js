@@ -78,7 +78,7 @@ export const pageUtils = {
     }, 300);
   },
   copyText: async function (divElement) {
-    const value = divElement.innerHTML;
+    const value = divElement.innerText;
     await navigator.clipboard.writeText(value);
     divElement.classList.add('show-message');
     setTimeout(() => {

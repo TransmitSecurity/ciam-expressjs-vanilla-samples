@@ -14,6 +14,7 @@ export const config = {
     jwks: `${baseUrl()}/cis/oidc/jwks`,
     logout: `${baseUrl()}/cis/v1/auth/logout`,
     backendLogout: `${baseUrl()}/cis/v1/auth/session/logout`,
+    sessionAuthenticate: `${baseUrl()}/cis/v1/auth/session/authenticate`,
     backendRefreshToken: `${baseUrl()}/cis/v1/auth/token/refresh`,
 
     backendSessionAuthentication: `${baseUrl()}/cis/v1/auth/session/authenticate`,
@@ -47,6 +48,10 @@ export const config = {
     webauthnRegister: `${baseUrl()}/cis/v1/auth/webauthn/register`,
     webauthnRegisterExternal: `${baseUrl()}/cis/v1/auth/webauthn/external/register`,
     webauthnRegisterExternalHint: `${baseUrl()}/cis/v1/auth/webauthn/external/register/hosted/hint`,
+
+    webauthnCrossDeviceRegisterExternalInit: `${baseUrl()}/cis/v1/auth/webauthn/cross-device/external/register/init`,
+    webauthnCrossDeviceRegisterInit: `${baseUrl()}/cis/v1/auth/webauthn/cross-device/register/init`,
+    webauthnCrossDeviceRegister: `${baseUrl()}/cis/v1/auth/webauthn/cross-device/register`,
 
     hostedIDVSessionUrl: `${baseUrl()}/verify/api/v1/verification`,
     hostedIDVVerifyUrl: `${baseUrl()}/verify/app`,

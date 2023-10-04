@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script
+      type="text/javascript"
+      src="https://platform-websdk.idsec-dev.com/platform-websdk/1.7.16-alpha-6407172635.0/ts-platform-websdk.js"
+    ></script>
+    <script type="module" src="./init.js"></script>
+    <script>
+      async function init() {
+        try {
+          await window.tsPlatform.initialize({
+            clientId: window.env.VITE_TS_CLIENT_ID,
+            webauthn: {
+              serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
+            },
+          });
+
+          const { crossDeviceTicketId } =
+            await window.tsPlatform.webauthn.crossDevice.init.authentication({
+              handlers: { onDeviceAttach, onCredentialAuthenticate },
+            });
+          activateQR(crossDeviceTicketId);
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `${ex.description}`);
+        }
+      }
+
+      function activateQR(ticketId) {
+        // Construct the URL of your login page along with the authSessionId param (aid in this example).
+        // To use a mobile device, best to display the generated URL using a QR code.
+        const url = `${window.location.origin}/pages/mobile.html?ticket_id=${ticketId}`;
+
+        // Load the QR image and display the page after it is loaded
+        const qrImg = new Image();
+        qrImg.onload = () => {
+          const qrElem = document.getElementById('qr');
+          qrElem.setAttribute('src', qrImg.src);
+          window.pageUtils.show('qrDiv');
+          window.pageUtils.hide('spinner');
+        };
+        qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=220x220`;
+
+        window.pageUtils.updateElementText('url', url);
+      }
+
+      async function onCredentialAuthenticate(sessionId) {
+        await fetch(`/token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            session_id: sessionId,
+          }),
+        });
+
+        window.location.replace('/pages/home.html');
+      }
+
+      function onDeviceAttach() {
+        window.pageUtils.hide('qrDiv');
+        window.pageUtils.show('spinner');
+        console.log('Device attached');
+      }
+
+      async function handleSuccessfulPasskeyValidation(webauthn_encoded_result) {
+        const token = await fetch(`/token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            webauthn_encoded_result,
+          }),
+        });
+
+        const data = await token.json();
+        console.log('Response from /token: ', data);
+
+        if (data.error_code) {
+          window.pageUtils.updateElementText('status', `Error during login: ${data.message}`);
+          return;
+        }
+        window.location.replace('/pages/home.html');
+        window.pageUtils.updateElementText('status-ok', `Passkey validated successfully!`);
+      }
+    </script>
+  </head>
+  <body onload="init()">
+    <div class="page" id="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" alt="ACME" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <h3>Authenticate using another device</h3>
+          <div class="column gap centered">
+            <div id="spinner" class="page-icon centered"></div>
+          </div>
+          <div id="qrDiv" class="column gap centered hidden">
+            <div class="text">Scan this QR code using a mobile device</div>
+            <img id="qr" src="" class="qr-code" />
+            <div class="divider">
+              <span class="divider-text">or</span>
+            </div>
+            <div class="text">open the following link in a separate browser</div>
+            <div
+              id="url"
+              class="text break-anywhere copyable"
+              onclick="window.pageUtils.copyText(this)"
+            ></div>
+          </div>
+          <div class="divider"></div>
+          <div class="row">
+            Dont have a passkey enrolled? Enroll <a href="/pages/register.html">here</a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -19,7 +19,7 @@
       async function hostedLogin() {
         const username = document.getElementById('passkeyInput').value;
 
-        const registrationStartResult = await fetch(`/webauthn/authenticate`, {
+        const authenticationResult = await fetch(`/webauthn/authenticate`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -29,8 +29,8 @@
           }),
         });
 
-        if (registrationStartResult.ok) {
-          const data = await registrationStartResult.json();
+        if (authenticationResult.ok) {
+          const data = await authenticationResult.json();
           window.location.href = data.redirect_uri;
         }
       }

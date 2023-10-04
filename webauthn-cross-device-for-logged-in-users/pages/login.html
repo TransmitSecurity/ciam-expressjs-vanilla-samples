@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./init.js"></script>
+    <script
+      type="text/javascript"
+      src="https://platform-websdk.transmitsecurity.io/platform-websdk/1.4.0/ts-platform-websdk.js"
+    ></script>
+  </head>
+  <body onload="init()">
+    <div class="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" /></a>
+      </header>
+      <main>
+        <div class="content column gap">
+          <div id="emailDiv" class="column gap">
+            <h3>Enter your email</h3>
+            <input
+              id="emailInput"
+              type="text"
+              size="40"
+              placeholder="you@example.com"
+              autocomplete="username webauthn"
+            />
+            <button id="sendEmailButton" onclick="sendOTP()" class="full-width">Continue</button>
+            <div class="divider">
+              <span class="divider-text">or</span>
+            </div>
+            <button id="passkeyButton" onclick="passkeyModal()" class="full-width">
+              Use Passkey
+            </button>
+          </div>
+          <div id="otpDiv" class="column gap hidden">
+            <h3>Enter the OTP code</h3>
+            <input id="otpInput" type="text" size="20" />
+            <button id="loginButton" onclick="login()" class="full-width">Login</button>
+            <div id="otpText" class="text"></div>
+          </div>
+          <div id="status"></div>
+        </div>
+      </main>
+    </div>
+    <script>
+      const emailInput = document.getElementById('emailInput');
+      const otpInput = document.getElementById('otpInput');
+      const otpText = document.getElementById('otpText');
+      const otpDiv = document.getElementById('otpDiv');
+      const emailDiv = document.getElementById('emailDiv');
+
+      async function init() {
+        emailDiv.classList.remove('hidden');
+        otpDiv.classList.add('hidden');
+
+        try {
+          await window.tsPlatform.initialize({
+            clientId: window.env.VITE_TS_CLIENT_ID,
+            webauthn: {
+              serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
+            },
+          });
+          activatePasskeyAutofill();
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `${ex.description}`);
+        }
+      }
+
+      /* Email OTP Logic */
+
+      async function sendEmailOtp(email, handleResponse) {
+        const response = await fetch('/email-otp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+          }),
+        });
+
+        const status = response.status;
+        const data = await response.json();
+        console.log('Response from /email-otp', { status, data });
+        handleResponse({ status, data });
+      }
+
+      async function verifyOtp(email, otpCode, handleResponse) {
+        const response = await fetch('/verify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            otpCode: otpCode,
+          }),
+        });
+
+        const status = response.status;
+        const data = await response.json();
+        console.log('Response from /verify', { status, data });
+        handleResponse({ status, data });
+      }
+
+      async function sendOTP() {
+        window.pageUtils.showLoading();
+        window.pageUtils.updateElementText('status', '');
+
+        await sendEmailOtp(emailInput.value, handleEmailOtpResponse);
+      }
+
+      async function login() {
+        window.pageUtils.showLoading();
+        window.pageUtils.updateElementText('status', '');
+
+        // TODO - Hila Partuk: 20/02/2023 Add FE validation for the OTP value
+        await verifyOtp(emailInput.value, otpInput.value, handleVerifyOtpResponse);
+      }
+
+      const handleEmailOtpResponse = emailOtpResponse => {
+        console.log('Email Otp Response', emailOtpResponse);
+
+        if (emailOtpResponse?.status === 200) {
+          emailDiv.classList.add('hidden');
+          otpDiv.classList.remove('hidden');
+
+          otpText.textContent = `We sent a code to ${emailInput.value}`;
+        } else {
+          window.pageUtils.updateElementText('status', emailOtpResponse.data.message);
+        }
+
+        window.pageUtils.hideLoading();
+      };
+
+      const handleVerifyOtpResponse = verifyOtpResponse => {
+        console.log('Verify Otp Response', verifyOtpResponse);
+
+        if (verifyOtpResponse?.status === 200) {
+          // success!!!!!! use the result to redirect to completion page
+          window.location = verifyOtpResponse.data.result;
+        } else {
+          window.pageUtils.updateElementText('status', verifyOtpResponse.data.message);
+          window.pageUtils.hideLoading();
+        }
+      };
+
+      /* Passkey Logic */
+      function activatePasskeyAutofill() {
+        window.tsPlatform.webauthn.authenticate.autofill.activate({
+          onSuccess: handleSuccessfulPasskeyValidation,
+          onError: handleAutofillError,
+        });
+      }
+
+      async function abortPasskeyAutofill() {
+        await window.tsPlatform.webauthn.authenticate.autofill.abort();
+      }
+
+      async function passkeyModal() {
+        await abortPasskeyAutofill();
+        const username = document.getElementById('emailInput').value;
+
+        try {
+          const webauthn_encoded_result = await window.tsPlatform.webauthn.authenticate.modal(
+            username,
+          );
+          await handleSuccessfulPasskeyValidation(webauthn_encoded_result);
+        } catch (err) {
+          if (err.errorCode == 'webauthn_authentication_canceled') {
+            activatePasskeyAutofill();
+            return;
+          }
+          window.pageUtils.updateElementText('status', `${err.message}`);
+        }
+      }
+
+      async function handleSuccessfulPasskeyValidation(webauthn_encoded_result) {
+        const token = await fetch(`/token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            webauthn_encoded_result,
+          }),
+        });
+
+        const data = await token.json();
+        console.log('Response from /token endpoint: ', data);
+
+        if (data.error_code) {
+          window.pageUtils.updateElementText('status', `Error during login: ${data.message}`);
+          return;
+        }
+
+        window.location.replace('/pages/home.html');
+      }
+
+      async function handleAutofillError(error) {
+        if (error.errorCode === 'autofill_authentication_aborted') return;
+        window.pageUtils.updateElementText('status', `Error during login: ${error}`);
+      }
+    </script>
+  </body>
+</html>
