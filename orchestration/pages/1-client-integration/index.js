@@ -26,7 +26,7 @@ async function handleJourneyActionUI(idoResponse) {
       // handle new journey step
       clientResponse = new Promise(resolve => {
         // Present provided information in UI or handle programmatically. E.g. use alert for presentation:
-        alert(actionData);
+        alert(`Data from IDO server: ${JSON.stringify(actionData)}`);
         // Return an empty client input
         resolve({
           option: ClientResponseOptionType.ClientInput,
