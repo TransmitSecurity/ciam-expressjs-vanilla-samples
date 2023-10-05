@@ -208,33 +208,6 @@
         window.pageUtils.show('spinner');
         console.log('Device attached');
       }
-
-      async function handleSuccessfulPasskeyValidation(webauthn_encoded_result) {
-        const token = await fetch(`/token`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            webauthn_encoded_result,
-          }),
-        });
-
-        const data = await token.json();
-        console.log('Response from /token endpoint: ', data);
-
-        if (data.error_code) {
-          window.pageUtils.updateElementText('status', `Error during login: ${data.message}`);
-          return;
-        }
-
-        window.location.replace('/pages/home.html');
-      }
-
-      async function handleAutofillError(error) {
-        if (error.errorCode === 'autofill_authentication_aborted') return;
-        window.pageUtils.updateElementText('status', `Error during login: ${error}`);
-      }
     </script>
   </body>
 </html>
