@@ -12,6 +12,24 @@ router.get(['/'], async function (req, res) {
   }
 });
 
+router.get('/complete', async function (req, res) {
+  const params = new URLSearchParams(req.query);
+  const tokens = await common.tokens.getUserTokens(params.get('code'));
+  console.log('Tokens', tokens);
+
+  if (tokens.id_token) {
+    const idToken = common.tokens.parseJwt(tokens.id_token);
+    req.session.tokens = {
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+      idToken,
+    };
+    req.session.save();
+  }
+
+  res.redirect('/pages/home.html');
+});
+
 // Get an authenticated user's saved ID Token or return a not found error
 router.get('/user', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
