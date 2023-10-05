@@ -48,7 +48,7 @@ async function handleJourneyActionUI(idoResponse) {
     case IdoJourneyActionType.WaitForAnotherDevice:
       clientResponse = await showInformation({
         title: 'Wait for another device',
-        text: 'Journey is waiting for another device',
+        text: `Journey is waiting for another device. Open the following URL is a separate or incognito browser: ${window.location.protocol}//${window.location.host}/pages/4-consume-csm/index.html?messageId=${idoResponse.data.ticket_id.alt}`,
       });
       break;
     default:
