@@ -98,7 +98,7 @@ router.get('/webauthn/register/init', async function (req, res) {
   const user_identifier = crypto.randomUUID();
 
   // This is the username that will be displayed to the user during the WebAuthn registration process.
-  const webauthnUsername = 'Or.Gaizer';
+  const webauthnUsername = user_identifier;
 
   const url = common.config.apis.webauthnCrossDeviceRegisterExternalInit;
   const request = {

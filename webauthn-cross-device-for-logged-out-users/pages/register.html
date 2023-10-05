@@ -16,6 +16,7 @@
     ></script>
     <script type="module" src="./init.js"></script>
     <script>
+      let url = undefined;
       async function initPage() {
         try {
           await window.tsPlatform.initialize({
@@ -55,7 +56,7 @@
       function activateQR(ticketId) {
         // Construct the URL of your login page along with the authSessionId param (aid in this example).
         // To use a mobile device, best to display the generated URL using a QR code.
-        const url = `${window.location.origin}/pages/mobile.html?ticket_id=${ticketId}&is_registration=true`;
+        url = `${window.location.origin}/pages/mobile.html?ticket_id=${ticketId}&is_registration=true`;
 
         // Load the QR image and display the page after it is loaded
         const qrImg = new Image();
@@ -66,8 +67,6 @@
           window.pageUtils.hide('spinner');
         };
         qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=220x220`;
-
-        window.pageUtils.updateElementText('url', url);
       }
 
       function onCredentialRegister() {
@@ -94,17 +93,17 @@
             <div id="spinner" class="page-icon centered"></div>
           </div>
           <div id="qrDiv" class="column gap centered hidden">
-            <div class="text">Scan this QR code using a mobile device</div>
-            <img id="qr" src="" class="qr-code" />
-            <div class="divider">
-              <span class="divider-text">or</span>
+            <div class="text">
+              Scan this QR code using a mobile device or click on it to open the mobile page in
+              another tab
             </div>
-            <div class="text">open the following link in a separate browser</div>
-            <div
-              id="url"
-              class="text break-anywhere copyable"
-              onclick="window.pageUtils.copyText(this)"
-            ></div>
+            <img
+              id="qr"
+              src=""
+              class="qr-code"
+              onclick='window.open(url, "_blank")'
+              style="cursor: pointer"
+            />
           </div>
           <div id="successDiv" class="column gap centered hidden">
             <div class="title sm">Success</div>

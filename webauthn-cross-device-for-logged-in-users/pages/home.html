@@ -11,13 +11,15 @@
     <title>ACME</title>
     <script
       type="text/javascript"
-      src="https://platform-websdk.transmitsecurity.io/platform-websdk/1.4.0/ts-platform-websdk.js"
+      src="https://platform-websdk.idsec-dev.com/platform-websdk/1.7.16-alpha-6407172635.0/ts-platform-websdk.js"
       defer="true"
     ></script>
     <script type="module" src="./init.js"></script>
 
     <script>
       let userData;
+      let url;
+      let ticketId;
 
       async function getUserData() {
         try {
@@ -81,39 +83,67 @@
         }
       }
 
-      async function registerPasskey() {
+      function onCredentialRegister() {
+        window.pageUtils.hide('spinner');
+        window.pageUtils.updateElementText(
+          'status-ok',
+          'Passkey registered successfully!' +
+            ' Try to logout and login again with your new Passkey.',
+        );
+      }
+
+      function onDeviceAttach() {
+        window.pageUtils.hide('qrDiv');
+        window.pageUtils.show('spinner');
+        console.log('Device attached');
+      }
+
+      function activateQR(ticketId) {
+        // Construct the URL of your login page along with the authSessionId param (aid in this example).
+        // To use a mobile device, best to display the generated URL using a QR code.
+        url = `${window.location.origin}/pages/mobile.html?ticket_id=${ticketId}&is_registration=true`;
+
+        // Load the QR image and display the page after it is loaded
+        const qrImg = new Image();
+        qrImg.onload = () => {
+          const qrElem = document.getElementById('qr');
+          qrElem.setAttribute('src', qrImg.src);
+          window.pageUtils.show('qrDiv');
+          window.pageUtils.hide('spinner');
+        };
+        qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=220x220`;
+      }
+
+      async function getRegistrationTicket() {
         try {
-          window.pageUtils.showLoading();
-
-          const username = userData.email;
-
-          const encodedResult = await window.tsPlatform.webauthn.register(username);
-
-          const registrationResult = await fetch(`/webauthn/register`, {
-            method: 'POST',
+          const registrationResult = await fetch(`/webauthn/register/init`, {
+            method: 'GET',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              webauthn_encoded_result: encodedResult,
-            }),
           });
 
-          console.log(registrationResult);
+          const result = await registrationResult.json();
+          return result.cross_device_ticket_id;
+        } catch (ex) {
+          console.log(ex);
+        }
+      }
 
-          if (!registrationResult.ok) throw new Error('Registration failed');
+      async function registerPasskey() {
+        try {
+          window.pageUtils.hide('qrDiv');
+          window.pageUtils.show('spinner');
 
-          window.pageUtils.updateElementText(
-            'status-ok',
-            'Passkey registered successfully!' +
-              ' Try to logout and login again with your new Passkey.',
-          );
-          return;
+          ticketId = await getRegistrationTicket();
+          activateQR(ticketId);
+          await window.tsPlatform.webauthn.crossDevice.init.registration({
+            crossDeviceTicketId: ticketId,
+            handlers: { onCredentialRegister, onDeviceAttach },
+          });
         } catch (ex) {
           console.log(ex);
           window.pageUtils.updateElementText('status', `${ex.description || ex.message}`);
-        } finally {
-          window.pageUtils.hideLoading();
         }
       }
     </script>
@@ -131,6 +161,20 @@
           <img src="/shield.svg" alt="Logged in" />
           <div id="status"></div>
           <button id="registerPasskeyButton" onclick="registerPasskey()">Register Passkey</button>
+          <div id="qrDiv" class="column gap centered hidden">
+            <div class="text">
+              Scan this QR code using a mobile device or click on it to open the mobile page in
+              another tab
+            </div>
+            <img
+              id="qr"
+              src=""
+              class="qr-code"
+              onclick='window.open(url, "_blank")'
+              style="cursor: pointer"
+            />
+          </div>
+          <div id="spinner" class="page-icon centered hidden"></div>
           <div id="status-ok"></div>
           <div>Login token data</div>
           <textarea disabled id="tokenData" class="dataTextArea"></textarea>

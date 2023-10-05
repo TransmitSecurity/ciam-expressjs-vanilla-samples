@@ -12,28 +12,25 @@ router.get(['/'], async function (req, res) {
   }
 });
 
-router.get('/complete', async function (req, res) {
-  const params = new URLSearchParams(req.query);
-  const tokens = await common.tokens.getUserTokens(params.get('code'));
-  console.log('Tokens', tokens);
-
-  if (tokens.id_token) {
-    const idToken = common.tokens.parseJwt(tokens.id_token);
-    req.session.tokens = {
-      accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token,
-      idToken,
-    };
-    req.session.save();
+// Get an authenticated user's saved ID Token or return a not found error
+router.get('/user', async function (req, res) {
+  // TODO add error handling, omitted for sample clarity
+  console.log('/user', req.session.tokens);
+  if (req.session.tokens) {
+    res.status(200).send({
+      idToken: req.session.tokens.idToken,
+    });
+  } else {
+    res.status(404).send({
+      idToken: null,
+    });
   }
-
-  res.redirect('/pages/home.html');
 });
 
 router.post('/token', async function (req, res) {
   try {
-    const webauthnEncodedResult = req.body.webauthn_encoded_result;
-    const url = common.config.apis.webauthnToken;
+    const sessionId = req.body.session_id;
+    const url = common.config.apis.sessionAuthenticate;
     const token = await common.tokens.getClientCredsToken();
     const request = {
       method: 'POST',
@@ -42,7 +39,7 @@ router.post('/token', async function (req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        webauthn_encoded_result: webauthnEncodedResult,
+        session_id: sessionId,
       }),
     };
 
@@ -67,11 +64,38 @@ router.post('/token', async function (req, res) {
   }
 });
 
+router.post('/webauthn/authenticate', async function (req, res) {
+  try {
+    const webauthnEncodedResult = req.body.webauthn_encoded_result;
+    const url = common.config.apis.webauthnToken;
+    const token = await common.tokens.getClientCredsToken();
+    const request = {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        webauthn_encoded_result: webauthnEncodedResult,
+      }),
+    };
+
+    const data = await fetch(url, request);
+    const json = await data.json();
+
+    res.status(data.status).send(json);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send({ error: JSON.stringify(e) });
+  }
+});
+
 router.post('/webauthn/register', async function (req, res) {
   try {
     const webauthnEncodedResult = req.body.webauthn_encoded_result;
-    const url = common.config.apis.webauthnRegister;
-    const token = req.session.tokens.accessToken;
+    const url = common.config.apis.webauthnCrossDeviceRegister;
+    const token = await common.tokens.getClientCredsToken();
+
     const request = {
       method: 'POST',
       headers: {
@@ -94,19 +118,27 @@ router.post('/webauthn/register', async function (req, res) {
   }
 });
 
-// Get an authenticated user's saved ID Token or return a not found error
-router.get('/user', async function (req, res) {
-  // TODO add error handling, omitted for sample clarity
-  console.log('/user', req.session.tokens);
-  if (req.session.tokens) {
-    res.status(200).send({
-      idToken: req.session.tokens.idToken,
-    });
-  } else {
-    res.status(404).send({
-      idToken: null,
-    });
-  }
+router.get('/webauthn/register/init', async function (req, res) {
+  const token = req.session.tokens.accessToken;
+  const idToken = req.session.tokens.idToken;
+
+  const url = common.config.apis.webauthnCrossDeviceRegisterInit;
+  const request = {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      username: idToken.email || idToken.sub,
+    }),
+  };
+
+  const data = await fetch(url, request);
+  const json = await data.json();
+  console.log('register response', json);
+
+  res.status(data.status).send(json);
 });
 
 // Logout user

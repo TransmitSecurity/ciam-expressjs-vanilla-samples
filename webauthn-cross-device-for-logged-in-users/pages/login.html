@@ -13,7 +13,7 @@
     <script type="module" src="./init.js"></script>
     <script
       type="text/javascript"
-      src="https://platform-websdk.transmitsecurity.io/platform-websdk/1.4.0/ts-platform-websdk.js"
+      src="https://platform-websdk.idsec-dev.com/platform-websdk/1.7.16-alpha-6407172635.0/ts-platform-websdk.js"
     ></script>
   </head>
   <body onload="init()">
@@ -36,9 +36,21 @@
             <div class="divider">
               <span class="divider-text">or</span>
             </div>
-            <button id="passkeyButton" onclick="passkeyModal()" class="full-width">
-              Use Passkey
-            </button>
+            <div id="qrDiv" class="column gap centered">
+              <div class="text">Use Passkey on a different device</div>
+              <div class="text">
+                Scan this QR code using a mobile device or click on it to open the mobile page in
+                another tab
+              </div>
+              <img
+                id="qr"
+                src=""
+                class="qr-code"
+                onclick='window.open(url, "_blank")'
+                style="cursor: pointer"
+              />
+              <div id="spinner" class="page-icon centered"></div>
+            </div>
           </div>
           <div id="otpDiv" class="column gap hidden">
             <h3>Enter the OTP code</h3>
@@ -56,6 +68,7 @@
       const otpText = document.getElementById('otpText');
       const otpDiv = document.getElementById('otpDiv');
       const emailDiv = document.getElementById('emailDiv');
+      let url;
 
       async function init() {
         emailDiv.classList.remove('hidden');
@@ -68,7 +81,12 @@
               serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
             },
           });
-          activatePasskeyAutofill();
+
+          const { crossDeviceTicketId } =
+            await window.tsPlatform.webauthn.crossDevice.init.authentication({
+              handlers: { onDeviceAttach, onCredentialAuthenticate },
+            });
+          activateQR(crossDeviceTicketId);
         } catch (ex) {
           window.pageUtils.updateElementText('status', `${ex.description}`);
         }
@@ -153,34 +171,42 @@
         }
       };
 
-      /* Passkey Logic */
-      function activatePasskeyAutofill() {
-        window.tsPlatform.webauthn.authenticate.autofill.activate({
-          onSuccess: handleSuccessfulPasskeyValidation,
-          onError: handleAutofillError,
+      /* Passkey Cross Device */
+
+      function activateQR(ticketId) {
+        // Construct the URL of your login page along with the authSessionId param (aid in this example).
+        // To use a mobile device, best to display the generated URL using a QR code.
+        url = `${window.location.origin}/pages/mobile.html?ticket_id=${ticketId}`;
+
+        // Load the QR image and display the page after it is loaded
+        const qrImg = new Image();
+        qrImg.onload = () => {
+          const qrElem = document.getElementById('qr');
+          qrElem.setAttribute('src', qrImg.src);
+          window.pageUtils.show('qr');
+          window.pageUtils.hide('spinner');
+        };
+        qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=220x220`;
+      }
+
+      async function onCredentialAuthenticate(sessionId) {
+        await fetch(`/token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            session_id: sessionId,
+          }),
         });
+
+        window.location.replace('/pages/home.html');
       }
 
-      async function abortPasskeyAutofill() {
-        await window.tsPlatform.webauthn.authenticate.autofill.abort();
-      }
-
-      async function passkeyModal() {
-        await abortPasskeyAutofill();
-        const username = document.getElementById('emailInput').value;
-
-        try {
-          const webauthn_encoded_result = await window.tsPlatform.webauthn.authenticate.modal(
-            username,
-          );
-          await handleSuccessfulPasskeyValidation(webauthn_encoded_result);
-        } catch (err) {
-          if (err.errorCode == 'webauthn_authentication_canceled') {
-            activatePasskeyAutofill();
-            return;
-          }
-          window.pageUtils.updateElementText('status', `${err.message}`);
-        }
+      function onDeviceAttach() {
+        window.pageUtils.hide('qr');
+        window.pageUtils.show('spinner');
+        console.log('Device attached');
       }
 
       async function handleSuccessfulPasskeyValidation(webauthn_encoded_result) {
