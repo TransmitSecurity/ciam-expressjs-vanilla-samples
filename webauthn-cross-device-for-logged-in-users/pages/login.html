@@ -68,6 +68,7 @@
       const otpText = document.getElementById('otpText');
       const otpDiv = document.getElementById('otpDiv');
       const emailDiv = document.getElementById('emailDiv');
+      let stopPolling;
       let url;
 
       async function init() {
@@ -82,10 +83,11 @@
             },
           });
 
-          const { crossDeviceTicketId } =
+          const { crossDeviceTicketId, stop } =
             await window.tsPlatform.webauthn.crossDevice.init.authentication({
               handlers: { onDeviceAttach, onCredentialAuthenticate },
             });
+          stopPolling = stop;
           activateQR(crossDeviceTicketId);
         } catch (ex) {
           window.pageUtils.updateElementText('status', `${ex.description}`);
@@ -154,7 +156,7 @@
         } else {
           window.pageUtils.updateElementText('status', emailOtpResponse.data.message);
         }
-
+        stopPolling();
         window.pageUtils.hideLoading();
       };
 
