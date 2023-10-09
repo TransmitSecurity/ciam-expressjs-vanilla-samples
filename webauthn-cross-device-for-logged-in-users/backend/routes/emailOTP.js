@@ -1,7 +1,6 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
-import * as querystring from 'querystring';
 
 const router = express.Router();
 
@@ -75,8 +74,22 @@ router.post('/verify', async function (req, res) {
   }
 });
 
-router.get('/complete', function (req, res) {
-  res.redirect(`/pages/complete.html?${querystring.stringify(req.query)}`);
+router.get('/complete', async function (req, res) {
+  const params = new URLSearchParams(req.query);
+  const tokens = await common.tokens.getUserTokens(params.get('code'));
+  console.log('Tokens', tokens);
+
+  if (tokens.id_token) {
+    const idToken = common.tokens.parseJwt(tokens.id_token);
+    req.session.tokens = {
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+      idToken,
+    };
+    req.session.save();
+  }
+
+  res.redirect('/pages/home.html');
 });
 
 router.post('/exchange-and-validate', async function (req, res) {

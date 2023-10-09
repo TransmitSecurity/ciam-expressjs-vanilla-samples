@@ -127,9 +127,9 @@
       } catch (ex) {
         window.pageUtils.updateElementText('status', ex.description);
         console.log('Error during registration', ex);
+      } finally {
+        window.pageUtils.hideLoading();
       }
-
-      window.pageUtils.hideLoading();
     }
 
     // triggered on authentication click
@@ -163,9 +163,9 @@
       } catch (ex) {
         window.pageUtils.updateElementText('status', ex.description);
         console.log('Error during authentication', ex);
+      } finally {
+        window.pageUtils.hideLoading();
       }
-
-      window.pageUtils.hideLoading();
     }
   </script>
 </html>

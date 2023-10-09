@@ -140,7 +140,6 @@
         window.pageUtils.showLoading();
         window.pageUtils.updateElementText('status', '');
 
-        // TODO - Hila Partuk: 20/02/2023 Add FE validation for the OTP value
         await verifyOtp(emailInput.value, otpInput.value, handleVerifyOtpResponse);
       }
 
@@ -206,7 +205,6 @@
       function onDeviceAttach() {
         window.pageUtils.hide('qr');
         window.pageUtils.show('spinner');
-        console.log('Device attached');
       }
     </script>
   </body>
