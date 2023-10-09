@@ -1,4 +1,4 @@
-// import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
+import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 import { pageUtils } from '../../shared/pageUtils.js';
 import { ClientResponseOptionType, IdoServiceResponseType } from './sdk_interface.js';
 
@@ -6,8 +6,12 @@ let sdk = null;
 
 export async function initSdk(clientId, serverPath, appId) {
   if (!sdk) {
-    await window.tsPlatform.initialize({ clientId, ido: { serverPath, applicationId: appId } });
-    sdk = window.tsPlatform.ido;
+    await window.tsPlatform.initialize({ clientId: 'az8xbjlb1zbfot2husyw7qu0kb3qj074' });
+    await tsPlatform.initialize({
+      clientId,
+      ido: { serverPath, applicationId: appId },
+    });
+    sdk = tsPlatform.ido;
   }
 }
 
@@ -27,7 +31,11 @@ export async function executeJourney(
   restoreState,
 ) {
   // initialize SDK first time this is called
-  await initSdk('demo-client-id', 'https://appclips.poc.transmit-field.com', 'idosdk');
+  await initSdk(
+    'az8xbjlb1zbfot2husyw7qu0kb3qj074',
+    'https://0dau9szmld2g6zq50g9i6.transmit.security',
+    'default_application',
+  );
 
   // Reset UI
   pageUtils.hide('journey_start');
@@ -90,7 +98,7 @@ export async function showInformation(actionData) {
       pageUtils.hide('action_response_error');
       resolve({
         option: ClientResponseOptionType.ClientInput,
-        data: {},
+        data: { ...actionData?.data },
       });
     }
 
