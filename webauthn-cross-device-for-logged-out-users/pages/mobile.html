@@ -1,0 +1,171 @@
+<html style="display: none">
+  <head>
+    <!--meta name="viewport" content="width=device-width, initial-scale=1" /-->
+    <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/outlinedFingerprint.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME Desktop</title>
+    <script type="module" src="./init.js"></script>
+    <script
+      type="text/javascript"
+      src="https://platform-websdk.transmitsecurity.io/platform-websdk/1.6.0/ts-platform-websdk.js"
+    ></script>
+  </head>
+
+  <body onload="init()">
+    <div class="page">
+      <header>
+        <a href="/"><img src="/acme-logo.svg" /></a>
+      </header>
+      <main>
+        <div class="content column gap centered">
+          <div id="formsDiv" class="column gap page">
+            <div>
+              <img src="/outlinedFingerprint.svg" style="width: 40%" />
+            </div>
+            <div id="authenticateDiv" class="column gap hidden">
+              <h2>Sign in with Passkey</h2>
+              <div class="text">To complete this flow, you'll now be asked register a Passkey.</div>
+              <button id="authnBtn" onclick="doAuthentication()" class="full-width">
+                Continue
+              </button>
+            </div>
+            <div id="registerDiv" class="column gap hidden">
+              <h2>Set up a Passkey</h2>
+              <div class="text">To complete this flow, you'll now be asked register a Passkey.</div>
+              <button id="regBtn" onclick="doRegistration()" class="full-width">Continue</button>
+            </div>
+          </div>
+          <div id="successDiv" class="column gap centered hidden">
+            <div class="title sm">Success</div>
+            <img src="/green-check.svg" class="page-icon" />
+            <div class="text">
+              Please return to the Desktop device page to see flow completion and response.
+            </div>
+            <div class="text">You can close this tab.</div>
+          </div>
+          <div id="status" class="column gap"></div>
+        </div>
+      </main>
+    </div>
+  </body>
+  <script>
+    let crossDeviceTicketId = undefined;
+
+    // initialize page and SDK
+    async function init() {
+      try {
+        await window.tsPlatform.initialize({
+          clientId: window.env.VITE_TS_CLIENT_ID,
+          webauthn: {
+            serverPath: window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io',
+          },
+        });
+
+        crossDeviceTicketId = window.pageUtils.extractUrlParameter('ticket_id');
+        const isRegistrationFlow =
+          window.pageUtils.extractUrlParameter('is_registration') === 'true';
+
+        // Check if WebAuthn is supported for this device. if not - no real need to continue.
+        const isBiometricsSupported =
+          await window.tsPlatform.webauthn.isPlatformAuthenticatorSupported();
+        if (!isBiometricsSupported) {
+          // WebAuthn is not supported
+          window.pageUtils.updateElementText(
+            'status',
+            `WebAuthn is not supported on this device, try scanning with a different one`,
+          );
+          return;
+        }
+
+        if (isRegistrationFlow) {
+          window.pageUtils.show('registerDiv');
+        } else {
+          window.pageUtils.show('authenticateDiv');
+        }
+
+        // Optional
+        // Mark the device as attached. This will trigger an event on the originating desktop device.
+        await window.tsPlatform.webauthn.crossDevice.attachDevice(crossDeviceTicketId);
+      } catch (ex) {
+        console.log('Error during init:', ex);
+        window.pageUtils.updateElementText('status', `${ex.description}`);
+      }
+    }
+
+    // Triggered on registration click
+    async function doRegistration() {
+      try {
+        window.pageUtils.showLoading();
+
+        // Execute the registration API calls
+        const encodedResult = await window.tsPlatform.webauthn.crossDevice.register(
+          crossDeviceTicketId,
+        );
+        const registrationResult = await fetch(`/webauthn/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            webauthn_encoded_result: encodedResult,
+          }),
+        });
+
+        console.log(registrationResult);
+
+        if (!registrationResult.ok) throw new Error('Registration failed');
+
+        window.pageUtils.show('successDiv');
+        window.pageUtils.hide('formsDiv');
+      } catch (ex) {
+        window.pageUtils.updateElementText('status', ex.description);
+        console.log('Error during registration', ex);
+      } finally {
+        window.pageUtils.hideLoading();
+      }
+    }
+
+    // triggered on authentication click
+    async function doAuthentication() {
+      try {
+        window.pageUtils.showLoading();
+
+        const webauthn_encoded_result =
+          await window.tsPlatform.webauthn.crossDevice.authenticate.modal(crossDeviceTicketId);
+
+        const token = await fetch(`/webauthn/authenticate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            webauthn_encoded_result,
+          }),
+        });
+
+        const data = await token.json();
+        console.log('Response from /token: ', data);
+
+        if (data.error_code) {
+          window.pageUtils.updateElementText('status', `Error during login: ${data.message}`);
+          return;
+        }
+
+        window.pageUtils.show('successDiv');
+        window.pageUtils.hide('formsDiv');
+      } catch (ex) {
+        window.pageUtils.updateElementText('status', ex.description);
+        console.log('Error during authentication', ex);
+      } finally {
+        window.pageUtils.hideLoading();
+      }
+    }
+  </script>
+</html>

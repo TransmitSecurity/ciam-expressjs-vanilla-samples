@@ -85,9 +85,10 @@ options=(
     "Password Authentication (Backend)"
     "SAML IDP"
     "WebAuthn Passkey Authentication (autocomplete)"
-    "WebAuthn Cross Device"
     "WebAuthn Logged In Users"
     "WebAuthn Logged Out Users"
+    "WebAuthn Cross Device Logged In Users"
+    "WebAuthn Cross Device Logged Out Users"
 )
 optdir=(
     "authentication-hub"
@@ -106,9 +107,10 @@ optdir=(
     "password-be-authentication"
     "saml-idp"
     "passkey-authentication"
-    "webauthn-cross-device"
     "webauthn-for-logged-in-users"
     "webauthn-for-logged-out-users"
+    "webauthn-cross-device-for-logged-in-users"
+    "webauthn-cross-device-for-logged-out-users"
 )
 
 select_option "${options[@]} "
