@@ -85,9 +85,10 @@ options=(
     "Password Authentication (Backend)"
     "SAML IDP"
     "WebAuthn Passkey Authentication (autocomplete)"
-    "WebAuthn Cross Device"
     "WebAuthn Logged In Users"
     "WebAuthn Logged Out Users"
+    "WebAuthn Cross Device Logged In Users"
+    "WebAuthn Cross Device Logged Out Users"
 )
 optdir=(
     "authentication-hub"
