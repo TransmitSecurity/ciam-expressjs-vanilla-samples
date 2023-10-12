@@ -69,8 +69,7 @@
         });
 
         crossDeviceTicketId = window.pageUtils.extractUrlParameter('ticket_id');
-        const isRegistrationFlow =
-          window.pageUtils.extractUrlParameter('is_registration') === 'true';
+        const isAuthenticationFlow = crossDeviceTicketId.startsWith('auth:');
 
         // Check if WebAuthn is supported for this device. if not - no real need to continue.
         const isBiometricsSupported =
@@ -84,10 +83,10 @@
           return;
         }
 
-        if (isRegistrationFlow) {
-          window.pageUtils.show('registerDiv');
-        } else {
+        if (isAuthenticationFlow) {
           window.pageUtils.show('authenticateDiv');
+        } else {
+          window.pageUtils.show('registerDiv');
         }
 
         // Optional

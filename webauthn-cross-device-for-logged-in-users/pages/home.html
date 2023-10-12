@@ -101,7 +101,7 @@
       function activateQR(ticketId) {
         // Construct the URL of your login page along with the authSessionId param (aid in this example).
         // To use a mobile device, best to display the generated URL using a QR code.
-        url = `${window.location.origin}/pages/mobile.html?ticket_id=${ticketId}&is_registration=true`;
+        url = `${window.location.origin}/pages/mobile.html?ticket_id=${ticketId}`;
 
         // Load the QR image and display the page after it is loaded
         const qrImg = new Image();
