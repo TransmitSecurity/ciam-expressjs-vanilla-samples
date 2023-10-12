@@ -6,7 +6,10 @@ let sdk = null;
 
 export async function initSdk(clientId, serverPath, appId) {
   if (!sdk) {
-    await window.tsPlatform.initialize({ clientId: 'az8xbjlb1zbfot2husyw7qu0kb3qj074' });
+    await window.tsPlatform.initialize({
+      clientId,
+      drs: { serverPath: 'https://collect.riskid-stg.io' },
+    });
     await tsPlatform.initialize({
       clientId,
       ido: { serverPath, applicationId: appId },
