@@ -7,10 +7,20 @@ document.querySelector('#start_journey_button').addEventListener('click', onClic
 
 // Start the journey
 function onClick() {
-  executeJourney('sample_info_journey', handleJourneyActionUI, {
-    flowId: 'my_external_session_tracking_id',
-    additionalParams: {},
-  });
+  executeJourney(
+    'sample_info_journey',
+    handleJourneyActionUI,
+    {
+      flowId: 'my_external_session_tracking_id',
+      additionalParams: {},
+    },
+    undefined,
+    {
+      clientId: 'demo-client-id',
+      serverPath: 'https://appclips.poc.transmit-field.com',
+      appId: 'idosdk',
+    },
+  );
 }
 
 // Handle the journey information action

@@ -28,7 +28,6 @@ function onClick() {
 }
 
 async function handleJourneyActionUI(idoResponse) {
-  console.log('idoResponse', idoResponse);
   const actionData = idoResponse?.data;
   const stepId = idoResponse?.journeyStepId;
   const responseOptions = idoResponse?.clientResponseOptions || new Map();

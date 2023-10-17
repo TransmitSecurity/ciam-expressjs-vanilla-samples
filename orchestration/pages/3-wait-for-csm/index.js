@@ -10,17 +10,34 @@ const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: 'random',
   additionalParams: {},
 };
+const SDK_INIT_OPTIONS = {
+  clientId: 'demo-client-id',
+  serverPath: 'https://appclips.poc.transmit-field.com',
+  appId: 'idosdk',
+};
 
 const state = localStorage.getItem('serializedState');
 const parsedState = state ? JSON.parse(state) : null;
 if (parsedState && parsedState.expires > new Date().getTime()) {
-  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, parsedState.state);
+  executeJourney(
+    JOURNEY_NAME,
+    handleJourneyActionUI,
+    JOURNEY_ADDITIONAL_PARAMS,
+    parsedState.state,
+    SDK_INIT_OPTIONS,
+  );
 } else {
   localStorage.removeItem('serializedState');
 }
 
 function onClick() {
-  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
+  executeJourney(
+    JOURNEY_NAME,
+    handleJourneyActionUI,
+    JOURNEY_ADDITIONAL_PARAMS,
+    undefined,
+    SDK_INIT_OPTIONS,
+  );
 }
 
 async function handleJourneyActionUI(idoResponse) {

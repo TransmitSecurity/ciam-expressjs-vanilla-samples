@@ -1,21 +1,24 @@
-import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
+// import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 import { pageUtils } from '../../shared/pageUtils.js';
 import { ClientResponseOptionType, IdoServiceResponseType } from './sdk_interface.js';
 
 let sdk = null;
 
+const DEFAULT_SDK_INIT_OPTIONS = {
+  clientId: 'az8xbjlb1zbfot2husyw7qu0kb3qj074',
+  serverPath: 'https://0dau9szmld2g6zq50g9i6.transmit.security',
+  appId: 'default_application',
+};
+
 // Initialize the SDK
-export async function initSdk(clientId, serverPath, appId) {
+export async function initSdk(clientId, serverPath, appId, sdkOptions = {}) {
   if (!sdk) {
     await window.tsPlatform.initialize({
       clientId,
-      drs: { serverPath: 'https://collect.riskid-stg.io' },
-    });
-    await tsPlatform.initialize({
-      clientId,
       ido: { serverPath, applicationId: appId },
+      ...sdkOptions,
     });
-    sdk = tsPlatform.ido;
+    sdk = window.tsPlatform.ido;
   }
 }
 
@@ -33,13 +36,12 @@ export async function executeJourney(
   handleJourneyActionUI,
   additionalParams,
   restoreState,
+  sdkInitOptions,
+  sdkOptions,
 ) {
   // initialize SDK first time this is called
-  await initSdk(
-    'az8xbjlb1zbfot2husyw7qu0kb3qj074',
-    'https://0dau9szmld2g6zq50g9i6.transmit.security',
-    'default_application',
-  );
+  const { clientId, serverPath, appId } = sdkInitOptions ?? DEFAULT_SDK_INIT_OPTIONS;
+  await initSdk(clientId, serverPath, appId, sdkOptions);
 
   // Reset UI
   pageUtils.hide('journey_start');

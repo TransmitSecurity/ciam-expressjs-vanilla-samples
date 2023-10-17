@@ -11,19 +11,36 @@ const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: 'my_external_session_tracking_id',
   additionalParams: {},
 };
+const SDK_INIT_OPTIONS = {
+  clientId: 'demo-client-id',
+  serverPath: 'https://appclips.poc.transmit-field.com',
+  appId: 'idosdk',
+};
 
 // Check if there is a serialized state in local storage and if it is still valid
 // If so, continue the journey from the last step
 const state = localStorage.getItem('serializedState');
 const parsedState = state ? JSON.parse(state) : null;
 if (parsedState && parsedState.expires > new Date().getTime()) {
-  executeJourney(JOURNEY_NAME, newJourneyStepHandler, JOURNEY_ADDITIONAL_PARAMS, parsedState.state);
+  executeJourney(
+    JOURNEY_NAME,
+    newJourneyStepHandler,
+    JOURNEY_ADDITIONAL_PARAMS,
+    parsedState.state,
+    SDK_INIT_OPTIONS,
+  );
 } else {
   localStorage.removeItem('serializedState');
 }
 
 function onClick() {
-  executeJourney(JOURNEY_NAME, newJourneyStepHandler, JOURNEY_ADDITIONAL_PARAMS);
+  executeJourney(
+    JOURNEY_NAME,
+    newJourneyStepHandler,
+    JOURNEY_ADDITIONAL_PARAMS,
+    undefined,
+    SDK_INIT_OPTIONS,
+  );
 }
 
 async function newJourneyStepHandler(idoResponse) {

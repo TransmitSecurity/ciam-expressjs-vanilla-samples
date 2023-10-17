@@ -35,7 +35,16 @@ window.drs = {
 };
 
 function onClick() {
-  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
+  executeJourney(
+    JOURNEY_NAME,
+    handleJourneyActionUI,
+    JOURNEY_ADDITIONAL_PARAMS,
+    undefined,
+    undefined,
+    {
+      sdkOptions: { drs: { serverPath: 'https://collect.riskid-stg.io' } },
+    },
+  );
 }
 
 async function handleJourneyActionUI(idoResponse) {
