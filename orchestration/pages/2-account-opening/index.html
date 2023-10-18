@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html style="display: block">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="../../public/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script
+      src="https://platform-websdk.transmitsecurity.io/platform-websdk/latest/ts-platform-websdk.js"
+      id="platform-sdk"
+    ></script>
+    <script type="module" src="./index.js"></script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        display: flex;
+        flex-direction: column;
+        /* Ensure body and all its children are in a column layout */
+        height: 100vh;
+      }
+
+      .page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        /* Allow .page to grow and take remaining vertical space */
+      }
+
+      .main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        width: 100%;
+        background-color: #f2f2f2;
+
+        .content {
+          width: 486px;
+          padding: 48px;
+          background-color: white;
+          border-radius: 4px;
+        }
+      }
+
+      /* Style the header to stick to the top */
+      header {
+        width: 100%;
+        background-color: #fff;
+        /* Header background color matches the main background color */
+        color: #1c3869;
+        /* Header text color */
+        padding: 10px 0;
+        /* Add padding to the header */
+        display: flex;
+        /* Use Flexbox */
+        justify-content: space-between;
+        /* Spread items horizontally */
+        align-items: center;
+        /* Center items vertically */
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        /* Add a subtle shadow for a less sharp effect */
+      }
+
+      /* Style header items */
+      header img,
+      header h3,
+      header p,
+      header a {
+        margin: 0 10px;
+        /* Add margin between items */
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      *.hidden {
+        display: none !important;
+      }
+
+      .break-anywhere {
+        line-break: anywhere;
+      }
+
+      .column {
+        display: flex;
+        flex-direction: column;
+
+        &.gap {
+          gap: 20px;
+        }
+
+        &.gap-small {
+          gap: 8px;
+        }
+
+        &.centered {
+          align-items: center;
+          text-align: center;
+          width: 100%;
+        }
+
+        &.long-text {
+          overflow-wrap: anywhere;
+        }
+      }
+
+      input {
+        padding: 17px 12px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+
+        &:focus-visible {
+          outline: #2383fe auto 1px;
+        }
+      }
+
+      button {
+        /* Adjust the font size to your preference */
+        width: fit-content;
+        padding: 18px 12px;
+        border: none;
+        border-radius: 4px;
+        background-color: #2383fe;
+        color: #ffffff;
+        cursor: pointer;
+
+        &.full-width {
+          width: 100%;
+        }
+
+        &.disabled,
+        &:disabled {
+          background-color: #cccccc;
+          color: #666666;
+          pointer-events: none;
+        }
+
+        /* Highlight when hovered over */
+        &:hover {
+          background-color: #1c5ca9;
+          /* Change to the desired highlight color */
+        }
+      }
+
+      .cancel-button {
+        background-color: #ccc;
+        color: #333;
+        border: 1px solid #999;
+      }
+
+      .cancel-button:hover {
+        background-color: #999;
+        color: #fff;
+      }
+
+      a {
+        color: #2383fe;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
+      #spinner {
+        display: block;
+        border: 4px solid #2383fe;
+        border-top: 6px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      #loading-mask {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 200ms;
+
+        &.loaded {
+          opacity: 1;
+        }
+
+        & > div {
+          display: block;
+          width: 32px;
+          height: 32px;
+          border: 4px solid white;
+          border-top: 4px solid transparent;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <header>
+    <img src="../../public/acme-logo.svg" />
+    <h3 style="color: #1c3869">Account Opening - Code Sample</h3>
+    <p>Journey Id: 'account_opening'</p>
+    <!-- <a
+      href="https://developer.transmitsecurity.com/guides/ido/onboarding_orchestration/"
+      target="_blank"
+      >guide</a
+    > -->
+  </header>
+
+  <body>
+    <div class="page">
+      <div class="main">
+        <div class="content">
+          <div id="journey_end_landing" class="column gap hidden">
+            <h3>Journey complete!</h3>
+            <button id="restart_journey_button" class="full-width">Restart</button>
+          </div>
+          <div id="journey_start" class="column gap">
+            <button id="start_journey_button" class="full-width">Start Journey</button>
+          </div>
+          <div id="information_form" class="column gap hidden">
+            <div class="column gap">
+              <h3 id="information_form_title" style="font-weight: bold">Title</h3>
+              <div
+                id="information_form_text"
+                style="font-family: Sans-serif"
+                class="column long-text"
+              >
+                Text here
+              </div>
+              <button id="information_form_button" class="full-width" type="button">OK</button>
+            </div>
+          </div>
+          <div id="account_opening" class="column gap" style="display: none">
+            <div class="column gap">
+              <h3 id="account_opening_title" style="font-weight: bold">
+                Account Opening Form Sample
+              </h3>
+              <div
+                id="account_opening_text"
+                style="font-family: Sans-serif"
+                class="column long-text"
+              ></div>
+              <input
+                class="focus-visible"
+                type="text"
+                autocomplete="on"
+                id="user_id_input"
+                placeholder="Enter user Id"
+              />
+              <input
+                class="focus-visible"
+                type="tel"
+                autocomplete="off"
+                id="phone_input"
+                placeholder="Enter phone number"
+                required
+              />
+              <script>
+                const phoneInput = document.getElementById('phone_input');
+                phoneInput.addEventListener('input', function () {
+                  // Remove any non-digit characters
+                  this.value = this.value.replace(/[^0-9]/g, '');
+                });
+              </script>
+              <button id="account_opening_button" class="full-width" type="button">Submit</button>
+              <button
+                id="account_opening_cancel_button"
+                class="full-width cancel-button"
+                type="cancel"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+          <div class="column gap">
+            <div class="row"></div>
+            <div
+              id="action_response_error"
+              style="font-family: Sans-serif; color: red"
+              class="column hidden"
+            >
+              Error
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -5,22 +5,39 @@ import { IdoJourneyActionType } from '../sdk_interface.js';
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'wait_for_device';
+const JOURNEY_NAME = 'crypto_binding';
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: 'random',
   additionalParams: {},
+};
+const SDK_INIT_OPTIONS = {
+  clientId: 'demo-client-id',
+  serverPath: 'https://appclips.poc.transmit-field.com',
+  appId: 'idosdk',
 };
 
 const state = localStorage.getItem('serializedState');
 const parsedState = state ? JSON.parse(state) : null;
 if (parsedState && parsedState.expires > new Date().getTime()) {
-  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, parsedState.state);
+  executeJourney(
+    JOURNEY_NAME,
+    handleJourneyActionUI,
+    JOURNEY_ADDITIONAL_PARAMS,
+    parsedState.state,
+    SDK_INIT_OPTIONS,
+  );
 } else {
   localStorage.removeItem('serializedState');
 }
 
 function onClick() {
-  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
+  executeJourney(
+    JOURNEY_NAME,
+    handleJourneyActionUI,
+    JOURNEY_ADDITIONAL_PARAMS,
+    undefined,
+    SDK_INIT_OPTIONS,
+  );
 }
 
 async function handleJourneyActionUI(idoResponse) {
@@ -39,16 +56,16 @@ async function handleJourneyActionUI(idoResponse) {
     case IdoJourneyActionType.Information:
       clientResponse = await showInformation(actionData, responseOptions);
       break;
-    case IdoJourneyActionType.DebugBreak:
+    case IdoJourneyActionType.CryptoBindingRegistration:
       clientResponse = await showInformation({
-        title: 'Breakpoint',
-        text: 'Journey is holding on breakpoint',
+        title: 'Crypto Binding',
+        text: 'About to register a device key',
       });
       break;
-    case IdoJourneyActionType.WaitForAnotherDevice:
+    case IdoJourneyActionType.CryptoBindingValidation:
       clientResponse = await showInformation({
-        title: 'Wait for another device',
-        text: 'Journey is waiting for another device',
+        title: 'Crypto Binding validation',
+        text: 'About to validate a device key',
       });
       break;
     default:

@@ -1,8 +1,8 @@
+/* eslint-disable no-var */
 /**
  * @enum
  * @description The enum for the log levels.
  */
-// eslint-disable-next-line no-var
 export var LogLevel;
 (function (LogLevel) {
   LogLevel[(LogLevel['Debug'] = 0)] = 'Debug';
@@ -14,7 +14,6 @@ export var LogLevel;
  * @enum
  * @description The enum for the sdk error codes.
  */
-// eslint-disable-next-line no-var
 export var ErrorCode;
 (function (ErrorCode) {
   /**
@@ -50,7 +49,6 @@ export var ErrorCode;
  * @enum
  * @description The enum for the client response option types.
  */
-// eslint-disable-next-line no-var
 export var ClientResponseOptionType;
 (function (ClientResponseOptionType) {
   /**
@@ -70,7 +68,6 @@ export var ClientResponseOptionType;
  * @enum
  * @description The enum for the Journey step types.
  */
-// eslint-disable-next-line no-var
 export var IdoServiceResponseType;
 (function (IdoServiceResponseType) {
   /**
@@ -94,7 +91,6 @@ export var IdoServiceResponseType;
  * @enum
  * @description The enum for the Journey step ID, when the journey step is a known action and not a custom form.
  */
-// eslint-disable-next-line no-var
 export var IdoJourneyActionType;
 (function (IdoJourneyActionType) {
   /**
@@ -130,6 +126,47 @@ export var IdoJourneyActionType;
   /**
    * @description `journeyStepId` for device crypto binding validation action.
    * This action is presented to the client side when the journey has a form with the ID `"action:crypto_binding_validation"`.
+   * * On submission of `clientResponse` - the SDK will sign the challenge and respond in the following format:
+   * ```json
+   * {
+   *   "ts:idosdk:device": {
+   *     "signature": "base64 encoded signature",
+   *     "platform_device_id": "an opaque key ID",
+   *  }
+   * ```
    */
   IdoJourneyActionType['CryptoBindingValidation'] = 'action:crypto_binding_validation';
+  /**
+   * @description `journeyStepId` for WebAuthn registration action.
+   */
+  IdoJourneyActionType['WebAuthnRegistration'] = 'action:webauthn_registration';
+  /**
+   * @description `journeyStepId` for DRS trigger action.
+   * This action is presented to the client side when the journey has a form with the ID `"action:drs_trigger_action"`.
+   * The action_type field should be used for creating the DRS action token.
+   *
+   * client response:
+   * ```json
+   * {
+   *  "data": {
+   *     "correlation_id": "a47ed80a-41f9-464a-a42f-fce775b6e446",
+   *     "user_id": "user",
+   *     "action_type": "login"
+   *  },
+   * }
+   * ```
+   * output:
+   * ```json
+   * {
+   *  "data": {
+   *     "action_token": "<DRS action token>"
+   *  }
+   *}
+   * ```
+   */
+  IdoJourneyActionType['DrsTriggerAction'] = 'action:drs_trigger_action';
+  /**
+   * @description `journeyStepId` for Identity Verification action.
+   */
+  IdoJourneyActionType['IdentityVerification'] = 'action:id_verification';
 })(IdoJourneyActionType || (IdoJourneyActionType = {}));
