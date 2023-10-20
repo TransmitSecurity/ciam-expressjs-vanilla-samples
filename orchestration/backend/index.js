@@ -11,4 +11,8 @@ router.get('/', function (req, res) {
   res.redirect('menu.html');
 });
 
+router.get('/pages/sandbox', function (req, res) {
+  res.redirect('sandbox.html');
+});
+
 export const indexRouter = router;

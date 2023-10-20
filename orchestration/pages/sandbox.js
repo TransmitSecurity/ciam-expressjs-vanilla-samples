@@ -7,7 +7,7 @@ import { ClientResponseOptionType, IdoJourneyActionType } from './sdk_interface.
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'ciam_orch_1';
+const JOURNEY_NAME = 'test_dynamic_forms';
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: 'random',
   additionalParams: { username: 'John Doe', plus: true },
@@ -24,6 +24,7 @@ if (parsedState && parsedState.expires > new Date().getTime()) {
 function onClick() {
   executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
 }
+
 async function handleJourneyActionUI(idoResponse) {
   const actionData = idoResponse?.data;
   const stepId = idoResponse?.journeyStepId;
