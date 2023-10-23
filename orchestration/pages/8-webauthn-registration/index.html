@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html style="display: block">
+  <head>
+    <link rel="stylesheet" type="text/css" href="../../../public/style.css" />
+    <link rel="icon" type="image/svg+xml" href="../../../public/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script
+      src="https://platform-websdk.transmitsecurity.io/platform-websdk/latest/ts-platform-websdk.js"
+      id="platform-sdk"
+    ></script>
+    <script type="module" src="./index.js"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <img src="../../../public/acme-logo.svg" />
+        <h3 style="color: #1c3869">Identity Orchestration Sample - WebAuthn registration</h3>
+        <p>Journey Id: 'demo'</p>
+      </header>
+      <main>
+        <div class="content">
+          <div id="journey_end_landing" class="column gap hidden">
+            <h3>Journey complete!</h3>
+            <button id="restart_journey_button" class="full-width">Restart</button>
+          </div>
+          <div id="journey_start" class="column gap">
+            <button id="start_journey_button" class="full-width">Start Journey</button>
+          </div>
+          <div id="information_form" class="column gap hidden">
+            <div class="column gap">
+              <h3 id="information_form_title" style="font-weight: bold">Title</h3>
+              <div
+                id="information_form_text"
+                style="font-family: Sans-serif"
+                class="column long-text"
+              >
+                Text here
+              </div>
+              <button id="information_form_button" class="full-width" type="submit">OK</button>
+              <!--button id="intro_form_cancel_button" class="full-width" type="cancel"></button-->
+            </div>
+          </div>
+
+          <div class="column gap">
+            <div class="row"></div>
+            <div
+              id="action_response_error"
+              style="font-family: Sans-serif; color: red"
+              class="column hidden"
+            >
+              Error
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
