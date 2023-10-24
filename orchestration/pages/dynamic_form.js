@@ -4,10 +4,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 let _actionData = null;
-const _fields_output = {};
-let _phoneInput = null;
+const _actions_response = [];
 let _submitHandler = null;
 let _rejectHandler = null;
+const phone_parsers = {};
 
 export async function enableDynamicForm() {
   return new Promise((resolve, reject) => {
@@ -58,23 +58,23 @@ export function getDynamicFormUI(actionData) {
 </div>`;
 
   // set form title
-  if (actionData.title) {
+  if (actionData.title && actionData.title.length > 0) {
     df_div.querySelector('#form_title').innerHTML = actionData.title;
-    df_div.querySelector('#form_title').display = 'block';
+    df_div.querySelector('#form_title').classList.remove('hidden');
   } else {
-    df_div.querySelector('#form_title').display = 'none !important';
+    df_div.querySelector('#form_title').classList.add('hidden');
   }
 
   // set form subtitle
-  if (actionData.subtitle) {
+  if (actionData.subtitle && actionData.subtitle.length > 0) {
     df_div.querySelector('#form_subtitle').innerHTML = actionData.subtitle;
-    df_div.querySelector('#form_subtitle').display = 'block';
+    df_div.querySelector('#form_subtitle').classList.remove('hidden');
   } else {
-    df_div.querySelector('#form_subtitle').display = 'none !important';
+    df_div.querySelector('#form_subtitle').classList.add('hidden');
   }
 
   // set form input fields
-  fields.forEach((field, index) => {
+  fields.forEach((field /*, index*/) => {
     if (!(field.type && field.id)) {
       throw 'dynamic form fields must have type and id fields. Where type is one of: text, number, date, password, email, phone.';
     }
@@ -116,7 +116,10 @@ export function getDynamicFormUI(actionData) {
     }
 
     if (!new_elem) return;
-    _fields_output[`${index}`] = { type: field.type, id: field.id, value: null };
+    const obj = {};
+    obj[field.id] = null;
+    _actions_response.push(obj);
+    // _fields_output[`${index}`] = { type: field.type, id: field.id, value: null };
     pushFieldInDiv(new_elem, df_div);
   });
 
@@ -124,11 +127,10 @@ export function getDynamicFormUI(actionData) {
   setButton(df_div.querySelector('#ok_button'), null, () => {
     if (_submitHandler) {
       if (!validateForm()) return;
-      const fields_values = collectOutput(_fields_output);
       disableAllButtons();
       _submitHandler({
         option: 'client_input',
-        data: { fields: fields_values },
+        data: collectOutput(_actions_response),
       });
       _submitHandler = _rejectHandler = null;
     }
@@ -165,18 +167,44 @@ function createPhoneInput(field) {
     phone.setAttribute('name', 'phone');
     phone.setAttribute('onkeypress', 'return event.charCode >= 48 && event.charCode <= 57');
     appendElementInDiv(phone, wrapperDiv);
+    const preferredCountries = getCountyCodeList(field.regex);
 
-    _phoneInput = window.intlTelInput(phone, {
-      initialCountry: 'auto',
+    const phoneInput = window.intlTelInput(phone, {
+      initialCountry: preferredCountries[0],
       nationalMode: true,
-      preferredCountries: ['us', 'gb', 'il', 'in', 'au'],
+      preferredCountries: preferredCountries,
       utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js',
     });
+    phone_parsers[field.id] = phoneInput;
 
     return wrapperDiv;
   } catch (ex) {
     console.log(ex);
   }
+}
+
+// use field.regex if it's a valid array of country code
+function getCountyCodeList(regex_field) {
+  let countries = ['us', 'ca', 'mx'];
+  try {
+    // eslint-disable-next-line no-useless-escape
+    const country_list = String(regex_field)
+      .replace(/[\[\] *"*'*`*]/g, '')
+      .split(',')
+      .reduce((acc, cur) => {
+        if (cur.length == 2) {
+          acc.push(cur);
+        }
+        return acc;
+      }, []);
+
+    if (country_list && Array.isArray(country_list) && country_list.length > 0) {
+      countries = country_list;
+    }
+  } catch (ex) {
+    console.log(ex);
+  }
+  return countries;
 }
 
 function createTextInput(field) {
@@ -225,6 +253,7 @@ function createDecimalInput(field) {
       'onkeypress',
       'return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46',
     );
+    num.setAttribute('onfocusout', 'this.value = parseFloat(this.value).toFixed(2);');
     appendElementInDiv(num, wrapperDiv);
     return wrapperDiv;
   } catch (ex) {
@@ -282,24 +311,20 @@ function createDropDownList(field) {
 
 function createCheckbox(field) {
   try {
-    const wrapperDiv = createWrapperDiv(field.id + 'Div', field.name);
+    const wrapperDiv = document.createElement('DIV');
+    wrapperDiv.id = field.id + 'Div';
+    wrapperDiv.classList.add('column');
     const checkbox = document.createElement('INPUT');
     checkbox.type = 'checkbox';
     checkbox.id = field.id;
     checkbox.name = field.id;
-    checkbox.value = field.value ?? false;
+    checkbox.checked = field.value ?? false;
     checkbox.style = 'margin: 6px;';
 
-    const onCheck = (/*event*/) => {
-      checkbox.value = checkbox.checked;
-    };
-
-    checkbox.addEventListener('change', onCheck);
-
     const label = document.createElement('label');
-    label.htmlFor = 'car';
+    label.htmlFor = field.id;
     label.appendChild(checkbox);
-    label.appendChild(document.createTextNode('Car'));
+    label.appendChild(document.createTextNode(field.name));
     appendElementInDiv(label, wrapperDiv);
     return wrapperDiv;
   } catch (ex) {
@@ -388,54 +413,49 @@ function validateForm() {
     }
     const elem_value = elem.value;
 
-    if (field.mandatory == true && !elem_value) {
-      markInputError(field_id, 'Required input missing.');
-      isValid = false;
-      return false;
-    }
-
-    if (elem_value) {
-      if (field.min_len) {
-        if (length(elem_value) > field.max_len) {
-          markInputError(field_id, `Input must contain at least ${field.min_len} characters`);
+    switch (field.type) {
+      case 'email':
+        if (isMandatoryFieldEmpty(field, elem_value) || !isValidEmail(elem_value)) {
+          markInputError(field_id, 'Email missing or invalid.');
           isValid = false;
           return false;
         }
-      }
-
-      if (field.max_len) {
-        if (length(elem_value) < field.min_len) {
-          markInputError(field_id, `Input must contain at most ${field.max_len} characters`);
+        break;
+      case 'phone':
+        if (isMandatoryFieldEmpty(field, elem_value) || !phone_parsers[field.id].isValidNumber()) {
+          markInputError(field_id, 'Phone number missing or invalid.');
           isValid = false;
           return false;
         }
-      }
-
-      switch (field.type) {
-        case 'email':
-          if (!isValidEmail(elem_value)) {
-            markInputError(field_id, 'Email missing or invalid.');
-            isValid = false;
-            return false;
-          }
-          break;
-        case 'phone':
-          if (!_phoneInput.isValidNumber()) {
-            markInputError(field_id, 'Phone number missing or invalid.');
-            isValid = false;
-            return false;
-          }
-          break;
-        case 'number':
-          if (isNaN(elem_value)) {
-            markInputError(field_id, 'Input must be a number.');
-            isValid = false;
-            return false;
-          }
-      }
+        break;
+      case 'number':
+      case 'decimal':
+        if (isNaN(elem_value)) {
+          markInputError(field_id, 'Input must be a number.');
+          isValid = false;
+          return false;
+        }
+        break;
+      case 'list':
+        if (isMandatoryFieldEmpty(field, elem_value)) {
+          markInputError(field_id, 'Please select an option.');
+          isValid = false;
+          return false;
+        }
+        break;
+      default:
+        if (isMandatoryFieldEmpty(field, elem_value)) {
+          markInputError(field_id, 'Required input missing.');
+          isValid = false;
+          return false;
+        }
     }
   });
   return isValid;
+}
+
+function isMandatoryFieldEmpty(field, value) {
+  return field.mandatory == true && !value;
 }
 
 function isValidEmail(input) {
@@ -451,17 +471,30 @@ function disableAllButtons() {
   document.getElementById('delete_button').disabled = true;
 }
 
-function collectOutput(fields_output) {
-  const output = {};
-  const size = Object.keys(fields_output).length;
+function collectOutput(actions_response) {
+  const output = { type: 'dynamic_form', actions: {} };
+  const size = actions_response.length;
   Array(size)
     .fill(0)
     .map((_, index) => {
-      const obj = fields_output[`${index}`];
+      const obj = actions_response[index];
       if (obj) {
-        const elem = document.getElementById(obj.id);
-        obj['value'] = elem.value;
-        output[obj.id] = obj;
+        const field_id = Object.keys(obj)[0];
+        const elem = document.getElementById(field_id);
+        switch (elem.type) {
+          case 'checkbox':
+            output.actions[field_id] = elem.checked;
+            break;
+          case 'number':
+          case 'decimal':
+            output.actions[field_id] = Number(elem.value);
+            break;
+          case 'tel':
+            output.actions[field_id] = phone_parsers[field_id].getNumber();
+            break;
+          default:
+            output.actions[field_id] = elem.value;
+        }
       }
     });
   return output;
