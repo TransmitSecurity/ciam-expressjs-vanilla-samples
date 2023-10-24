@@ -1,5 +1,3 @@
-import { ClientResponseOptionType } from './sdk_interface.js';
-
 // this together with <html style="display: none"> avoids flash of unstyled content (FOUC)
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementsByTagName('html')[0].style.display = 'block';
@@ -36,17 +34,17 @@ export function getDynamicFormUI(actionData) {
 
   const df_div = document.createElement('DIV');
   df_div.id = 'dynamic_form_body';
-  df_div.classList.add('form-hidden');
-  df_div.innerHTML = `<div class="form-group">
-  <h3 id="form_title" style="font-weight: bold">Title</h3>
-  <div id="form_text" style="font-family: Sans-serif" class="column long-text">
-	  Text here
+  df_div.classList.add('column');
+  df_div.classList.add('gap');
+  df_div.classList.add('hidden');
+  df_div.innerHTML = `<div class="column gap">
+  <a id="form_title" class="title">Title</a>
+  <a id="form_subtitle" class="title sm">Subtitle</a>
   </div>
-</div>
-<button id="ok_button" class="btn btn-primary btn-block hidden" type="button">OK</button>
-<button id="cancel_button" class="btn btn-secondary btn-block hidden"
+<button id="ok_button" class="full-width" type="button">OK</button>
+<button id="cancel_button" class="full-width hidden"
   type="button">Cancel</button>
-<button id="delete_button" class="btn btn-danger btn-block hidden"
+<button id="delete_button" class="full-width danger hidden"
   type="button">Delete</button>
   <div class="column gap">
   <div class="row"></div>
@@ -67,12 +65,12 @@ export function getDynamicFormUI(actionData) {
     df_div.querySelector('#form_title').display = 'none !important';
   }
 
-  // set form text
+  // set form subtitle
   if (actionData.subtitle) {
-    df_div.querySelector('#form_text').innerHTML = actionData.subtitle;
-    df_div.querySelector('#form_text').display = 'block';
+    df_div.querySelector('#form_subtitle').innerHTML = actionData.subtitle;
+    df_div.querySelector('#form_subtitle').display = 'block';
   } else {
-    df_div.querySelector('#form_text').display = 'none !important';
+    df_div.querySelector('#form_subtitle').display = 'none !important';
   }
 
   // set form input fields
@@ -97,6 +95,13 @@ export function getDynamicFormUI(actionData) {
       case 'text':
         new_elem = createTextInput(field);
         break;
+      case 'message':
+        new_elem = createMessage(field);
+        pushFieldInDiv(new_elem, df_div);
+        return;
+      case 'decimal':
+        new_elem = createDecimalInput(field);
+        break;
       case 'numeric':
         new_elem = createNumberInput(field);
         break;
@@ -110,6 +115,7 @@ export function getDynamicFormUI(actionData) {
         console.log(`Unknown field type provided: ${field.type} - ignoring.`);
     }
 
+    if (!new_elem) return;
     _fields_output[`${index}`] = { type: field.type, id: field.id, value: null };
     pushFieldInDiv(new_elem, df_div);
   });
@@ -121,7 +127,7 @@ export function getDynamicFormUI(actionData) {
       const fields_values = collectOutput(_fields_output);
       disableAllButtons();
       _submitHandler({
-        option: ClientResponseOptionType.ClientInput,
+        option: 'client_input',
         data: { fields: fields_values },
       });
       _submitHandler = _rejectHandler = null;
@@ -134,7 +140,7 @@ export function getDynamicFormUI(actionData) {
     _submitHandler = _rejectHandler = null;
   });
 
-  df_div.querySelector('#dynamic_form_error').display = 'none !important';
+  df_div.querySelector('#dynamic_form_error').classList.add('hidden');
   return df_div;
 }
 
@@ -157,10 +163,13 @@ function createPhoneInput(field) {
     const phone = createInputField(field);
     phone.setAttribute('type', 'tel');
     phone.setAttribute('name', 'phone');
+    phone.setAttribute('onkeypress', 'return event.charCode >= 48 && event.charCode <= 57');
     appendElementInDiv(phone, wrapperDiv);
 
     _phoneInput = window.intlTelInput(phone, {
-      preferredCountries: ['mx', 'cr', 'sv', 'pa', 'ni', 'hn'],
+      initialCountry: 'auto',
+      nationalMode: true,
+      preferredCountries: ['us', 'gb', 'il', 'in', 'au'],
       utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js',
     });
 
@@ -186,11 +195,51 @@ function createTextInput(field) {
   }
 }
 
+function createMessage(field) {
+  try {
+    const wrapperDiv = document.createElement('DIV');
+    wrapperDiv.id = field.id;
+    wrapperDiv.classList.add('column');
+    wrapperDiv.classList.add('gap');
+
+    const label = document.createElement('LABEL');
+    label.setAttribute('for', field.id);
+    label.innerHTML = field.name;
+    label.style = 'margin: 6px; font-weight: lighter;';
+    appendElementInDiv(label, wrapperDiv);
+
+    return wrapperDiv;
+  } catch (ex) {
+    console.log(ex);
+  }
+}
+
+function createDecimalInput(field) {
+  try {
+    const wrapperDiv = createWrapperDiv(field.id + 'Div', field.name || 'Amount:');
+    const num = createInputField(field);
+    num.setAttribute('type', 'number');
+    num.setAttribute('step', '0.10');
+    num.setAttribute('pattern', '^d*(.d{0,2})?$');
+    num.setAttribute(
+      'onkeypress',
+      'return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46',
+    );
+    appendElementInDiv(num, wrapperDiv);
+    return wrapperDiv;
+  } catch (ex) {
+    console.log(ex);
+  }
+}
+
 function createNumberInput(field) {
   try {
     const wrapperDiv = createWrapperDiv(field.id + 'Div', field.name || 'Number:');
     const num = createInputField(field);
     num.setAttribute('type', 'number');
+    num.setAttribute('step', '1');
+    // num.setAttribute('oninput', 'validity.valid||(value="");');
+    num.setAttribute('onkeypress', 'return event.charCode >= 48 && event.charCode <= 57');
     appendElementInDiv(num, wrapperDiv);
     return wrapperDiv;
   } catch (ex) {
@@ -215,7 +264,7 @@ function createDropDownList(field) {
     const wrapperDiv = createWrapperDiv(field.id + 'Div', field.name || 'Select an option:');
     const dropdown = Object.assign(document.createElement(`DIV`), {
       innerHTML:
-        `<select name="dropdown" id=${field.id} ><option disabled selected value> -- select an option -- </option>` +
+        `<select name="dropdown" id=${field.id} ><option/><option disabled selected value> -- select an option -- </option>` +
         field.options
           .map(item => {
             return '<option value="' + item + '">' + item + '</option>';
@@ -245,21 +294,14 @@ function createCheckbox(field) {
       checkbox.value = checkbox.checked;
     };
 
-    checkbox.deleteEventListener('click', onCheck);
-    checkbox.addEventListener('click', onCheck);
+    checkbox.addEventListener('change', onCheck);
 
     const label = document.createElement('label');
     label.htmlFor = 'car';
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode('Car'));
-
-    //	var br = document.createElement('br');
-
     appendElementInDiv(label, wrapperDiv);
     return wrapperDiv;
-
-    //	container.appendChild(label);
-    //	container.appendChild(br);
   } catch (ex) {
     console.log(ex);
   }
@@ -268,22 +310,23 @@ function createCheckbox(field) {
 function createWrapperDiv(id, label_text) {
   const wrapperDiv = document.createElement('DIV');
   wrapperDiv.id = id;
-  wrapperDiv.classList.add('form-group');
+  wrapperDiv.classList.add('column');
 
   if (label_text) {
     const label = document.createElement('LABEL');
     label.setAttribute('for', id);
     label.innerHTML = label_text;
+    label.style = 'margin: 6px; font-weight: bold;';
     appendElementInDiv(label, wrapperDiv);
-    appendElementInDiv(document.createElement('br'), wrapperDiv);
   }
   return wrapperDiv;
 }
 
 function createInputField(field) {
   const elem = document.createElement('INPUT');
-  elem.classList.add('form-control');
-  elem.classList.add('form-control-sm');
+  elem.classList.add('focus-visible');
+  elem.classList.add('full-width');
+  elem.classList.add('sm');
   elem.id = field.id;
   elem.setAttribute('name', field.type);
   if (field.hint) {
@@ -319,24 +362,35 @@ function markInputError(id, message) {
   elem.style.borderColor = 'red';
   elem.focus();
   setInterval(function () {
-    document.getElementById(id).style.borderColor = null;
+    const elem = document.getElementById(id);
+    if (elem) {
+      elem.style = 'borderColor: #ccc';
+    }
+    console.log('clearing error');
   }, 1500);
 
   if (message) {
-    document.getElementById('dynamic_form_error').innerHTML = message;
-    document.getElementById('dynamic_form_error').display = 'block';
+    const errorDiv = document.getElementById('dynamic_form_error');
+    errorDiv.innerHTML = message;
+    errorDiv.classList.remove('hidden');
   }
 }
 
 function validateForm() {
   const fields = _actionData.actions;
-
+  let isValid = true;
   fields.forEach((field /*, index, arr*/) => {
     const field_id = field.id;
-    const elem_value = document.getElementById(field_id).value;
+    const elem = document.getElementById(field_id);
+    if (!elem) {
+      console.log(`Cannot find element with id: ${field_id}`);
+      return false;
+    }
+    const elem_value = elem.value;
 
     if (field.mandatory == true && !elem_value) {
       markInputError(field_id, 'Required input missing.');
+      isValid = false;
       return false;
     }
 
@@ -344,6 +398,7 @@ function validateForm() {
       if (field.min_len) {
         if (length(elem_value) > field.max_len) {
           markInputError(field_id, `Input must contain at least ${field.min_len} characters`);
+          isValid = false;
           return false;
         }
       }
@@ -351,6 +406,7 @@ function validateForm() {
       if (field.max_len) {
         if (length(elem_value) < field.min_len) {
           markInputError(field_id, `Input must contain at most ${field.max_len} characters`);
+          isValid = false;
           return false;
         }
       }
@@ -359,19 +415,27 @@ function validateForm() {
         case 'email':
           if (!isValidEmail(elem_value)) {
             markInputError(field_id, 'Email missing or invalid.');
+            isValid = false;
             return false;
           }
           break;
         case 'phone':
           if (!_phoneInput.isValidNumber()) {
             markInputError(field_id, 'Phone number missing or invalid.');
+            isValid = false;
             return false;
           }
           break;
+        case 'number':
+          if (isNaN(elem_value)) {
+            markInputError(field_id, 'Input must be a number.');
+            isValid = false;
+            return false;
+          }
       }
     }
   });
-  return true;
+  return isValid;
 }
 
 function isValidEmail(input) {
@@ -394,10 +458,11 @@ function collectOutput(fields_output) {
     .fill(0)
     .map((_, index) => {
       const obj = fields_output[`${index}`];
-      const elem = document.getElementById(obj.id);
-      if (!elem) throw 'Cannot use function before dynamic form is added to the page document.';
-      obj['value'] = elem.value;
-      output[obj.id] = obj;
+      if (obj) {
+        const elem = document.getElementById(obj.id);
+        obj['value'] = elem.value;
+        output[obj.id] = obj;
+      }
     });
   return output;
 }

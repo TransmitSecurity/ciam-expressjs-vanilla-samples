@@ -79,8 +79,16 @@ input {
   border: 1px solid #cccccc;
   border-radius: 4px;
 }
+
+input.sm {
+  padding: 7px 12px;
+}
+
 input:focus-visible {
   outline: #2383fe auto 1px;
+}
+input.full-width {
+  width: 100%;
 }
 
 button {
@@ -105,6 +113,12 @@ button[type='cancel'] {
   background-color: #ffffff;
   color: #000000;
   border: 1px solid #cccccc;
+}
+
+button[type='danger'] {
+  background-color: #be3535;
+  color: #666666;
+  pointer-events: none;
 }
 
 a {
