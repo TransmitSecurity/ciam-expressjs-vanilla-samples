@@ -216,6 +216,7 @@ function createTextInput(field) {
     } else {
       text.setAttribute('type', 'text');
     }
+
     appendElementInDiv(text, wrapperDiv);
     return wrapperDiv;
   } catch (ex) {
@@ -412,6 +413,13 @@ function validateForm() {
     }
     const elem_value = elem.value;
 
+    if (!validateRegex(field, elem_value)) {
+      markInputError(field_id, 'Invalid input.');
+      console.log(`Field ${field_id} failed regex check`);
+      isValid = false;
+      return false;
+    }
+
     switch (field.type) {
       case 'email':
         if (isMandatoryFieldEmpty(field, elem_value) || !isValidEmail(elem_value)) {
@@ -455,6 +463,18 @@ function validateForm() {
 
 function isMandatoryFieldEmpty(field, value) {
   return field.mandatory == true && !value;
+}
+
+function validateRegex(field, value) {
+  if (field.regex) {
+    try {
+      const regexObj = new RegExp(field.regex);
+      return regexObj.test(value);
+    } catch (ex) {
+      console.log(ex);
+    }
+  }
+  return true;
 }
 
 function isValidEmail(input) {
