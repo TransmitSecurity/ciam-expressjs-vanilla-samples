@@ -1,5 +1,5 @@
 import { showInformation, executeJourney } from '../commonUtils.js';
-import { IdoJourneyActionType } from '../sdk_interface.js';
+import { ClientResponseOptionType, IdoJourneyActionType } from '../sdk_interface.js';
 
 // Register event handlers for buttons
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
@@ -53,6 +53,9 @@ async function handleJourneyActionUI(idoResponse) {
     case IdoJourneyActionType.Information:
       clientResponse = await showInformation(actionData, responseOptions);
       break;
+    case 'collect_username':
+      clientResponse = await handleCollectUsernameForm();
+      break;
     case IdoJourneyActionType.WebAuthnRegistration:
       clientResponse = await showInformation({
         title: 'Webauthn Register action',
@@ -67,4 +70,30 @@ async function handleJourneyActionUI(idoResponse) {
   }
 
   return clientResponse;
+}
+
+function handleCollectUsernameForm() {
+  return new Promise(resolve => {
+    // Reset input fields
+    document.getElementById('username_input').value = '';
+
+    // Set form instructions
+    document.getElementById('collect_username_text').textContent = 'Please enter your username';
+
+    // Handle input field and main submit
+    document.querySelector('#collect_username_button')?.addEventListener(
+      'click',
+      () => {
+        const username_value = document.getElementById('username_input').value; // collect username
+        document.getElementById('collect_username').style.display = 'none';
+        resolve({
+          option: ClientResponseOptionType.ClientInput,
+          data: { username: username_value },
+        });
+      },
+      { once: true },
+    );
+
+    document.getElementById('collect_username').style.display = 'block';
+  });
 }
