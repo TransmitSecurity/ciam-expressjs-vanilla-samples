@@ -106,6 +106,12 @@ it launches the container, and appends the values inside the `.env` automaticall
 
 ## Additional notes
 
+## Using cascading `.env` files
+
+You can place additional `.env` files inside the specific sample directories, whenever you need a
+additional parameters or an override to a parameter that was defined in the root `.env` files. The
+loading and cascading is performed automatically.
+
 ### Debugging tabs on a mobile device
 
 Some samples might require you to use web browsers on mobile devices. This is the case of the
