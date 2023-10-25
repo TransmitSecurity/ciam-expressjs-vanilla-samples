@@ -1,7 +1,7 @@
 // import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 import { pageUtils } from '../../shared/pageUtils.js';
 import { ClientResponseOptionType, IdoServiceResponseType } from './sdk_interface.js';
-import { enableDynamicForm, getDynamicFormUI } from './dynamic_form.js';
+import { startDynamicForm, createDynamicFormUI } from './dynamic_form.js';
 
 let sdk = null;
 
@@ -106,9 +106,9 @@ export async function executeJourney(
         case IdoServiceResponseType.ClientInputRequired:
         case IdoServiceResponseType.ClientInputUpdateRequired:
           if (idoResponse.data?.app_data?.type == 'dynamic_form') {
-            const df_div = getDynamicFormUI(idoResponse.data?.app_data);
+            const df_div = createDynamicFormUI(idoResponse.data?.app_data);
             addDynamicFormUI(df_div);
-            uiResponse = await enableDynamicForm(idoResponse.data?.app_data);
+            uiResponse = await startDynamicForm();
             removeDynamicFormUI();
           } else {
             uiResponse = await handleJourneyActionUI(idoResponse);

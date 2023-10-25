@@ -9,14 +9,14 @@ let _submitHandler = null;
 let _rejectHandler = null;
 const phone_parsers = {};
 
-export async function enableDynamicForm() {
+export async function startDynamicForm() {
   return new Promise((resolve, reject) => {
     _submitHandler = resolve;
     _rejectHandler = reject;
   });
 }
 
-export function getDynamicFormUI(actionData) {
+export function createDynamicFormUI(actionData) {
   _submitHandler = null;
   _rejectHandler = null;
 
@@ -187,8 +187,8 @@ function createPhoneInput(field) {
 function getCountyCodeList(regex_field) {
   let countries = ['us', 'ca', 'mx'];
   try {
-    // eslint-disable-next-line no-useless-escape
     const country_list = String(regex_field)
+      // eslint-disable-next-line no-useless-escape
       .replace(/[\[\] *"*'*`*]/g, '')
       .split(',')
       .reduce((acc, cur) => {
@@ -267,7 +267,6 @@ function createNumberInput(field) {
     const num = createInputField(field);
     num.setAttribute('type', 'number');
     num.setAttribute('step', '1');
-    // num.setAttribute('oninput', 'validity.valid||(value="");');
     num.setAttribute('onkeypress', 'return event.charCode >= 48 && event.charCode <= 57');
     appendElementInDiv(num, wrapperDiv);
     return wrapperDiv;
