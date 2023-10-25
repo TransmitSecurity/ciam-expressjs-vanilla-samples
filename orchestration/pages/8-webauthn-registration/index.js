@@ -14,7 +14,14 @@ const JOURNEY_ADDITIONAL_PARAMS = {
 const state = localStorage.getItem('serializedState');
 const parsedState = state ? JSON.parse(state) : null;
 if (parsedState && parsedState.expires > new Date().getTime()) {
-  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, parsedState.state);
+  executeJourney(
+    JOURNEY_NAME,
+    handleJourneyActionUI,
+    JOURNEY_ADDITIONAL_PARAMS,
+    parsedState.state,
+    undefined,
+    { webauthn: { serverPath: 'https://api.idsec-stg.com' } },
+  );
 } else {
   localStorage.removeItem('serializedState');
 }
@@ -26,9 +33,7 @@ function onClick() {
     JOURNEY_ADDITIONAL_PARAMS,
     undefined,
     undefined,
-    {
-      sdkOptions: { webauthn: { serverPath: 'https://api.idsec-stg.com' } },
-    },
+    { webauthn: { serverPath: 'https://api.idsec-stg.com' } },
   );
 }
 

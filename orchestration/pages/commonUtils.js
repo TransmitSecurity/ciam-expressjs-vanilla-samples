@@ -1,4 +1,4 @@
-import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
+// import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 import { pageUtils } from '../../shared/pageUtils.js';
 import { ClientResponseOptionType, IdoServiceResponseType } from './sdk_interface.js';
 
@@ -15,14 +15,10 @@ export async function initSdk(clientId, serverPath, appId, sdkOptions = {}) {
   if (!sdk) {
     await window.tsPlatform.initialize({
       clientId,
-      webauthn: { serverPath: 'https://api.idsec-stg.com' },
-    });
-    await tsPlatform.initialize({
-      clientId,
       ido: { serverPath, applicationId: appId },
       ...sdkOptions,
     });
-    sdk = tsPlatform.ido;
+    sdk = window.tsPlatform.ido;
   }
 }
 
