@@ -54,14 +54,12 @@ async function handleJourneyActionUI(idoResponse) {
       clientResponse = await showInformation(actionData, responseOptions);
       break;
     case IdoJourneyActionType.WebAuthnRegistration:
-      // eslint-disable-next-line no-case-declarations
-      const webauthn_encoded_result = await window.tsPlatform.webauthn.register(
-        actionData.username,
-      );
       clientResponse = await showInformation({
         title: 'Webauthn Register action',
         text: 'About to register a webauthn key',
-        data: { webauthn_encoded_result },
+        submitAction: async () => ({
+          webauthn_encoded_result: await window.tsPlatform.webauthn.register(actionData.username),
+        }),
       });
       break;
     default:
