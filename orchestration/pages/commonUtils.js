@@ -99,13 +99,12 @@ export async function executeJourney(
 
 export async function showInformation(actionData) {
   return new Promise((resolve /*reject*/) => {
-    async function submit() {
+    function submit() {
       pageUtils.hide('information_form');
       pageUtils.hide('action_response_error');
-      const submitActionResponse = await actionData?.submitAction?.();
       resolve({
         option: ClientResponseOptionType.ClientInput,
-        data: { ...(actionData?.data ?? submitActionResponse) },
+        data: { ...actionData?.data },
       });
     }
 

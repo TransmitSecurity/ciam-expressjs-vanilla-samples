@@ -60,10 +60,10 @@ async function handleJourneyActionUI(idoResponse) {
       clientResponse = await showInformation({
         title: 'Webauthn Register action',
         text: 'About to register a webauthn key',
-        submitAction: async () => ({
-          webauthn_encoded_result: await window.tsPlatform.webauthn.register(actionData.username),
-        }),
       });
+      clientResponse.data.webauthn_encoded_result = await window.tsPlatform.webauthn.register(
+        actionData.username,
+      );
       break;
     default:
       throw `Unexpected step id: ${stepId}`;
