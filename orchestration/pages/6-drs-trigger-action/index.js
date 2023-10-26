@@ -41,9 +41,7 @@ function onClick() {
     JOURNEY_ADDITIONAL_PARAMS,
     undefined,
     undefined,
-    {
-      sdkOptions: { drs: { serverPath: 'https://collect.riskid-stg.io' } },
-    },
+    { drs: { serverPath: 'https://collect.riskid-stg.io' } },
   );
 }
 
