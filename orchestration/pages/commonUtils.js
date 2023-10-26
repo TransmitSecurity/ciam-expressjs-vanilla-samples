@@ -1,6 +1,7 @@
 // import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 import { pageUtils } from '../../shared/pageUtils.js';
 import { ClientResponseOptionType, IdoServiceResponseType } from './sdk_interface.js';
+import { startDynamicForm, createDynamicFormUI } from './dynamic_form.js';
 
 let sdk = null;
 
@@ -28,6 +29,40 @@ function showFatalError(error) {
   pageUtils.updateElementText('action_response_error', error);
   pageUtils.show('action_response_error');
   pageUtils.show('journey_start');
+  removeDynamicFormUI();
+}
+
+// Add dynamic form to the page
+function addDynamicFormUI(df_div) {
+  const journey_container_id = 'journey_container';
+  removeDynamicFormUI(journey_container_id);
+  const rootDiv = document.getElementById(journey_container_id);
+  for (const child of rootDiv.children) {
+    try {
+      if (child.id) {
+        pageUtils.hide(child.id);
+      }
+    } catch (ex) {
+      console.error(ex);
+    }
+  }
+  rootDiv.appendChild(df_div);
+  pageUtils.hide('action_response_error');
+  pageUtils.show(df_div.id);
+}
+
+// Remove dynamic form from the page
+function removeDynamicFormUI() {
+  try {
+    const journey_container_id = 'journey_container';
+    const rootDiv = document.getElementById(journey_container_id);
+    const dynamic_form = document.getElementById('dynamic_form_body');
+    if (dynamic_form && rootDiv) {
+      rootDiv.removeChild(dynamic_form);
+    }
+  } catch (ex) {
+    console.log(ex);
+  }
 }
 
 // Start the journey
@@ -70,8 +105,16 @@ export async function executeJourney(
       switch (idoResponse.type) {
         case IdoServiceResponseType.ClientInputRequired:
         case IdoServiceResponseType.ClientInputUpdateRequired:
-          uiResponse = await handleJourneyActionUI(idoResponse);
+          if (idoResponse.data?.app_data?.type == 'dynamic_form') {
+            const df_div = createDynamicFormUI(idoResponse.data?.app_data);
+            addDynamicFormUI(df_div);
+            uiResponse = await startDynamicForm();
+            removeDynamicFormUI();
+          } else {
+            uiResponse = await handleJourneyActionUI(idoResponse);
+          }
           pageUtils.showLoading();
+          pageUtils.hide('action_response_error');
           idoResponse = await sdk.submitClientResponse(uiResponse.option, uiResponse.data);
           pageUtils.hideLoading();
           break;
@@ -83,7 +126,6 @@ export async function executeJourney(
           break;
         case IdoServiceResponseType.JourneySuccess:
           inJourney = false;
-          pageUtils.hide('action_response_error');
           break;
       }
     }
