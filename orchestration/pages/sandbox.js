@@ -7,7 +7,7 @@ import { ClientResponseOptionType, IdoJourneyActionType } from './sdk_interface.
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'test_dynamic_forms';
+const JOURNEY_NAME = 'ENTER JOURNEY NAME HERE';
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: 'random',
   additionalParams: { username: 'John Doe', plus: true },
