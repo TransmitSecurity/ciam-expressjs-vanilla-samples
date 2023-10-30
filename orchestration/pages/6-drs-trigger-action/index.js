@@ -69,7 +69,7 @@ async function handleJourneyActionUI(idoResponse) {
       console.log('Action Token', actionToken);
       // Add code here to send the action and the received actionToken to your backend
       clientResponse = await showInformation({
-        title: 'CRS Trigger Action',
+        title: 'DRS Trigger Action',
         text: 'About to trigger a DRS action',
         data: { action_token: actionToken },
       });
