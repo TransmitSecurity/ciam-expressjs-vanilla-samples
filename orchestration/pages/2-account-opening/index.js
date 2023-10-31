@@ -38,6 +38,7 @@ function onClick() {
   );
 }
 
+// Clear the serialized state from local storage and redirect to the start page
 function clearClientState() {
   if (idoSDKState) {
     localStorage.removeItem('serializedState');
@@ -237,7 +238,8 @@ async function handleIdentityVerificationStep(actionData /*, responseOptions*/) 
       payload: { endpoint },
     } = actionData ?? { payload: {} };
     if (endpoint) {
-      // Before redirection to hosted Identity verification action, serialize the state and store it in local storage with 5 minutes expiry.
+      // Before redirection to hosted Identity verification action,
+      // serialize the state and store it in local storage with 5 minutes expiry.
       localStorage.setItem(
         'serializedState',
         JSON.stringify({

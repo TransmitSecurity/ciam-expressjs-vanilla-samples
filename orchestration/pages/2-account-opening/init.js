@@ -6,11 +6,12 @@ export const urlParams = new URLSearchParams(window.location.search);
 // Define the journey name and additional parameters
 const startEnhancedJourney = urlParams.get('start_enhanced');
 const isIDVDone = urlParams.get('sessionId');
+const isVerboseJourney = true;
 export let JOURNEY_NAME = 'ciam_account_opening_start';
-export const JOURNEY_ADDITIONAL_PARAMS = {
+export let JOURNEY_ADDITIONAL_PARAMS = {
   // optional
   flowId: 'my_external_session_tracking_id',
-  additionalParams: { verbose: true },
+  additionalParams: { verbose: isVerboseJourney },
 };
 
 // Define the SDK init options
@@ -24,6 +25,15 @@ if (startEnhancedJourney || isIDVDone) {
   document.querySelector('#restart_journey_button').textContent = 'Restart Enhanced Journey';
 
   JOURNEY_NAME = 'ciam_account_opening_full';
+  JOURNEY_ADDITIONAL_PARAMS = {
+    // optional
+    flowId: 'my_external_session_tracking_id',
+    additionalParams: {
+      verbose: isVerboseJourney,
+      idv_redirect_url: window.location.origin + window.location.pathname,
+    },
+  };
+
   otherModulesInitOptions.webauthn = {
     serverPath: 'https://api.idsec-stg.com',
   };
