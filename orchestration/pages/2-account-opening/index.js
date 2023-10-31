@@ -95,7 +95,9 @@ async function newJourneyStepHandler(idoResponse) {
     case IdoJourneyActionType.DrsTriggerAction:
       // Handle drs trigger action step
       // eslint-disable-next-line no-case-declarations
-      const { actionToken } = await window.tsPlatform.drs.triggerActionEvent(actionData.actionType);
+      const { actionToken } = await window.tsPlatform.drs.triggerActionEvent(
+        actionData.action_type,
+      );
 
       // Add code here to send the action and the received actionToken to your backend
 
