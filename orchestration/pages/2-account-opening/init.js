@@ -19,6 +19,10 @@ export const otherModulesInitOptions = {};
 
 // If the enhanced journey is selected, change the journey name and add webAuthN registration
 if (startEnhancedJourney || isIDVDone) {
+  // change start journey button to start enhanced journey button
+  document.querySelector('#start_journey_button').textContent = 'Start Enhanced Journey';
+  document.querySelector('#restart_journey_button').textContent = 'Restart Enhanced Journey';
+
   JOURNEY_NAME = 'ciam_account_opening_full';
   otherModulesInitOptions.webauthn = {
     serverPath: 'https://api.idsec-stg.com',
@@ -26,13 +30,9 @@ if (startEnhancedJourney || isIDVDone) {
   otherModulesInitOptions.drs = {
     serverPath: 'https://collect.riskid-stg.io',
   };
-}
-
-if (startEnhancedJourney) {
-  // Sample application convenience code:
-  // Reset the journey state when an explicit request to start full journey has been made.
-  // This will allow escaping Identity Verification by going back to the menu and starting the journey again.
-  localStorage.removeItem('serializedState');
+} else {
+  document.querySelector('#start_journey_button').textContent = 'Start Journey';
+  document.querySelector('#restart_journey_button').textContent = 'Restart Journey';
 }
 
 // Check if there is a serialized state in local storage and if it is still valid
@@ -46,22 +46,6 @@ if (parsedState && parsedState.expires > new Date().getTime()) {
 } else {
   localStorage.removeItem('serializedState');
 }
-
-// DRS action types
-window.drs = {
-  actionType: {
-    LOGIN: 'login',
-    REGISTER: 'register',
-    TRANSACTION: 'transaction',
-    PASSWORD_RESET: 'password_reset',
-    LOGOUT: 'logout',
-    CHECKOUT: 'checkout',
-    ACCOUNT_DETAILS_CHANGE: 'account_details_change',
-    ACCOUNT_AUTH_CHANGE: 'account_auth_change',
-    WITHDRAW: 'withdraw',
-    CREDITS_CHANGE: 'credits_change',
-  },
-};
 
 // Set event handlers for back to menu buttons
 document.querySelector('#back_to_menu_1').addEventListener('click', () => {

@@ -12,7 +12,7 @@ import {
 } from './init.js';
 
 // Register event handlers for buttons
-document.querySelector('#restart_journey_button').addEventListener('click', onClick);
+document.querySelector('#restart_journey_button').addEventListener('click', clearClientState);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
 if (idoSDKState) {
@@ -36,6 +36,17 @@ function onClick() {
     idoSDKInitOptions, // ido sdk init options
     otherModulesInitOptions, // other modules init options. Used here to support webAuthN registration
   );
+}
+
+function clearClientState() {
+  if (idoSDKState) {
+    localStorage.removeItem('serializedState');
+  }
+  if (urlParams.get('start_enhanced') || urlParams.get('sessionId')) {
+    window.location.href = './index.html?start_enhanced=true';
+  } else {
+    window.location.href = './index.html';
+  }
 }
 
 const BreakValidationLoop = {};
@@ -84,10 +95,10 @@ async function newJourneyStepHandler(idoResponse) {
     case IdoJourneyActionType.DrsTriggerAction:
       // Handle drs trigger action step
       // eslint-disable-next-line no-case-declarations
-      const { actionToken } = await window.tsPlatform.drs.triggerActionEvent(
-        window.drs.actionType.REGISTER,
-      );
-      // ????????? Add code here to send the action and the received actionToken to your backend
+      const { actionToken } = await window.tsPlatform.drs.triggerActionEvent(actionData.actionType);
+
+      // Add code here to send the action and the received actionToken to your backend
+
       clientResponse = await showInformation({
         title: 'DRS Trigger Action',
         text: 'About to trigger a DRS action',
@@ -232,6 +243,7 @@ async function handleIdentityVerificationStep(actionData /*, responseOptions*/) 
           expires: new Date().getTime() + 300 * 1000,
         }),
       );
+      // Redirect to hosted identity verification flow
       window.location.href = endpoint;
       clientResponse = await showInformation({
         title: 'Identity verification Action',
