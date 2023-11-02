@@ -29,8 +29,8 @@ function showFatalError(error) {
   pageUtils.updateElementText('action_response_error', error);
   pageUtils.show('action_response_error');
   pageUtils.show('journey_end_landing');
-  pageUtils.hideLoading();
   removeDynamicFormUI();
+  pageUtils.hideLoading();
 }
 
 // Add dynamic form to the page
