@@ -7,7 +7,8 @@ import { ClientResponseOptionType, IdoJourneyActionType } from './sdk_interface.
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'ENTER JOURNEY NAME HERE';
+// const JOURNEY_NAME = 'crypto_binding'; // local register action
+const JOURNEY_NAME = 'test4'; // Flex register action
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: 'random',
   additionalParams: { username: 'John Doe', plus: true },
@@ -23,6 +24,11 @@ if (parsedState && parsedState.expires > new Date().getTime()) {
 
 function onClick() {
   executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
+  // executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, undefined, {
+  //   clientId: 'demo-client-id',
+  //   serverPath: 'https://appclips.poc.transmit-field.com',
+  //   appId: 'idosdk',
+  // });
 }
 
 async function handleJourneyActionUI(idoResponse) {
@@ -48,9 +54,17 @@ async function handleJourneyActionUI(idoResponse) {
       });
       break;
     case IdoJourneyActionType.CryptoBindingRegistration:
+    case IdoJourneyActionType.RegisterDeviceAction:
       clientResponse = await showInformation({
         title: 'Crypto Binding',
         text: 'About to register a device key',
+      });
+      break;
+    case IdoJourneyActionType.CryptoBindingValidation:
+    case IdoJourneyActionType.ValidateDeviceAction:
+      clientResponse = await showInformation({
+        title: 'Crypto Binding validation',
+        text: 'About to validate a device key',
       });
       break;
     case IdoJourneyActionType.WaitForAnotherDevice:

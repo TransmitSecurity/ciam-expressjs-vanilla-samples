@@ -1,4 +1,4 @@
-// import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
+import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 import { pageUtils } from '../../shared/pageUtils.js';
 import { ClientResponseOptionType, IdoServiceResponseType } from './sdk_interface.js';
 import { startDynamicForm, createDynamicFormUI } from './dynamic_form.js';
@@ -14,12 +14,12 @@ export const DEFAULT_SDK_INIT_OPTIONS = {
 // Initialize the SDK
 export async function initSdk(clientId, serverPath, appId, sdkOptions = {}) {
   if (!sdk) {
-    await window.tsPlatform.initialize({
+    await tsPlatform.initialize({
       clientId,
       ido: { serverPath, applicationId: appId },
       ...sdkOptions,
     });
-    sdk = window.tsPlatform.ido;
+    sdk = tsPlatform.ido;
   }
 }
 
