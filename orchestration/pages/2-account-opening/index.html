@@ -118,7 +118,7 @@
       }
 
       input {
-        padding: 17px 12px;
+        padding: 12px 12px;
         border: 1px solid #cccccc;
         border-radius: 4px;
 
@@ -170,6 +170,11 @@
         color: #2383fe;
         font-weight: bold;
         text-decoration: none;
+      }
+
+      label {
+        font-weight: bold;
+        margin-bottom: -15px;
       }
 
       #spinner {
@@ -238,9 +243,11 @@
           <div id="journey_end_landing" class="column gap hidden">
             <h3>Journey complete!</h3>
             <button id="restart_journey_button" class="full-width">Restart</button>
+            <button id="back_to_menu_2" class="full-width cancel-button">Back to menu</button>
           </div>
           <div id="journey_start" class="column gap">
             <button id="start_journey_button" class="full-width">Start Journey</button>
+            <button id="back_to_menu_1" class="full-width cancel-button">Back to menu</button>
           </div>
           <div id="information_form" class="column gap hidden">
             <div class="column gap">
@@ -255,38 +262,36 @@
               <button id="information_form_button" class="full-width" type="button">OK</button>
             </div>
           </div>
-          <div id="account_opening" class="column gap" style="display: none">
+          <div id="account_opening" class="column gap hidden">
             <div class="column gap">
               <h3 id="account_opening_title" style="font-weight: bold">
                 Account Opening Form Sample
               </h3>
               <div
                 id="account_opening_text"
-                style="font-family: Sans-serif"
+                style="font-family: Sans-serif; font-size: 14px; color: #666666"
                 class="column long-text"
               ></div>
+              <label for="name">Name</label>
+              <input class="focus-visible" type="text" autocomplete="on" id="name" placeholder="" />
+              <label for="surname">Surname</label>
               <input
                 class="focus-visible"
                 type="text"
                 autocomplete="on"
-                id="user_id_input"
-                placeholder="Enter user Id"
+                id="surname"
+                placeholder=""
               />
+              <label for="email">Email</label>
               <input
                 class="focus-visible"
-                type="tel"
-                autocomplete="off"
-                id="phone_input"
-                placeholder="Enter phone number"
-                required
+                type="email"
+                autocomplete="on"
+                id="email"
+                placeholder=""
               />
-              <script>
-                const phoneInput = document.getElementById('phone_input');
-                phoneInput.addEventListener('input', function () {
-                  // Remove any non-digit characters
-                  this.value = this.value.replace(/[^0-9]/g, '');
-                });
-              </script>
+              <label for="phone">Phone</label>
+              <input class="focus-visible" type="tel" autocomplete="on" id="phone" placeholder="" />
               <button id="account_opening_button" class="full-width" type="button">Submit</button>
               <button
                 id="account_opening_cancel_button"

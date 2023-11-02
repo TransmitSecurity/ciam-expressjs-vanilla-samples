@@ -5,7 +5,7 @@ import { startDynamicForm, createDynamicFormUI } from './dynamic_form.js';
 
 let sdk = null;
 
-const DEFAULT_SDK_INIT_OPTIONS = {
+export const DEFAULT_SDK_INIT_OPTIONS = {
   clientId: 'az8xbjlb1zbfot2husyw7qu0kb3qj074',
   serverPath: 'https://0dau9szmld2g6zq50g9i6.transmit.security',
   appId: 'default_application',
@@ -28,7 +28,8 @@ function showFatalError(error) {
   console.error(`Journey exited: ${error}`);
   pageUtils.updateElementText('action_response_error', error);
   pageUtils.show('action_response_error');
-  pageUtils.show('journey_start');
+  pageUtils.show('journey_end_landing');
+  pageUtils.hideLoading();
   removeDynamicFormUI();
 }
 
@@ -120,8 +121,11 @@ export async function executeJourney(
           break;
         case IdoServiceResponseType.JourneyRejection:
           console.log(`FlexID Server Error: ${idoResponse}`);
+          pageUtils.hideLoading();
           pageUtils.updateElementText('action_response_error', JSON.stringify(idoResponse));
           pageUtils.show('action_response_error');
+          pageUtils.show('journey_start');
+          removeDynamicFormUI();
           inJourney = false;
           break;
         case IdoServiceResponseType.JourneySuccess:
