@@ -9,6 +9,7 @@ document.querySelector('#start_journey_button').addEventListener('click', onClic
 
 // const JOURNEY_NAME = 'crypto_binding'; // local register action
 const JOURNEY_NAME = 'test4'; // Flex register action
+// const JOURNEY_NAME = 'test5'; // Flex validate action
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: 'random',
   additionalParams: { username: 'John Doe', plus: true },
