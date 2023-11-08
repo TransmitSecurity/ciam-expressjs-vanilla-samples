@@ -142,11 +142,11 @@ export var IdoJourneyActionType;
   /**
    * @description `journeyStepId` for Register Device action.
    */
-  IdoJourneyActionType['RegisterDeviceAction'] = 'transmit_platform_crypto_binding_registration';
+  IdoJourneyActionType['RegisterDeviceAction'] = 'transmit_platform_device_registration';
   /**
    * @description `journeyStepId` for Validate Device action.
    */
-  IdoJourneyActionType['ValidateDeviceAction'] = 'transmit_platform_crypto_binding_validation';
+  IdoJourneyActionType['ValidateDeviceAction'] = 'transmit_platform_device_validation';
   /**
    * @description `journeyStepId` for WebAuthn registration action.
    * * This action is presented to the client side when the journey has an action with the ID `"action:webauthn_registration"`.
