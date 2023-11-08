@@ -8,8 +8,7 @@ document.querySelector('#restart_journey_button').addEventListener('click', onCl
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
 // const JOURNEY_NAME = 'crypto_binding'; // local register action
-// const JOURNEY_NAME = 'test4'; // Flex register action
-const JOURNEY_NAME = 'test5'; // Flex validate action
+const JOURNEY_NAME = 'test4'; // Flex register action
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: 'random',
   additionalParams: { username: 'John Doe', plus: true },
@@ -24,14 +23,7 @@ if (parsedState && parsedState.expires > new Date().getTime()) {
 }
 
 function onClick() {
-  executeJourney(
-    JOURNEY_NAME,
-    handleJourneyActionUI,
-    JOURNEY_ADDITIONAL_PARAMS,
-    undefined,
-    undefined,
-    { drs: { serverPath: 'https://collect.riskid-stg.io' } },
-  );
+  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
   // executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, undefined, {
   //   clientId: 'demo-client-id',
   //   serverPath: 'https://appclips.poc.transmit-field.com',
