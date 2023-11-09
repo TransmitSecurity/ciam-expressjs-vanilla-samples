@@ -100,7 +100,7 @@ export async function executeJourney(
       // write to local store, non expired. Clean manually if needed
       localStorage.setItem(
         'serializedState',
-        JSON.stringify({ state: sdk.serializeState(), expires: new Date().getTime() + 10 * 1000 }),
+        JSON.stringify({ state: sdk.serializeState(), expires: new Date().getTime() + 60 * 1000 }),
       );
 
       switch (idoResponse.type) {
