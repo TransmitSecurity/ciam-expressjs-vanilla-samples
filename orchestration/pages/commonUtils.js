@@ -173,3 +173,7 @@ export async function showInformation(actionData) {
     document.querySelector('#information_form_button').addEventListener('click', submit);
   });
 }
+
+export function flowId() {
+  return `orc_${Math.floor(Math.random() * 1000000000)}`;
+}

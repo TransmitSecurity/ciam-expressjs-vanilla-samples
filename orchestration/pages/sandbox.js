@@ -1,5 +1,5 @@
 import { pageUtils } from '../../shared/pageUtils.js';
-import { showInformation, executeJourney } from './commonUtils.js';
+import { showInformation, executeJourney, flowId } from './commonUtils.js';
 import { ClientResponseOptionType, IdoJourneyActionType } from './sdk_interface.js';
 // import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 
@@ -9,7 +9,7 @@ document.querySelector('#start_journey_button').addEventListener('click', onClic
 
 const JOURNEY_NAME = 'ENTER JOURNEY NAME HERE';
 const JOURNEY_ADDITIONAL_PARAMS = {
-  flowId: 'random',
+  flowId: flowId(),
   additionalParams: { username: 'John Doe', plus: true },
 };
 
