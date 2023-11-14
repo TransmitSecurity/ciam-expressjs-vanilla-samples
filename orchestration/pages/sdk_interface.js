@@ -110,6 +110,7 @@ export var IdoJourneyActionType;
    */
   IdoJourneyActionType['WaitForAnotherDevice'] = 'action:wait_for_another_device';
   /**
+   * @deprecated Use {@link IdoJourneyActionType.RegisterDeviceAction} instead.
    * @description `journeyStepId` for device crypto binding action.
    * This action is presented to the client side when the journey has a form with the ID `"action:crypto_binding_registration"`.
    * On submission of `clientResponse` - the SDK will generate a key and respond in the following format:
@@ -124,6 +125,8 @@ export var IdoJourneyActionType;
    */
   IdoJourneyActionType['CryptoBindingRegistration'] = 'action:crypto_binding_registration';
   /**
+   * @deprecated
+   * Use {@link IdoJourneyActionType.ValidateDeviceAction} instead.
    * @description `journeyStepId` for device crypto binding validation action.
    * This action is presented to the client side when the journey has a form with the ID `"action:crypto_binding_validation"`.
    * * On submission of `clientResponse` - the SDK will sign the challenge and respond in the following format:
@@ -137,7 +140,37 @@ export var IdoJourneyActionType;
    */
   IdoJourneyActionType['CryptoBindingValidation'] = 'action:crypto_binding_validation';
   /**
+   * @description `journeyStepId` for Register Device action.
+   */
+  IdoJourneyActionType['RegisterDeviceAction'] = 'transmit_platform_device_registration';
+  /**
+   * @description `journeyStepId` for Validate Device action.
+   */
+  IdoJourneyActionType['ValidateDeviceAction'] = 'transmit_platform_device_validation';
+  /**
    * @description `journeyStepId` for WebAuthn registration action.
+   * * This action is presented to the client side when the journey has an action with the ID `"action:webauthn_registration"`.
+   * The action_type field should be used for webauthn registration using the SDK.
+   *
+   * Data received in `idoServiceResponse`:
+   * ```json
+   * {
+   *  "data": {
+   *     "username": "<USERNAME>",
+   *     "display_name": "dname",
+   *     "register_as_discoverable": true,
+   *     "allow_cross_Platform_authenticators": true
+   *  },
+   * }
+   * ```
+   * Data to send with `submitClientResponse`:
+   * ```json
+   * {
+   *  "data": {
+   *     "webauthn_encoded_result": "<WEBAUTHN_ENCODED_RESULT_FROM_SDK>"
+   *  }
+   *}
+   * ```
    */
   IdoJourneyActionType['WebAuthnRegistration'] = 'action:webauthn_registration';
   /**
@@ -145,7 +178,7 @@ export var IdoJourneyActionType;
    * This action is presented to the client side when the journey has a form with the ID `"action:drs_trigger_action"`.
    * The action_type field should be used for creating the DRS action token.
    *
-   * client response:
+   * Data received in `idoServiceResponse`:
    * ```json
    * {
    *  "data": {
@@ -155,7 +188,7 @@ export var IdoJourneyActionType;
    *  },
    * }
    * ```
-   * output:
+   * Data to send with `submitClientResponse`:
    * ```json
    * {
    *  "data": {
@@ -167,6 +200,33 @@ export var IdoJourneyActionType;
   IdoJourneyActionType['DrsTriggerAction'] = 'action:drs_trigger_action';
   /**
    * @description `journeyStepId` for Identity Verification action.
+   * This action is presented to the client side when the journey has a form with the ID `"action:id_verification"`.
+   * The action_type field should be used for identity verification hosted experience.
+   *
+   * Data received in `idoServiceResponse`:
+   * ```json
+   * {
+   *  "data": {
+   *    "payload": {
+   *      "endpoint": "<endpoint to redirect>",
+   *      "state": "<state>",
+   *      "session": "<session>"
+   *      },
+   *    }
+   * }
+   * ```
+   *
+   * Data to send with `submitClientResponse`:
+   * ```json
+   * {
+   *  "data": {
+   *    "payload": {
+   *      "sessionId": "<sessionId>",
+   *      "state": "<state>"
+   *    },
+   *  }
+   * }
+   * ```
    */
   IdoJourneyActionType['IdentityVerification'] = 'action:id_verification';
 })(IdoJourneyActionType || (IdoJourneyActionType = {}));
