@@ -1,4 +1,4 @@
-import { DEFAULT_SDK_INIT_OPTIONS } from '../commonUtils.js';
+import { DEFAULT_SDK_INIT_OPTIONS, flowId } from '../commonUtils.js';
 
 // Collect urlParams
 export const urlParams = new URLSearchParams(window.location.search);
@@ -10,7 +10,7 @@ const isVerboseJourney = true;
 export let JOURNEY_NAME = 'ciam_account_opening_start';
 export let JOURNEY_ADDITIONAL_PARAMS = {
   // optional
-  flowId: 'my_external_session_tracking_id',
+  flowId: flowId(),
   additionalParams: { verbose: isVerboseJourney },
 };
 
@@ -27,7 +27,7 @@ if (startEnhancedJourney || isIDVDone) {
   JOURNEY_NAME = 'ciam_account_opening_full';
   JOURNEY_ADDITIONAL_PARAMS = {
     // optional
-    flowId: 'my_external_session_tracking_id',
+    flowId: flowId(),
     additionalParams: {
       verbose: isVerboseJourney,
       idv_redirect_url: window.location.origin + window.location.pathname,
