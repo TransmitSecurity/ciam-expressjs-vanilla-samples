@@ -5,7 +5,7 @@ import { IdoJourneyActionType } from '../sdk_interface.js';
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'DRS';
+const JOURNEY_NAME = 'testm';
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: flowId(),
   additionalParams: {},
@@ -51,6 +51,7 @@ async function handleJourneyActionUI(idoResponse) {
   const responseOptions = idoResponse?.clientResponseOptions || new Map();
 
   console.debug(`handle journey action ${stepId}`);
+  console.log('idoResponse', idoResponse);
   let clientResponse = null;
 
   if (actionData['json_data']) {

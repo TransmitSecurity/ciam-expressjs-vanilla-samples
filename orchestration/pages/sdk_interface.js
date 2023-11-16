@@ -119,7 +119,8 @@ export var IdoJourneyActionType;
    *   "ts:idosdk:device": {
    *     "platform_device_key": "base64 encoded public key",
    *     "platform_device_id": "an opaque key ID",
-   *  }
+   *   }
+   * }
    * ```
    * The server should store the key and the ID for future device identity validation.
    */
@@ -136,6 +137,7 @@ export var IdoJourneyActionType;
    *     "signature": "base64 encoded signature",
    *     "platform_device_id": "an opaque key ID",
    *  }
+   * }
    * ```
    */
   IdoJourneyActionType['CryptoBindingValidation'] = 'action:crypto_binding_validation';
@@ -150,35 +152,33 @@ export var IdoJourneyActionType;
   /**
    * @description `journeyStepId` for WebAuthn registration action.
    * * This action is presented to the client side when the journey has an action with the ID `"action:webauthn_registration"`.
-   * The action_type field should be used for webauthn registration using the SDK.
    *
    * Data received in `idoServiceResponse`:
+   * These input parameters are the input to tsPlatform.webauthn.register()
    * ```json
    * {
    *  "data": {
-   *     "username": "<USERNAME>",
-   *     "display_name": "dname",
-   *     "register_as_discoverable": true,
-   *     "allow_cross_Platform_authenticators": true
-   *  },
+   *    "username": "<USERNAME>",
+   *    "display_name": "<DISPLAY_NAME>",
+   *    "register_as_discoverable": <true|false>,
+   *    "allow_cross_Platform_authenticators": <true|false>
+   *  }
    * }
    * ```
    * Data to send with `submitClientResponse`:
+   * The `webauthn_encoded_result` is the output of tsPlatform.webauthn.register()
    * ```json
    * {
-   *  "data": {
-   *     "webauthn_encoded_result": "<WEBAUTHN_ENCODED_RESULT_FROM_SDK>"
-   *  }
-   *}
+   *   "webauthn_encoded_result": "<WEBAUTHN_ENCODED_RESULT_FROM_SDK>"
+   * }
    * ```
    */
   IdoJourneyActionType['WebAuthnRegistration'] = 'action:webauthn_registration';
   /**
-   * @description `journeyStepId` for DRS trigger action.
-   * This action is presented to the client side when the journey has a form with the ID `"action:drs_trigger_action"`.
-   * The action_type field should be used for creating the DRS action token.
+   * @description `journeyStepId` for DRS trigger action. (Risk Recommendation)
    *
    * Data received in `idoServiceResponse`:
+   * These input parameters are the input to tsPlatform.drs.triggerActionEvent()
    * ```json
    * {
    *  "data": {
@@ -189,19 +189,16 @@ export var IdoJourneyActionType;
    * }
    * ```
    * Data to send with `submitClientResponse`:
+   * The `action_token` is the output of tsPlatform.drs.triggerActionEvent()
    * ```json
    * {
-   *  "data": {
-   *     "action_token": "<DRS action token>"
-   *  }
+   *  "action_token": "<DRS action token>"
    *}
    * ```
    */
   IdoJourneyActionType['DrsTriggerAction'] = 'action:drs_trigger_action';
   /**
    * @description `journeyStepId` for Identity Verification action.
-   * This action is presented to the client side when the journey has a form with the ID `"action:id_verification"`.
-   * The action_type field should be used for identity verification hosted experience.
    *
    * Data received in `idoServiceResponse`:
    * ```json
@@ -219,12 +216,10 @@ export var IdoJourneyActionType;
    * Data to send with `submitClientResponse`:
    * ```json
    * {
-   *  "data": {
    *    "payload": {
    *      "sessionId": "<sessionId>",
    *      "state": "<state>"
    *    },
-   *  }
    * }
    * ```
    */
