@@ -1,13 +1,13 @@
-import { showInformation, executeJourney, flowId } from '../commonUtils.js';
+import { showInformation, executeJourney } from '../commonUtils.js';
 import { IdoJourneyActionType } from '../sdk_interface.js';
 
 // Register event handlers for buttons
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'testm';
+const JOURNEY_NAME = 'device_actions';
 const JOURNEY_ADDITIONAL_PARAMS = {
-  flowId: flowId(),
+  flowId: 'random',
   additionalParams: {},
 };
 
@@ -18,21 +18,6 @@ if (parsedState && parsedState.expires > new Date().getTime()) {
 } else {
   localStorage.removeItem('serializedState');
 }
-
-window.drs = {
-  actionType: {
-    LOGIN: 'login',
-    REGISTER: 'register',
-    TRANSACTION: 'transaction',
-    PASSWORD_RESET: 'password_reset',
-    LOGOUT: 'logout',
-    CHECKOUT: 'checkout',
-    ACCOUNT_DETAILS_CHANGE: 'account_details_change',
-    ACCOUNT_AUTH_CHANGE: 'account_auth_change',
-    WITHDRAW: 'withdraw',
-    CREDITS_CHANGE: 'credits_change',
-  },
-};
 
 function onClick() {
   executeJourney(
@@ -51,7 +36,6 @@ async function handleJourneyActionUI(idoResponse) {
   const responseOptions = idoResponse?.clientResponseOptions || new Map();
 
   console.debug(`handle journey action ${stepId}`);
-  console.log('idoResponse', idoResponse);
   let clientResponse = null;
 
   if (actionData['json_data']) {
@@ -62,17 +46,18 @@ async function handleJourneyActionUI(idoResponse) {
     case IdoJourneyActionType.Information:
       clientResponse = await showInformation(actionData, responseOptions);
       break;
-    case IdoJourneyActionType.DrsTriggerAction:
-      // eslint-disable-next-line no-case-declarations
-      const { actionToken } = await window.tsPlatform.drs.triggerActionEvent(
-        window.drs.actionType.LOGIN,
-      );
-      console.log('Action Token', actionToken);
-      // Add code here to send the action and the received actionToken to your backend
+    case IdoJourneyActionType.CryptoBindingRegistration:
+    case IdoJourneyActionType.RegisterDeviceAction:
       clientResponse = await showInformation({
-        title: 'DRS Trigger Action',
-        text: 'About to trigger a DRS action',
-        data: { action_token: actionToken },
+        title: 'Crypto Binding',
+        text: 'About to register a device key',
+      });
+      break;
+    case IdoJourneyActionType.CryptoBindingValidation:
+    case IdoJourneyActionType.ValidateDeviceAction:
+      clientResponse = await showInformation({
+        title: 'Crypto Binding validation',
+        text: 'About to validate a device key',
       });
       break;
     default:
