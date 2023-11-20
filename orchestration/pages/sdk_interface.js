@@ -60,6 +60,10 @@ export var ClientResponseOptionType;
    */
   ClientResponseOptionType['Cancel'] = 'cancel';
   /**
+   * @description Client response option type for client failure in the Journey.
+   */
+  ClientResponseOptionType['Fail'] = 'fail';
+  /**
    * @description Client response option type for custom branch in the Journey, used for custom branching.
    */
   ClientResponseOptionType['Custom'] = 'custom';
@@ -224,4 +228,8 @@ export var IdoJourneyActionType;
    * ```
    */
   IdoJourneyActionType['IdentityVerification'] = 'action:id_verification';
+  /**
+   * @description `journeyStepId` for Authentication action.
+   */
+  IdoJourneyActionType['Authentication'] = 'transmit_platform_authentication';
 })(IdoJourneyActionType || (IdoJourneyActionType = {}));

@@ -22,7 +22,14 @@ if (parsedState && parsedState.expires > new Date().getTime()) {
 }
 
 function onClick() {
-  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
+  executeJourney(
+    JOURNEY_NAME,
+    handleJourneyActionUI,
+    JOURNEY_ADDITIONAL_PARAMS,
+    undefined,
+    undefined,
+    { webauthn: { serverPath: 'https://api.idsec-stg.com' } },
+  );
 }
 
 async function handleJourneyActionUI(idoResponse) {
@@ -67,6 +74,15 @@ async function handleJourneyActionUI(idoResponse) {
       break;
     case 'kba_input':
       clientResponse = await showKbaForm(actionData, responseOptions);
+      break;
+    case IdoJourneyActionType.Authentication:
+      clientResponse = await showInformation({
+        title: 'Webauthn Register action',
+        text: 'About to register a webauthn key',
+      });
+      clientResponse.data.webauthn_encoded_result = await window.tsPlatform.webauthn.register(
+        actionData.username,
+      );
       break;
     default:
       throw `Unexpected step id: ${stepId}`;

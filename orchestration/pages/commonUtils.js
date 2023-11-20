@@ -1,4 +1,4 @@
-// import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
+import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 import { pageUtils } from '../../shared/pageUtils.js';
 import { ClientResponseOptionType, IdoServiceResponseType } from './sdk_interface.js';
 import { startDynamicForm, createDynamicFormUI } from './dynamic_form.js';
@@ -16,10 +16,14 @@ export async function initSdk(clientId, serverPath, appId, sdkOptions = {}) {
   if (!sdk) {
     await window.tsPlatform.initialize({
       clientId,
-      ido: { serverPath, applicationId: appId },
       ...sdkOptions,
     });
-    sdk = window.tsPlatform.ido;
+    await tsPlatform.initialize({
+      clientId,
+      ido: { serverPath, applicationId: appId },
+      // ...sdkOptions,
+    });
+    sdk = tsPlatform.ido;
   }
 }
 
@@ -102,6 +106,8 @@ export async function executeJourney(
         'serializedState',
         JSON.stringify({ state: sdk.serializeState(), expires: new Date().getTime() + 60 * 1000 }),
       );
+
+      console.log('executeJourney - idoResponse', idoResponse);
 
       switch (idoResponse.type) {
         case IdoServiceResponseType.ClientInputRequired:
