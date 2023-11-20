@@ -27,14 +27,7 @@ if (parsedState && parsedState.expires > new Date().getTime()) {
 }
 
 function onClick() {
-  executeJourney(
-    JOURNEY_NAME,
-    handleJourneyActionUI,
-    JOURNEY_ADDITIONAL_PARAMS,
-    undefined,
-    undefined,
-    { webauthn: { serverPath: 'https://api.idsec-stg.com' } },
-  );
+  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
 }
 
 async function handleJourneyActionUI(idoResponse) {

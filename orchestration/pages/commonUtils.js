@@ -16,12 +16,12 @@ export async function initSdk(clientId, serverPath, appId, sdkOptions = {}) {
   if (!sdk) {
     await window.tsPlatform.initialize({
       clientId,
-      ...sdkOptions,
+      webauthn: { serverPath: 'https://api.idsec-stg.com' },
     });
     await tsPlatform.initialize({
       clientId,
       ido: { serverPath, applicationId: appId },
-      // ...sdkOptions,
+      ...sdkOptions,
     });
     sdk = tsPlatform.ido;
   }
