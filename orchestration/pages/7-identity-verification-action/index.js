@@ -5,7 +5,8 @@ import { IdoJourneyActionType } from '../sdk_interface.js';
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'IDV';
+const JOURNEY_NAME = 'user_journey_2';
+// const JOURNEY_NAME = 'IDV';
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: flowId(),
   additionalParams: {},

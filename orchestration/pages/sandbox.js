@@ -82,6 +82,7 @@ async function handleJourneyActionUI(idoResponse) {
       });
       clientResponse.data.webauthn_encoded_result =
         await window.tsPlatform.webauthn.authenticate.modal(actionData.username);
+      clientResponse.data.type = 'webauthn';
       break;
     default:
       throw `Unexpected step id: ${stepId}`;
