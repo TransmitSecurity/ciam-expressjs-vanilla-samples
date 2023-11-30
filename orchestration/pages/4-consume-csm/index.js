@@ -1,4 +1,4 @@
-import { showInformation, executeJourney } from '../commonUtils.js';
+import { showInformation, executeJourney, flowId } from '../commonUtils.js';
 import { IdoJourneyActionType } from '../sdk_interface.js';
 
 // Register event handlers for buttons
@@ -7,7 +7,7 @@ document.querySelector('#start_journey_button').addEventListener('click', onClic
 
 const JOURNEY_NAME = 'cross_device';
 const JOURNEY_ADDITIONAL_PARAMS = {
-  flowId: 'random',
+  flowId: flowId(),
   additionalParams: { messageId: new URLSearchParams(window.location.search).get('messageId') },
 };
 const SDK_INIT_OPTIONS = {
