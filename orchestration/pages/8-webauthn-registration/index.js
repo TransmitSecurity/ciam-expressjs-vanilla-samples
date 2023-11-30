@@ -5,7 +5,7 @@ import { ClientResponseOptionType, IdoJourneyActionType } from '../sdk_interface
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'test3';
+const JOURNEY_NAME = 'test2';
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: flowId(),
   additionalParams: {},
@@ -27,7 +27,14 @@ if (parsedState && parsedState.expires > new Date().getTime()) {
 }
 
 function onClick() {
-  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
+  executeJourney(
+    JOURNEY_NAME,
+    handleJourneyActionUI,
+    JOURNEY_ADDITIONAL_PARAMS,
+    undefined,
+    undefined,
+    { webauthn: { serverPath: 'https://api.idsec-stg.com' } },
+  );
 }
 
 async function handleJourneyActionUI(idoResponse) {

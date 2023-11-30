@@ -1,4 +1,4 @@
-import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
+// import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 import { pageUtils } from '../../shared/pageUtils.js';
 import { ClientResponseOptionType, IdoServiceResponseType } from './sdk_interface.js';
 import { startDynamicForm, createDynamicFormUI } from './dynamic_form.js';
@@ -16,14 +16,10 @@ export async function initSdk(clientId, serverPath, appId, sdkOptions = {}) {
   if (!sdk) {
     await window.tsPlatform.initialize({
       clientId,
-      webauthn: { serverPath: 'https://api.idsec-stg.com' },
-    });
-    await tsPlatform.initialize({
-      clientId,
       ido: { serverPath, applicationId: appId },
       ...sdkOptions,
     });
-    sdk = tsPlatform.ido;
+    sdk = window.tsPlatform.ido;
   }
 }
 
@@ -101,13 +97,11 @@ export async function executeJourney(
     let uiResponse = null;
 
     while (inJourney) {
-      console.log('idoResponse', idoResponse);
       // write to local store, non expired. Clean manually if needed
       localStorage.setItem(
         'serializedState',
         JSON.stringify({ state: sdk.serializeState(), expires: new Date().getTime() + 60 * 1000 }),
       );
-      console.log('executeJourney - idoResponse', idoResponse);
 
       switch (idoResponse.type) {
         case IdoServiceResponseType.ClientInputRequired:
