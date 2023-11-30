@@ -7,7 +7,6 @@ let sdk = null;
 
 export const DEFAULT_SDK_INIT_OPTIONS = {
   clientId: 'az8xbjlb1zbfot2husyw7qu0kb3qj074',
-  // serverPath: 'http://127.0.0.1:8085',
   serverPath: 'https://0dau9szmld2g6zq50g9i6.transmit.security',
   appId: 'default_application',
 };
@@ -108,7 +107,6 @@ export async function executeJourney(
         'serializedState',
         JSON.stringify({ state: sdk.serializeState(), expires: new Date().getTime() + 60 * 1000 }),
       );
-
       console.log('executeJourney - idoResponse', idoResponse);
 
       switch (idoResponse.type) {
