@@ -70,10 +70,17 @@ export const pageUtils = {
   },
   hideLoading: function () {
     const mask = document.getElementById('loading-mask');
+    if (!mask) {
+      return;
+    }
     mask.classList.remove('loaded');
 
     setTimeout(function () {
       // Allow transition to complete before removing the spinner from the DOM
+      const mask = document.getElementById('loading-mask');
+      if (!mask) {
+        return;
+      }
       document.body.removeChild(mask);
     }, 300);
   },
