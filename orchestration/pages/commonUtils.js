@@ -1,7 +1,7 @@
-// import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
+import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 import { pageUtils } from '../../shared/pageUtils.js';
-import { ClientResponseOptionType, IdoServiceResponseType } from './sdk_interface.js';
-import { startDynamicForm, createDynamicFormUI } from './dynamic_form.js';
+import { createDynamicFormUI, startDynamicForm } from './dynamic_form.js';
+import { ClientResponseOptionType, IdoJourneyActionType } from './sdk_interface.js';
 
 let sdk = null;
 
@@ -14,12 +14,12 @@ export const DEFAULT_SDK_INIT_OPTIONS = {
 // Initialize the SDK
 export async function initSdk(clientId, serverPath, appId, sdkOptions = {}) {
   if (!sdk) {
-    await window.tsPlatform.initialize({
+    await tsPlatform.initialize({
       clientId,
       ido: { serverPath, applicationId: appId },
       ...sdkOptions,
     });
-    sdk = window.tsPlatform.ido;
+    sdk = tsPlatform.ido;
   }
 }
 
@@ -103,9 +103,8 @@ export async function executeJourney(
         JSON.stringify({ state: sdk.serializeState(), expires: new Date().getTime() + 60 * 1000 }),
       );
 
-      switch (idoResponse.type) {
-        case IdoServiceResponseType.ClientInputRequired:
-        case IdoServiceResponseType.ClientInputUpdateRequired:
+      switch (idoResponse.journeyStepId) {
+        default:
           if (idoResponse.data?.app_data?.type == 'dynamic_form') {
             const df_div = createDynamicFormUI(idoResponse.data?.app_data);
             addDynamicFormUI(df_div);
@@ -119,7 +118,7 @@ export async function executeJourney(
           idoResponse = await sdk.submitClientResponse(uiResponse.option, uiResponse.data);
           pageUtils.hideLoading();
           break;
-        case IdoServiceResponseType.JourneyRejection:
+        case IdoJourneyActionType.Rejection:
           console.log(`FlexID Server Error: ${idoResponse}`);
           pageUtils.hideLoading();
           pageUtils.updateElementText('action_response_error', JSON.stringify(idoResponse));
@@ -128,7 +127,8 @@ export async function executeJourney(
           removeDynamicFormUI();
           inJourney = false;
           break;
-        case IdoServiceResponseType.JourneySuccess:
+        case IdoJourneyActionType.Success:
+        case 'action:success':
           inJourney = false;
           break;
       }
