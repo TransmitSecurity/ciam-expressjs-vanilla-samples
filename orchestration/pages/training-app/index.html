@@ -1,48 +1,92 @@
 <!DOCTYPE html>
 <html style="display: block">
+  <head>
+    <link rel="stylesheet" type="text/css" href="../../public/style.css" />
+    <link rel="icon" type="image/svg+xml" href="../../public/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME</title>
+    <script type="module" src="./index.js"></script>
+  </head>
 
-<head>
-  <link rel="stylesheet" type="text/css" href="../../public/style.css" />
-  <link rel="icon" type="image/svg+xml" href="../../public/acme-icon.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ACME</title>
-  <script type="module" src="./index.js"></script>
-</head>
-
-<body>
-  <div class="page">
-    <header>
-      <img src="../../public/acme-logo.svg" />
-      <h3 style="color: #1c3869">Client integration - Training Application</h3>
-    </header>
-    <main>
-      <div class="content">
-        <div id="journey_start" class="column gap">
-          <h3 id="journey_complete_announce" class="hidden">Journey complete!</h3>
-          <input id="journey_id" type="text" autocomplete=true placeholder="Journey Identifier" />
-          <button id="start_journey_button" class="full-width">Start Journey</button>
-        </div>
-        <div id="information_form" class="column gap hidden">
-          <div class="column gap">
-            <h3 id="information_form_title" style="font-weight: bold">Title</h3>
-            <div id="information_form_text" style="font-family: Sans-serif" class="column long-text">
-              Text here
+  <body>
+    <div class="page">
+      <header>
+        <img src="../../public/acme-logo.svg" />
+        <h3 style="color: #1c3869">Client integration - Training Application</h3>
+        <button
+          id="reset_client"
+          type="cancel"
+          class="shadow-on-hover"
+          onclick="clearClientState()"
+        >
+          Reset
+        </button>
+        <script>
+          // Clear the serialized state from local storage and redirect to the start page
+          function clearClientState() {
+            if (localStorage.getItem('idoSDKState')) {
+              localStorage.removeItem('idoSDKState');
+            }
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('sessionId')) {
+              window.location.href = window.location.origin + window.location.pathname;
+            }
+          }
+        </script>
+      </header>
+      <main>
+        <div class="content">
+          <div id="journey_start" class="column gap">
+            <h3 id="journey_complete_announce" class="hidden">Journey complete!</h3>
+            <input
+              id="journey_id"
+              type="text"
+              autocomplete="true"
+              placeholder="Journey Identifier"
+            />
+            <button id="start_journey_button" class="full-width">Start Journey</button>
+          </div>
+          <div id="information_form" class="column gap hidden">
+            <div class="column gap">
+              <h3 id="information_form_title" style="font-weight: bold">Title</h3>
+              <div
+                id="information_form_text"
+                style="font-family: Sans-serif"
+                class="column long-text"
+              >
+                Text here
+              </div>
+              <button id="information_form_button" class="full-width" type="submit">OK</button>
             </div>
-            <button id="information_form_button" class="full-width" type="submit">OK</button>
+          </div>
+          <form id="some_form" class="column gap hidden">
+            <div class="column gap">
+              <h3 id="some_form_title" style="font-weight: bold">Form Title</h3>
+              <div id="some_form_text" style="font-family: Sans-serif" class="column long-text">
+                Form Text here
+              </div>
+              <input type="text" name="name" autocomplete="true" placeholder="Enter your name" />
+              <button id="some_form_button" class="full-width" type="submit">Submit</button>
+            </div>
+          </form>
+          <div class="column gap">
+            <div class="row"></div>
+            <div
+              id="action_response_error"
+              style="font-family: Sans-serif; color: red"
+              class="column hidden"
+            >
+              Error
+            </div>
           </div>
         </div>
-        <div class="column gap">
-          <div class="row"></div>
-          <div id="action_response_error" style="font-family: Sans-serif; color: red" class="column hidden">
-            Error
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
-</body>
-
+      </main>
+    </div>
+  </body>
 </html>

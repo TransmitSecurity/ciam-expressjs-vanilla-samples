@@ -1,9 +1,10 @@
-import { pageUtils } from '../../shared/pageUtils.js';
-import { getJourneyId, handleError, resetUI } from './training_utils.js';
+/* eslint-disable no-unused-vars */
+import { pageUtils } from '../../../shared/pageUtils.js';
+import { getJourneyId, handleError, handleJourneySuccess, resetUI } from './training_utils.js';
 import { ClientResponseOptionType, IdoJourneyActionType } from '../sdk_interface.js';
 import { initSdk } from './init.js';
 
-// Register event handlers for buttons
+// Register event handlers for start journey button
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
 function onClick() {
@@ -11,12 +12,22 @@ function onClick() {
   startJourney();
 }
 
-// init sdk
-let sdk = null; // SDK instance
-let ido = null; // IDO Module instance
+let sdk = null;
+let ido = null;
+const idoSDKState = localStorage.getItem('idoSDKState'); // get serialized state from local storage - supports IDV flow
+
+async function init() {
+  sdk = await initSdk();
+  ido = sdk?.ido;
+  if (idoSDKState) {
+    resetUI();
+    startJourney();
+  }
+}
+
+init();
 
 async function startJourney() {
-
   if (!ido) {
     handleError('IDO is not initialized');
     return;
@@ -30,11 +41,16 @@ async function startJourney() {
   }
 
   try {
+    pageUtils.showLoading();
     // start journey
+    pageUtils.hideLoading();
 
-
+    // Handle journey response (loop until journey is done)
+    // let inJourney = true;
+    // while (inJourney) {
+    //}
   } catch (error) {
-
+    handleError(error);
   }
 }
 // Information action UI

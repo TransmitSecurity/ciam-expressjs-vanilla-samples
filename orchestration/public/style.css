@@ -114,6 +114,9 @@ button[type='cancel'] {
   color: #000000;
   border: 1px solid #cccccc;
 }
+.shadow-on-hover:hover {
+  box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.1);
+}
 
 button[type='danger'] {
   background-color: #be3535;

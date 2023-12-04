@@ -1,6 +1,6 @@
 import { pageUtils } from '../../../shared/pageUtils.js';
 import { getJourneyId, handleError, handleJourneySuccess, resetUI } from './training_utils.js';
-import { ClientResponseOptionType, IdoJourneyActionType, IdoServiceResponseType } from '../sdk_interface.js';
+import { ClientResponseOptionType, IdoJourneyActionType } from '../sdk_interface.js';
 import { initSdk } from './init_full.js';
 
 // Register event handlers for buttons
@@ -11,12 +11,22 @@ function onClick() {
   startJourney();
 }
 
-const sdk = await initSdk();
-const ido = sdk.ido;
+let sdk = null;
+let ido = null;
+const idoSDKState = localStorage.getItem('idoSDKState');
 
+async function init() {
+  sdk = await initSdk();
+  ido = sdk?.ido;
+  if (idoSDKState) {
+    resetUI();
+    startJourney();
+  }
+}
+
+init();
 
 async function startJourney() {
-
   if (!ido) {
     handleError('IDO is not initialized');
     return;
@@ -27,36 +37,43 @@ async function startJourney() {
 
   try {
     // start journey
+    let idoResponse = null;
+    // if (!idoSDKState) {
+    //   pageUtils.showLoading();
+    //   idoResponse = await ido.startJourney(journeyId, {
+    //     flow_id: 'training-app-flow-id',
+    //     additionalParams: {
+    //       idv_redirect_url: window.location.origin + window.location.pathname
+    //     },
+    //   });
+    //   pageUtils.hideLoading();
+    // } else {
+    //   idoResponse = ido.restoreFromSerializedState(idoSDKState);
+    // }
+
     pageUtils.showLoading();
-    let idoResponse = await ido.startJourney(journeyId, {
+    idoResponse = await ido.startJourney(journeyId, {
       flow_id: 'training-app-flow-id',
-      additionalParams: {
-        foo: 'bar',
-      },
+      additionalParams: {},
     });
 
     let inJourney = true;
     while (inJourney) {
-      pageUtils.hideLoading();
-
-      if (idoResponse.type === IdoServiceResponseType.JourneySuccess) {
-        handleJourneySuccess(idoResponse);
-        inJourney = false;
-        return;
-      }
-
-      if (idoResponse.type === IdoServiceResponseType.JourneyRejection) {
-        throw new Error(`Journey rejected: ${idoResponse.data?.reason || 'No reason'}`);
-      }
-
       const stepId = idoResponse.journeyStepId;
       const actionData = idoResponse.data;
+      const responseOptions = idoResponse.clientResponseOptions;
       let clientInput = null;
 
       // Handle journey response
       switch (stepId) {
         case IdoJourneyActionType.Information:
           clientInput = await showInformation(actionData);
+          break;
+        case IdoJourneyActionType.IdentityVerification:
+          clientInput = await handleIdentityVerificationStep(actionData);
+          break;
+        case 'some_form':
+          clientInput = await showForm(actionData, responseOptions);
           break;
         case IdoJourneyActionType.Success:
           handleJourneySuccess(idoResponse);
@@ -78,7 +95,6 @@ async function startJourney() {
         pageUtils.hideLoading();
       }
     }
-
   } catch (error) {
     handleError(error);
   }
@@ -111,4 +127,66 @@ async function showInformation(actionData) {
     // eslint-disable-next-line no-unused-vars
     document.querySelector('#information_form_button').addEventListener('click', submit);
   });
+}
+
+async function showForm(/*actionData, responseOptions*/) {
+  return new Promise((resolve /*reject*/) => {
+    // optionally add form title and text here
+
+    // Handle form submission
+    document.getElementById('some_form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      // output as an object
+      console.log(Object.fromEntries(formData));
+
+      pageUtils.hide('some_form');
+      // resolve here...
+      resolve({
+        option: ClientResponseOptionType.ClientInput, // ClientInput is used to return user input
+        data: Object.fromEntries(formData),
+      });
+    });
+
+    // Show form
+    pageUtils.show('some_form');
+  });
+}
+
+/*
+ * handleIdentityVerificationStep is used to handle the Identity Verification step.
+ * The function is called when the journey step id is 'identity_verification'.
+ * The function checks if the journey step contains a sessionId.
+ * If so, the function displays a success message.
+ * Otherwise, the function checks if the journey step contains an endpoint.
+ * If so, the function redirects the user to the endpoint.
+ * Otherwise, the function throws an error.
+ */
+async function handleIdentityVerificationStep(actionData /*, responseOptions*/) {
+  // Check if the journey step contains a sessionId and state
+  const urlParams = new URLSearchParams(window.location.search);
+  const sessionId = urlParams.get('sessionId');
+  const idvState = urlParams.get('state');
+
+  let clientResponse = null;
+  // Display success message if the journey step contains a sessionId and state
+  if (sessionId) {
+    clientResponse = {
+      option: ClientResponseOptionType.ClientInput,
+      data: { payload: { sessionId: sessionId, state: idvState } },
+    };
+  } else {
+    // Redirect to endpoint if the journey step contains an endpoint
+    const endpoint = actionData?.payload?.endpoint;
+    {
+      if (endpoint) {
+        // Before redirection to hosted Identity verification action,
+        // serialize the ido sdk state
+        localStorage.setItem('idoSDKState', ido.serializeState());
+        window.location.href = endpoint;
+      }
+    }
+  }
+  return clientResponse;
 }
