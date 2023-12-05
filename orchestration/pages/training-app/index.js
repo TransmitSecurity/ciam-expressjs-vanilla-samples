@@ -14,7 +14,7 @@ function onClick() {
 
 let sdk = null;
 let ido = null;
-const idoSDKState = localStorage.getItem('idoSDKState'); // get serialized state from local storage - supports IDV flow
+const idoSDKState = null; //localStorage.getItem('idoSDKState'); // get serialized state from local storage - supports IDV flow
 
 async function init() {
   sdk = await initSdk();
@@ -43,16 +43,62 @@ async function startJourney() {
   try {
     pageUtils.showLoading();
     // start journey
+    let idoResponse = await ido.startJourney(journeyId, {
+      additionalParams: {
+        foo: 'bar',
+      },
+    });
     pageUtils.hideLoading();
 
     // Handle journey response (loop until journey is done)
-    // let inJourney = true;
-    // while (inJourney) {
-    //}
+    const inJourney = true;
+    while (inJourney) {
+      const journeyStepId = idoResponse?.journeyStepId;
+      let clientResponse = null;
+
+      switch (journeyStepId) {
+        case IdoJourneyActionType.Information:
+          clientResponse = await showInformation(idoResponse?.data);
+          break;
+        case IdoJourneyActionType.Success:
+          return handleJourneySuccess(idoResponse);
+        default:
+          throw new Error(`Unknown journey step id: ${journeyStepId}`);
+      }
+
+      // Handle client response
+      if (clientResponse !== null) {
+        idoResponse = await ido.submitClientResponse(clientResponse.option, clientResponse.data);
+      }
+    }
   } catch (error) {
     handleError(error);
   }
 }
+
+// Show form
+async function showForm(/*actionData, responseOptions*/) {
+  return new Promise((resolve /*reject*/) => {
+    // optionally add form title and text here
+
+    // Handle form submission
+    document.getElementById('some_form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      // output as an object
+      console.log(Object.fromEntries(formData));
+
+      pageUtils.hide('some_form');
+      // resolve here...
+      resolve();
+    });
+
+    // Show form
+    pageUtils.show('some_form');
+  });
+}
+
 // Information action UI
 async function showInformation(actionData) {
   return new Promise((resolve /*reject*/) => {
@@ -60,6 +106,10 @@ async function showInformation(actionData) {
       pageUtils.hide('information_form');
       pageUtils.hide('action_response_error');
       // resolve here...
+      resolve({
+        option: ClientResponseOptionType.ClientInput,
+        data: {},
+      });
     }
 
     pageUtils.updateElementText(
@@ -77,7 +127,6 @@ async function showInformation(actionData) {
     document.querySelector('#information_form_button').removeEventListener('click', submit);
 
     // Handle input field and main submit
-    // eslint-disable-next-line no-unused-vars
     document.querySelector('#information_form_button').addEventListener('click', submit);
   });
 }

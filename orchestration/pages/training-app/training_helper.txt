@@ -4,7 +4,7 @@ Training Helper
 Training Slides: https://docs.google.com/presentation/d/1Uz8vGPRGCbcrRMrz7itx04_E9pypcTxAhtj_L23ndDM/edit?usp=sharing
 SDK Documentation: 
 
-Client ID: ecb1khu1fmpl1jqs6qodett8cyw1obt1
+Client ID: az8xbjlb1zbfot2husyw7qu0kb3qj074
 
 =================================================
 
