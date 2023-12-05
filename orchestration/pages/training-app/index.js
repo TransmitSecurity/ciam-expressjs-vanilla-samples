@@ -42,44 +42,24 @@ async function startJourney() {
 
   try {
     pageUtils.showLoading();
-    // start journey
-    let idoResponse = await ido.startJourney(journeyId, {
-      additionalParams: {
-        foo: 'bar',
-      },
-    });
+    // start journey here...
+
     pageUtils.hideLoading();
 
     // Handle journey response (loop until journey is done)
-    const inJourney = true;
-    while (inJourney) {
-      const journeyStepId = idoResponse?.journeyStepId;
-      let clientResponse = null;
+    // const inJourney = true;
+    // while (inJourney) {
 
-      switch (journeyStepId) {
-        case IdoJourneyActionType.Information:
-          clientResponse = await showInformation(idoResponse?.data);
-          break;
-        case IdoJourneyActionType.Success:
-          return handleJourneySuccess(idoResponse);
-        default:
-          throw new Error(`Unknown journey step id: ${journeyStepId}`);
-      }
-
-      // Handle client response
-      if (clientResponse !== null) {
-        idoResponse = await ido.submitClientResponse(clientResponse.option, clientResponse.data);
-      }
-    }
+    // }
   } catch (error) {
     handleError(error);
   }
 }
 
 // Show form
-async function showForm(/*actionData, responseOptions*/) {
+async function showForm(data /*, responseOptions*/) {
   return new Promise((resolve /*reject*/) => {
-    // optionally add form title and text here
+    // optionally add form title and text here...
 
     // Handle form submission
     document.getElementById('some_form').addEventListener('submit', function (e) {
@@ -91,8 +71,9 @@ async function showForm(/*actionData, responseOptions*/) {
 
       pageUtils.hide('some_form');
       // resolve here...
-      resolve();
     });
+
+    // add additional response options here...
 
     // Show form
     pageUtils.show('some_form');
@@ -104,12 +85,7 @@ async function showInformation(actionData) {
   return new Promise((resolve /*reject*/) => {
     function submit() {
       pageUtils.hide('information_form');
-      pageUtils.hide('action_response_error');
       // resolve here...
-      resolve({
-        option: ClientResponseOptionType.ClientInput,
-        data: {},
-      });
     }
 
     pageUtils.updateElementText(
@@ -121,12 +97,13 @@ async function showInformation(actionData) {
       actionData?.text || 'Empty text from server',
     );
     pageUtils.updateElementText('information_form_button', actionData?.button_text || 'OK');
-    pageUtils.show('information_form');
 
     // clear all handlers, this handles multiple runs of the same action
     document.querySelector('#information_form_button').removeEventListener('click', submit);
 
     // Handle input field and main submit
     document.querySelector('#information_form_button').addEventListener('click', submit);
+
+    pageUtils.show('information_form');
   });
 }

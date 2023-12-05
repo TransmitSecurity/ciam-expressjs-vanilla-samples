@@ -38,24 +38,18 @@ async function startJourney() {
   try {
     // start journey
     let idoResponse = null;
-    // if (!idoSDKState) {
-    //   pageUtils.showLoading();
-    //   idoResponse = await ido.startJourney(journeyId, {
-    //     flow_id: 'training-app-flow-id',
-    //     additionalParams: {
-    //       idv_redirect_url: window.location.origin + window.location.pathname
-    //     },
-    //   });
-    //   pageUtils.hideLoading();
-    // } else {
-    //   idoResponse = ido.restoreFromSerializedState(idoSDKState);
-    // }
-
-    pageUtils.showLoading();
-    idoResponse = await ido.startJourney(journeyId, {
-      flow_id: 'training-app-flow-id',
-      additionalParams: {},
-    });
+    if (!idoSDKState) {
+      pageUtils.showLoading();
+      idoResponse = await ido.startJourney(journeyId, {
+        flow_id: 'training-app-flow-id',
+        additionalParams: {
+          idv_redirect_url: window.location.origin + window.location.pathname,
+        },
+      });
+      pageUtils.hideLoading();
+    } else {
+      idoResponse = ido.restoreFromSerializedState(idoSDKState);
+    }
 
     let inJourney = true;
     while (inJourney) {
@@ -77,14 +71,13 @@ async function startJourney() {
           break;
         case IdoJourneyActionType.Success:
           handleJourneySuccess(idoResponse);
+          localStorage.removeItem('idoSDKState'); // Clear SDK state
           inJourney = false;
           break;
         case IdoJourneyActionType.Rejection:
           throw new Error(`Journey rejected: ${actionData?.reason || 'No reason'}`);
         default:
-          console.error(`Unknown stepId: ${stepId}`);
-          inJourney = false;
-          break;
+          throw new Error(`Unknown stepId: ${stepId}`);
       }
 
       // submit input to journey and get next step
@@ -129,9 +122,14 @@ async function showInformation(actionData) {
   });
 }
 
-async function showForm(/*actionData, responseOptions*/) {
+async function showForm(data, responseOptions) {
   return new Promise((resolve /*reject*/) => {
     // optionally add form title and text here
+    pageUtils.updateElementText(
+      'some_form_title',
+      data?.app_data?.title || 'Empty title from server',
+    );
+    pageUtils.updateElementText('some_form_text', data?.app_data?.text || 'Empty text from server');
 
     // Handle form submission
     document.getElementById('some_form').addEventListener('submit', function (e) {
@@ -148,6 +146,44 @@ async function showForm(/*actionData, responseOptions*/) {
         data: Object.fromEntries(formData),
       });
     });
+
+    function cancel() {
+      pageUtils.hide('some_form');
+      pageUtils.hide('action_response_error');
+      // resolve here...
+      resolve({
+        option: ClientResponseOptionType.Cancel,
+        data: {},
+      });
+    }
+
+    if (responseOptions.has(ClientResponseOptionType.Cancel)) {
+      // Cancel button event listener
+      document.querySelector('#cancel_button').removeEventListener('click', cancel);
+      document.querySelector('#cancel_button').addEventListener('click', cancel);
+      pageUtils.show('cancel_button');
+    } else {
+      pageUtils.hide('cancel_button');
+    }
+
+    function custom_escape() {
+      pageUtils.hide('some_form');
+      pageUtils.hide('action_response_error');
+      // resolve here...
+      resolve({
+        option: 'custom_escape',
+        data: { foo: 'bar' },
+      });
+    }
+
+    if (responseOptions.has('custom_escape')) {
+      // Custom escape button event listener
+      document.querySelector('#custom_escape_button').removeEventListener('click', custom_escape);
+      document.querySelector('#custom_escape_button').addEventListener('click', custom_escape);
+      pageUtils.show('custom_escape_button');
+    } else {
+      pageUtils.hide('custom_escape_button');
+    }
 
     // Show form
     pageUtils.show('some_form');
@@ -172,10 +208,11 @@ async function handleIdentityVerificationStep(actionData /*, responseOptions*/) 
   let clientResponse = null;
   // Display success message if the journey step contains a sessionId and state
   if (sessionId) {
-    clientResponse = {
-      option: ClientResponseOptionType.ClientInput,
-      data: { payload: { sessionId: sessionId, state: idvState } },
-    };
+    clientResponse = await showInformation({
+      title: 'Identity verification completed',
+      text: 'You have successfully completed the identity verification step.',
+    });
+    clientResponse.data = { payload: { sessionId: sessionId, state: idvState } };
   } else {
     // Redirect to endpoint if the journey step contains an endpoint
     const endpoint = actionData?.payload?.endpoint;
