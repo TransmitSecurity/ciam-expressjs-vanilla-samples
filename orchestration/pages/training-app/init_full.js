@@ -7,6 +7,8 @@ export async function initSdk() {
       serverPath: 'https://0dau9szmld2g6zq50g9i6.transmit.security',
       applicationId: 'default_application',
     },
+    // webauthn: { serverPath: 'https://api.idsec-stg.com' },
+    // drs: { serverPath: 'https://collect.riskid-stg.io' }
   });
   return unifiedSdk;
 }
