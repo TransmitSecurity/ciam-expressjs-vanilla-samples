@@ -13,47 +13,38 @@ router.get('/saml/authn', function (req, res) {
   if (req.query.SAMLRequest) {
     req.session.samlRequest = req.query.SAMLRequest;
     req.session.relayState = req.query.RelayState;
-    // res.redirect('/login-sms');
-    res.redirect('/login-ido');
+    res.redirect('/login-sms');
   } else {
     res.send(`No SAML request`);
   }
 });
 
 router.get('/complete', common.utils.rateLimiter(), async function (req, res) {
-  let accessToken = null;
   if (req.query.code) {
     const params = new URLSearchParams(req.query);
     const tokens = await common.tokens.getUserTokens(params.get('code'));
-    accessToken = tokens.access_token;
-  } else if (req.query.token) {
-    accessToken = req.query.token;
-  }
 
-  if (accessToken) {
-    const samlIdpUrl = common.config.apis.samlIdpUrl;
-    const url = `${samlIdpUrl}?SAMLRequest=${encodeURIComponent(
-      req.session.samlRequest,
-    )}&RelayState=${encodeURIComponent(req.session.relayState)}`;
-    req.session.samlRequest;
-    console.log(`saml request: ${req.session.samlRequest}`);
-    console.log(`GET request url to saml idp (encoded params): ${url}`);
-    const resp = await fetch(url, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    const data = await resp.text();
-    console.log(`SAML response from idp: ${data}`);
-    return res.send(data);
+    if (tokens.access_token) {
+      const samlIdpUrl = common.config.apis.samlIdpUrl;
+      const url = `${samlIdpUrl}?SAMLRequest=${encodeURIComponent(
+        req.session.samlRequest,
+      )}&RelayState=${encodeURIComponent(req.session.relayState)}`;
+      req.session.samlRequest;
+      console.log(`saml request: ${req.session.samlRequest}`);
+      console.log(`GET request url to saml idp (encoded params): ${url}`);
+      const resp = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${tokens.access_token}`,
+        },
+      });
+      const data = await resp.text();
+      console.log(`SAML response from idp: ${data}`);
+      return res.send(data);
+    }
   } else {
     res.send(`Login with SMS completed with error: ${encodeURIComponent(req.query.error)}`);
   }
-});
-
-router.get('/login-ido', function (req, res) {
-  res.redirect('pages/ido.html');
 });
 
 // *************************** LOGIN WITH SMS ROUTING SECTION *****************************

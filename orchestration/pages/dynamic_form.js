@@ -16,7 +16,7 @@ export async function startDynamicForm() {
   });
 }
 
-export function createDynamicFormUI(actionData, responseOptions) {
+export function createDynamicFormUI(actionData) {
   _submitHandler = null;
   _rejectHandler = null;
 
@@ -148,35 +148,13 @@ export function createDynamicFormUI(actionData, responseOptions) {
     _submitHandler = _rejectHandler = null;
   });
 
-  // set escape options
-  if (responseOptions) {
-    responseOptions.forEach((option /*, index*/) => {
-      if (option.type == 'custom') {
-        if (option.label && option.id) {
-          const elem = createEscapeOptionButton(option);
-          addEscapeOptionButtonInDiv(elem, df_div);
-          setButton(elem, option.label, () => {
-            disableAllButtons();
-            _submitHandler({
-              option: option.id,
-              data: {},
-            });
-            _submitHandler = _rejectHandler = null;
-          });
-        } else {
-          console.log(`Invalid escape option provided: ${option} - ignoring.`);
-        }
-      }
-    });
-  }
-
   df_div.querySelector('#dynamic_form_error').classList.add('hidden');
   return df_div;
 }
 
 function setButton(btn, text, completion) {
   if (text) {
-    btn.textContent = text;
+    btn.value = text;
   }
 
   // clear all handlers, this handles multiple runs of the same action
@@ -403,26 +381,6 @@ function appendElementInDiv(element, wrapperDiv) {
 function pushFieldInDiv(element, root_div) {
   try {
     const btn = root_div.querySelector('#ok_button');
-    root_div.insertBefore(element, btn);
-  } catch (ex) {
-    console.log(ex);
-  }
-}
-
-function createEscapeOptionButton(option) {
-  const elem = document.createElement('button');
-  elem.classList.add('full-width');
-  elem.id = option.id;
-  elem.setAttribute('name', option.id);
-  if (option.label) {
-    elem.textContent = option.label;
-  }
-  return elem;
-}
-
-function addEscapeOptionButtonInDiv(element, root_div) {
-  try {
-    const btn = root_div.querySelector('#delete_button');
     root_div.insertBefore(element, btn);
   } catch (ex) {
     console.log(ex);

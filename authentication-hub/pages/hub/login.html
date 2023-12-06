@@ -7,14 +7,10 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <script
-      src="https://platform-websdk.transmitsecurity.io/platform-websdk/latest/ts-platform-websdk.js"
-      id="platform-sdk"
-    ></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ACME Login</title>
     <script type="module" src="./init.js"></script>
-    <script type="module" src="./ido.js"></script>
+
     <script>
       async function loadPage() {
         const clientId = window.env.VITE_TS_CLIENT_ID_SSOHUB;
@@ -55,21 +51,6 @@
           window.pageUtils.updateElementText('status', `Error during login: ${ex}`);
         }
       }
-
-      async function loginWithIDO() {
-        event.preventDefault();
-        const username = document.getElementById('username').value;
-        if (!username) {
-          window.pageUtils.updateElementText('status', 'Please enter a username');
-          document.getElementById('username').focus();
-          return;
-        }
-
-        const queryParams = new URLSearchParams(window.location.search);
-        const originClientId = queryParams.get('client_id');
-
-        const auth_code = await window.loginWithUsername(username, originClientId);
-      }
     </script>
   </head>
 
@@ -85,31 +66,11 @@
           <input type="text" name="username" id="username" placeholder="Enter username" />
           <input type="password" name="password" id="password" placeholder="Enter password" />
           <button class="full-width" type="submit">Login</button>
-          <button class="full-width" type="button" onclick="loginWithIDO()">Login with IDO</button>
           <div id="status"></div>
           <div class="row">
             Don&apos;t have an account? <a href="/pages/hub/signup.html">Sign up</a>
           </div>
         </form>
-        <div id="journey_container" class="content hidden">
-          <div id="journey_end_landing" class="column gap hidden">
-            <h3>Journey complete!</h3>
-            <button id="restart_journey_button" class="full-width">Restart</button>
-          </div>
-          <div id="journey_start" class="column gap hidden">
-            <button id="start_journey_button" class="full-width">Start Journey</button>
-          </div>
-          <div class="column gap">
-            <div class="row"></div>
-            <div
-              id="action_response_error"
-              style="font-family: Sans-serif; color: red"
-              class="column hidden"
-            >
-              Error
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   </body>

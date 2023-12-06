@@ -6,16 +6,10 @@ import { startDynamicForm, createDynamicFormUI } from './dynamic_form.js';
 let sdk = null;
 
 export const DEFAULT_SDK_INIT_OPTIONS = {
-  clientId: '0r2ywmlsams59wysu8chdfxdfjucvse5',
+  clientId: 'az8xbjlb1zbfot2husyw7qu0kb3qj074',
   serverPath: 'https://0dau9szmld2g6zq50g9i6.transmit.security',
   appId: 'default_application',
 };
-
-// export const OIDC_APPLICATION_INIT_OPTIONS = {
-//   clientId: 'd14wk2z30bg4rl5f7bb77drggv8hmbeb',
-//   serverPath: 'https://0dau9szmld2g6zq50g9i6.transmit.security',
-//   appId: 'default_application'
-// }
 
 // Initialize the SDK
 export async function initSdk(clientId, serverPath, appId, sdkOptions = {}) {
@@ -30,7 +24,7 @@ export async function initSdk(clientId, serverPath, appId, sdkOptions = {}) {
 }
 
 // Handle journey error
-export function showFatalError(error) {
+function showFatalError(error) {
   console.error(`Journey exited: ${error}`);
   pageUtils.updateElementText('action_response_error', error);
   pageUtils.show('action_response_error');
@@ -113,10 +107,7 @@ export async function executeJourney(
         case IdoServiceResponseType.ClientInputRequired:
         case IdoServiceResponseType.ClientInputUpdateRequired:
           if (idoResponse.data?.app_data?.type == 'dynamic_form') {
-            const df_div = createDynamicFormUI(
-              idoResponse.data?.app_data || {},
-              idoResponse.clientResponseOptions || new Map(),
-            );
+            const df_div = createDynamicFormUI(idoResponse.data?.app_data);
             addDynamicFormUI(df_div);
             uiResponse = await startDynamicForm();
             removeDynamicFormUI();
@@ -146,12 +137,10 @@ export async function executeJourney(
     // journey is complete
     console.log(`Journey Complete!`);
     pageUtils.show('journey_end_landing');
-    localStorage.removeItem('serializedState');
-    return idoResponse;
   } catch (error) {
-    localStorage.removeItem('serializedState');
     showFatalError(error);
   }
+  localStorage.removeItem('serializedState');
 }
 
 export async function showInformation(actionData) {
