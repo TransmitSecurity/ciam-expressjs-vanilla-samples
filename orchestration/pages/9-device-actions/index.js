@@ -1,13 +1,13 @@
-import { showInformation, executeJourney, flowId } from '../commonUtils.js';
+import { showInformation, executeJourney } from '../commonUtils.js';
 import { IdoJourneyActionType } from '../sdk_interface.js';
 
 // Register event handlers for buttons
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'crypto_binding';
+const JOURNEY_NAME = 'device_actions';
 const JOURNEY_ADDITIONAL_PARAMS = {
-  flowId: flowId,
+  flowId: 'random',
   additionalParams: {},
 };
 
@@ -20,7 +20,14 @@ if (parsedState && parsedState.expires > new Date().getTime()) {
 }
 
 function onClick() {
-  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
+  executeJourney(
+    JOURNEY_NAME,
+    handleJourneyActionUI,
+    JOURNEY_ADDITIONAL_PARAMS,
+    undefined,
+    undefined,
+    { drs: { serverPath: 'https://collect.riskid-stg.io' } },
+  );
 }
 
 async function handleJourneyActionUI(idoResponse) {
@@ -40,12 +47,14 @@ async function handleJourneyActionUI(idoResponse) {
       clientResponse = await showInformation(actionData, responseOptions);
       break;
     case IdoJourneyActionType.CryptoBindingRegistration:
+    case IdoJourneyActionType.RegisterDeviceAction:
       clientResponse = await showInformation({
         title: 'Crypto Binding',
         text: 'About to register a device key',
       });
       break;
     case IdoJourneyActionType.CryptoBindingValidation:
+    case IdoJourneyActionType.ValidateDeviceAction:
       clientResponse = await showInformation({
         title: 'Crypto Binding validation',
         text: 'About to validate a device key',

@@ -1,5 +1,5 @@
 import { pageUtils } from '../../shared/pageUtils.js';
-import { showInformation, executeJourney, DEFAULT_SDK_INIT_OPTIONS } from './commonUtils.js';
+import { showInformation, executeJourney, flowId } from './commonUtils.js';
 import { ClientResponseOptionType, IdoJourneyActionType } from './sdk_interface.js';
 // import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 
@@ -9,27 +9,34 @@ document.querySelector('#start_journey_button').addEventListener('click', onClic
 
 const JOURNEY_NAME = 'ENTER JOURNEY NAME HERE';
 const JOURNEY_ADDITIONAL_PARAMS = {
-  flowId: 'random',
+  flowId: flowId(),
   additionalParams: { username: 'John Doe', plus: true },
 };
-const SDK_INIT_OPTIONS = DEFAULT_SDK_INIT_OPTIONS;
 
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const sessionId = urlParams.get('sessionId');
+const idvState = urlParams.get('state');
 const state = localStorage.getItem('serializedState');
 const parsedState = state ? JSON.parse(state) : null;
 if (parsedState && parsedState.expires > new Date().getTime()) {
-  executeJourney(
-    JOURNEY_NAME,
-    handleJourneyActionUI,
-    JOURNEY_ADDITIONAL_PARAMS,
-    parsedState.state,
-    SDK_INIT_OPTIONS,
-  );
+  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, parsedState.state);
 } else {
   localStorage.removeItem('serializedState');
 }
 
 function onClick() {
-  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, SDK_INIT_OPTIONS);
+  executeJourney(
+    JOURNEY_NAME,
+    handleJourneyActionUI,
+    JOURNEY_ADDITIONAL_PARAMS,
+    undefined,
+    undefined,
+    {
+      webauthn: { serverPath: 'https://api.idsec-stg.com' },
+      drs: { serverPath: 'https://collect.riskid-stg.io' },
+    },
+  );
 }
 
 async function handleJourneyActionUI(idoResponse) {
@@ -55,9 +62,17 @@ async function handleJourneyActionUI(idoResponse) {
       });
       break;
     case IdoJourneyActionType.CryptoBindingRegistration:
+    case IdoJourneyActionType.RegisterDeviceAction:
       clientResponse = await showInformation({
         title: 'Crypto Binding',
         text: 'About to register a device key',
+      });
+      break;
+    case IdoJourneyActionType.CryptoBindingValidation:
+    case IdoJourneyActionType.ValidateDeviceAction:
+      clientResponse = await showInformation({
+        title: 'Crypto Binding validation',
+        text: 'About to validate a device key',
       });
       break;
     case IdoJourneyActionType.WaitForAnotherDevice:
@@ -74,6 +89,59 @@ async function handleJourneyActionUI(idoResponse) {
       break;
     case 'kba_input':
       clientResponse = await showKbaForm(actionData, responseOptions);
+      break;
+    case IdoJourneyActionType.WebAuthnRegistration:
+      // Handle webauthn registration step
+      clientResponse = await showInformation({
+        title: 'Webauthn Register action',
+        text: 'About to register a webauthn key',
+      });
+      clientResponse.data.webauthn_encoded_result = await window.tsPlatform.webauthn.register(
+        actionData.username,
+      );
+      break;
+    case IdoJourneyActionType.Authentication:
+      clientResponse = await showInformation({
+        title: 'Authenticate with Webauthn action',
+        text: 'About to authenticate using a webauthn key',
+      });
+      clientResponse.data.webauthn_encoded_result =
+        await window.tsPlatform.webauthn.authenticate.modal(actionData.username);
+      clientResponse.data.type = 'webauthn';
+      break;
+    case IdoJourneyActionType.DrsTriggerAction:
+      // eslint-disable-next-line no-case-declarations
+      const { actionToken } = await window.tsPlatform.drs.triggerActionEvent(
+        window.drs.actionType.LOGIN,
+      );
+      console.log('Action Token', actionToken);
+      // Add code here to send the action and the received actionToken to your backend
+      clientResponse = await showInformation({
+        title: 'DRS Trigger Action',
+        text: 'About to trigger a DRS action',
+        data: { action_token: actionToken },
+      });
+      break;
+    case IdoJourneyActionType.IdentityVerification:
+      if (sessionId) {
+        clientResponse = await showInformation({
+          title: 'Identity verification Action',
+          text: 'Identity verification action finished successfully',
+          data: { payload: { sessionId, state: idvState } },
+        });
+      } else {
+        // eslint-disable-next-line no-case-declarations
+        const {
+          payload: { endpoint },
+        } = actionData ?? { payload: {} };
+        if (endpoint) {
+          window.location.href = endpoint;
+          clientResponse = await showInformation({
+            title: 'Identity verification Action',
+            text: 'Being redirected to hosted Identity verification action',
+          });
+        }
+      }
       break;
     default:
       throw `Unexpected step id: ${stepId}`;

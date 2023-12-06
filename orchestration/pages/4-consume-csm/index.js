@@ -1,14 +1,14 @@
-import { showInformation, executeJourney } from '../commonUtils.js';
+import { showInformation, executeJourney, flowId } from '../commonUtils.js';
 import { IdoJourneyActionType } from '../sdk_interface.js';
 
 // Register event handlers for buttons
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'crypto_binding';
+const JOURNEY_NAME = 'cross_device';
 const JOURNEY_ADDITIONAL_PARAMS = {
-  flowId: 'random',
-  additionalParams: {},
+  flowId: flowId(),
+  additionalParams: { messageId: new URLSearchParams(window.location.search).get('messageId') },
 };
 const SDK_INIT_OPTIONS = {
   clientId: 'demo-client-id',

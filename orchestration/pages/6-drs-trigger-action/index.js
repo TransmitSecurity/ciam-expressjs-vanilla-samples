@@ -1,13 +1,13 @@
-import { showInformation, executeJourney } from '../commonUtils.js';
+import { showInformation, executeJourney, flowId } from '../commonUtils.js';
 import { IdoJourneyActionType } from '../sdk_interface.js';
 
 // Register event handlers for buttons
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'DRS';
+const JOURNEY_NAME = 'testm';
 const JOURNEY_ADDITIONAL_PARAMS = {
-  flowId: 'random',
+  flowId: flowId(),
   additionalParams: {},
 };
 

@@ -60,6 +60,10 @@ export var ClientResponseOptionType;
    */
   ClientResponseOptionType['Cancel'] = 'cancel';
   /**
+   * @description Client response option type for client failure in the Journey.
+   */
+  ClientResponseOptionType['Fail'] = 'fail';
+  /**
    * @description Client response option type for custom branch in the Journey, used for custom branching.
    */
   ClientResponseOptionType['Custom'] = 'custom';
@@ -110,6 +114,7 @@ export var IdoJourneyActionType;
    */
   IdoJourneyActionType['WaitForAnotherDevice'] = 'action:wait_for_another_device';
   /**
+   * @deprecated Use {@link IdoJourneyActionType.RegisterDeviceAction} instead.
    * @description `journeyStepId` for device crypto binding action.
    * This action is presented to the client side when the journey has a form with the ID `"action:crypto_binding_registration"`.
    * On submission of `clientResponse` - the SDK will generate a key and respond in the following format:
@@ -118,12 +123,15 @@ export var IdoJourneyActionType;
    *   "ts:idosdk:device": {
    *     "platform_device_key": "base64 encoded public key",
    *     "platform_device_id": "an opaque key ID",
-   *  }
+   *   }
+   * }
    * ```
    * The server should store the key and the ID for future device identity validation.
    */
   IdoJourneyActionType['CryptoBindingRegistration'] = 'action:crypto_binding_registration';
   /**
+   * @deprecated
+   * Use {@link IdoJourneyActionType.ValidateDeviceAction} instead.
    * @description `journeyStepId` for device crypto binding validation action.
    * This action is presented to the client side when the journey has a form with the ID `"action:crypto_binding_validation"`.
    * * On submission of `clientResponse` - the SDK will sign the challenge and respond in the following format:
@@ -133,19 +141,48 @@ export var IdoJourneyActionType;
    *     "signature": "base64 encoded signature",
    *     "platform_device_id": "an opaque key ID",
    *  }
+   * }
    * ```
    */
   IdoJourneyActionType['CryptoBindingValidation'] = 'action:crypto_binding_validation';
   /**
+   * @description `journeyStepId` for Register Device action.
+   */
+  IdoJourneyActionType['RegisterDeviceAction'] = 'transmit_platform_device_registration';
+  /**
+   * @description `journeyStepId` for Validate Device action.
+   */
+  IdoJourneyActionType['ValidateDeviceAction'] = 'transmit_platform_device_validation';
+  /**
    * @description `journeyStepId` for WebAuthn registration action.
+   * * This action is presented to the client side when the journey has an action with the ID `"action:webauthn_registration"`.
+   *
+   * Data received in `idoServiceResponse`:
+   * These input parameters are the input to tsPlatform.webauthn.register()
+   * ```json
+   * {
+   *  "data": {
+   *    "username": "<USERNAME>",
+   *    "display_name": "<DISPLAY_NAME>",
+   *    "register_as_discoverable": <true|false>,
+   *    "allow_cross_Platform_authenticators": <true|false>
+   *  }
+   * }
+   * ```
+   * Data to send with `submitClientResponse`:
+   * The `webauthn_encoded_result` is the output of tsPlatform.webauthn.register()
+   * ```json
+   * {
+   *   "webauthn_encoded_result": "<WEBAUTHN_ENCODED_RESULT_FROM_SDK>"
+   * }
+   * ```
    */
   IdoJourneyActionType['WebAuthnRegistration'] = 'action:webauthn_registration';
   /**
-   * @description `journeyStepId` for DRS trigger action.
-   * This action is presented to the client side when the journey has a form with the ID `"action:drs_trigger_action"`.
-   * The action_type field should be used for creating the DRS action token.
+   * @description `journeyStepId` for DRS trigger action. (Risk Recommendation)
    *
-   * client response:
+   * Data received in `idoServiceResponse`:
+   * These input parameters are the input to tsPlatform.drs.triggerActionEvent()
    * ```json
    * {
    *  "data": {
@@ -155,18 +192,44 @@ export var IdoJourneyActionType;
    *  },
    * }
    * ```
-   * output:
+   * Data to send with `submitClientResponse`:
+   * The `action_token` is the output of tsPlatform.drs.triggerActionEvent()
    * ```json
    * {
-   *  "data": {
-   *     "action_token": "<DRS action token>"
-   *  }
+   *  "action_token": "<DRS action token>"
    *}
    * ```
    */
   IdoJourneyActionType['DrsTriggerAction'] = 'action:drs_trigger_action';
   /**
    * @description `journeyStepId` for Identity Verification action.
+   *
+   * Data received in `idoServiceResponse`:
+   * ```json
+   * {
+   *  "data": {
+   *    "payload": {
+   *      "endpoint": "<endpoint to redirect>",
+   *      "state": "<state>",
+   *      "session": "<session>"
+   *      },
+   *    }
+   * }
+   * ```
+   *
+   * Data to send with `submitClientResponse`:
+   * ```json
+   * {
+   *    "payload": {
+   *      "sessionId": "<sessionId>",
+   *      "state": "<state>"
+   *    },
+   * }
+   * ```
    */
   IdoJourneyActionType['IdentityVerification'] = 'action:id_verification';
+  /**
+   * @description `journeyStepId` for Authentication action.
+   */
+  IdoJourneyActionType['Authentication'] = 'transmit_platform_authentication';
 })(IdoJourneyActionType || (IdoJourneyActionType = {}));
