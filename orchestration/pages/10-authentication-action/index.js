@@ -6,10 +6,16 @@ import { ClientResponseOptionType, IdoJourneyActionType } from '../sdk_interface
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'authentication_actione';
+const JOURNEY_NAME = 'authentication_action';
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: flowId(),
   additionalParams: {},
+};
+
+const SDK_INIT_OPTIONS = {
+  clientId: '93nvx1guth3pf2w92souyf5ebb47m91g',
+  serverPath: 'https://ia1sex9mt686s6xt1akm9.transmit.security',
+  appId: 'default_application',
 };
 
 const state = localStorage.getItem('serializedState');
@@ -20,8 +26,7 @@ if (parsedState && parsedState.expires > new Date().getTime()) {
     handleJourneyActionUI,
     JOURNEY_ADDITIONAL_PARAMS,
     parsedState.state,
-    undefined,
-    { webauthn: { serverPath: 'https://api.idsec-stg.com' } },
+    SDK_INIT_OPTIONS,
   );
 } else {
   localStorage.removeItem('serializedState');
@@ -33,8 +38,7 @@ function onClick() {
     handleJourneyActionUI,
     JOURNEY_ADDITIONAL_PARAMS,
     undefined,
-    undefined,
-    { webauthn: { serverPath: 'https://api.idsec-stg.com' } },
+    SDK_INIT_OPTIONS,
   );
 }
 
