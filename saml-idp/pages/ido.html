@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html style="display: block">
   <head>
-    <link rel="stylesheet" type="text/css" href="../../public/style.css" />
+    <link rel="stylesheet" type="text/css" href="../public/style.css" />
     <link rel="icon" type="image/svg+xml" href="../../public/acme-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,19 +15,21 @@
       src="https://platform-websdk.transmitsecurity.io/platform-websdk/latest/ts-platform-websdk.js"
       id="platform-sdk"
     ></script>
-    <script type="module" src="./index.js"></script>
+    <script type="module" src="./init.js"></script>
+    <script type="module" src="./ido.js"></script>
   </head>
   <body>
     <div class="page">
       <header>
         <img src="../../public/acme-logo.svg" />
-        <h3 style="color: #1c3869">Client integration guide - Code Sample</h3>
-        <p>Journey Id: 'sample_info_journey'</p>
-        <!-- <a
-          href="https://developer.transmitsecurity.com/guides/ido/information_action/"
-          target="_blank"
-          >guide</a
-        > -->
+        <h3 style="color: #1c3869">SAML-IDO - Code Sample</h3>
+        <p>Journey Id: 'ido-idp'</p>
+        <a href="https://samltest.id/start-idp-test/" onclick="clearState()">Restart SAML</a>
+        <script>
+          function clearState() {
+            localStorage.removeItem('serializedState');
+          }
+        </script>
       </header>
       <main>
         <div id="journey_container" class="content">
@@ -37,6 +39,19 @@
           </div>
           <div id="journey_start" class="column gap">
             <button id="start_journey_button" class="full-width">Start Journey</button>
+          </div>
+          <div id="information_form" class="column gap hidden">
+            <div class="column gap">
+              <h3 id="information_form_title" style="font-weight: bold">Title</h3>
+              <div
+                id="information_form_text"
+                style="font-family: Sans-serif"
+                class="column long-text"
+              >
+                Text here
+              </div>
+              <button id="information_form_button" class="full-width" type="submit">OK</button>
+            </div>
           </div>
           <div class="column gap">
             <div class="row"></div>

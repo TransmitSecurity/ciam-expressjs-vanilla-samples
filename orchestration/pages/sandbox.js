@@ -1,5 +1,5 @@
 import { pageUtils } from '../../shared/pageUtils.js';
-import { showInformation, executeJourney } from './commonUtils.js';
+import { showInformation, executeJourney, DEFAULT_SDK_INIT_OPTIONS } from './commonUtils.js';
 import { ClientResponseOptionType, IdoJourneyActionType } from './sdk_interface.js';
 // import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 
@@ -12,17 +12,24 @@ const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: 'random',
   additionalParams: { username: 'John Doe', plus: true },
 };
+const SDK_INIT_OPTIONS = DEFAULT_SDK_INIT_OPTIONS;
 
 const state = localStorage.getItem('serializedState');
 const parsedState = state ? JSON.parse(state) : null;
 if (parsedState && parsedState.expires > new Date().getTime()) {
-  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, parsedState.state);
+  executeJourney(
+    JOURNEY_NAME,
+    handleJourneyActionUI,
+    JOURNEY_ADDITIONAL_PARAMS,
+    parsedState.state,
+    SDK_INIT_OPTIONS,
+  );
 } else {
   localStorage.removeItem('serializedState');
 }
 
 function onClick() {
-  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS);
+  executeJourney(JOURNEY_NAME, handleJourneyActionUI, JOURNEY_ADDITIONAL_PARAMS, SDK_INIT_OPTIONS);
 }
 
 async function handleJourneyActionUI(idoResponse) {
