@@ -51,7 +51,6 @@ async function handleJourneyActionUI(idoResponse) {
   const responseOptions = idoResponse?.clientResponseOptions || new Map();
 
   console.debug(`handle journey action ${stepId}`);
-  console.log('idoResponse', idoResponse);
   let clientResponse = null;
 
   if (actionData['json_data']) {
