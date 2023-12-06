@@ -24,7 +24,7 @@ export async function initSdk(clientId, serverPath, appId, sdkOptions = {}) {
 }
 
 // Handle journey error
-function showFatalError(error) {
+export function showFatalError(error) {
   console.error(`Journey exited: ${error}`);
   pageUtils.updateElementText('action_response_error', error);
   pageUtils.show('action_response_error');
@@ -107,7 +107,10 @@ export async function executeJourney(
         case IdoServiceResponseType.ClientInputRequired:
         case IdoServiceResponseType.ClientInputUpdateRequired:
           if (idoResponse.data?.app_data?.type == 'dynamic_form') {
-            const df_div = createDynamicFormUI(idoResponse.data?.app_data);
+            const df_div = createDynamicFormUI(
+              idoResponse.data?.app_data || {},
+              idoResponse.clientResponseOptions || new Map(),
+            );
             addDynamicFormUI(df_div);
             uiResponse = await startDynamicForm();
             removeDynamicFormUI();
@@ -137,10 +140,12 @@ export async function executeJourney(
     // journey is complete
     console.log(`Journey Complete!`);
     pageUtils.show('journey_end_landing');
+    localStorage.removeItem('serializedState');
+    return idoResponse;
   } catch (error) {
+    localStorage.removeItem('serializedState');
     showFatalError(error);
   }
-  localStorage.removeItem('serializedState');
 }
 
 export async function showInformation(actionData) {
