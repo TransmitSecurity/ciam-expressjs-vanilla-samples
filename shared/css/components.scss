@@ -89,6 +89,10 @@ button {
     color: #666666;
     pointer-events: none;
   }
+
+  &.shadow-on-hover:hover {
+    box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.1);
+  }
 }
 
 a {

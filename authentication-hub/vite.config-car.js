@@ -8,10 +8,10 @@ const mix = mixPlugin.default;
 export default defineConfig({
   plugins: [
     mix({
-      handler: './backend/app.js',
+      handler: './backend-car/app.js',
     }),
   ],
   server: {
-    port: process.env.PORT || 8080,
+    port: 8090,
   },
 });

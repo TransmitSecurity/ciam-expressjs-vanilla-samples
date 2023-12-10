@@ -4,7 +4,10 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "start": "vite --debug --host",
+    "start": "npm run start-air & npm run start-cars & npm run start-hub",
+    "start-air": "vite --config vite.config-air.js -l silent --host 2>&1 >> vite-air.log &",
+    "start-cars": "vite --config vite.config-car.js -l silent --host 2>&1 >> vite-cars.log &",
+    "start-hub": "vite --config vite.config-hub.js -l silent --host 2>&1 >> vite-hub.log &",
     "lint": "eslint \"**/*.{js,html}\"",
     "format": "prettier .  --write"
   },
