@@ -4,6 +4,7 @@
 **/package-lock.json
 */dist
 */build
+**/.log
 .idea
 TODOS.md
 yarn-error.log
