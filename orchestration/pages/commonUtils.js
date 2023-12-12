@@ -125,7 +125,7 @@ export async function executeJourney(
           pageUtils.hideLoading();
           break;
         case IdoServiceResponseType.JourneyRejection:
-          console.log(`FlexID Server Error: ${idoResponse}`);
+          console.log('FlexID Server Error: ', idoResponse);
           pageUtils.hideLoading();
           pageUtils.updateElementText('action_response_error', JSON.stringify(idoResponse));
           pageUtils.show('action_response_error');

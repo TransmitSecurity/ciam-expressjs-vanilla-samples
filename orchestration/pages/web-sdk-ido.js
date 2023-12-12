@@ -921,7 +921,7 @@ export var tsPlatform = (function (exports) {
      *    "username": "<USERNAME>",
      *    "display_name": "<DISPLAY_NAME>",
      *    "register_as_discoverable": <true|false>,
-     *    "allow_cross_Platform_authenticators": <true|false>
+     *    "allow_cross_platform_authenticators": <true|false>
      *  }
      * }
      * ```
@@ -1423,7 +1423,7 @@ export var tsPlatform = (function (exports) {
     IdoActionType['WaitForTicket'] = 'wait_for_ticket';
     IdoActionType['DrsTriggerAction'] = 'transmit_acp';
     IdoActionType['IdentityVerification'] = 'kyc';
-    IdoActionType['WebAuthnRegistration'] = 'transmit_platform_webAuthn_registration';
+    IdoActionType['WebAuthnRegistration'] = 'transmit_platform_web_authn_registration';
   })(IdoActionType || (IdoActionType = {}));
 
   class IdoAPI {
@@ -1624,13 +1624,7 @@ export var tsPlatform = (function (exports) {
   const CLIENT_INPUT_UPDATE_REQUIRED_STATUS_CODE = 16;
   class IdoServiceResponseHelper {
     constructor(rawResponse) {
-      var _a, _b;
-      if (rawResponse.error_code) {
-        throw new IdoSdkError(
-          `[Code: ${rawResponse.error_code}] ${rawResponse.error_message}`,
-          ErrorCode.ServerError,
-        );
-      }
+      var _a, _b, _c;
       this.rawResponse = rawResponse;
       const [{ escapes, form_id }] =
         (_b = (_a = rawResponse.data) === null || _a === void 0 ? void 0 : _a.control_flow) !==
@@ -1638,7 +1632,7 @@ export var tsPlatform = (function (exports) {
           ? _b
           : [{}];
       this.escapes = escapes;
-      this.data = rawResponse.data;
+      this.data = (_c = rawResponse.data) !== null && _c !== void 0 ? _c : {};
       this.formId = form_id;
     }
     generateServiceResponse(actionType) {
@@ -1661,6 +1655,7 @@ export var tsPlatform = (function (exports) {
       return this.data.assertion_id;
     }
     getJourneyState() {
+      var _a, _b;
       let state;
       if (this.rawResponse.status >= 400) {
         state = JourneyState.TextRejection;
@@ -1675,7 +1670,12 @@ export var tsPlatform = (function (exports) {
       ) {
         state = JourneyState.JourneyEnd;
       } else {
-        if (this.rawResponse.data.control_flow) {
+        if (
+          (_b = (_a = this.rawResponse) === null || _a === void 0 ? void 0 : _a.data) === null ||
+          _b === void 0
+            ? void 0
+            : _b.control_flow
+        ) {
           state = JourneyState.NextAction;
         } else {
           state = JourneyState.UpdateAction;
@@ -1685,13 +1685,11 @@ export var tsPlatform = (function (exports) {
     }
     getType() {
       let responseType = IdoServiceResponseType.JourneyRejection;
-      if (this.rawResponse.data.assertions_complete) {
+      if (this.data.assertions_complete) {
         responseType = IdoServiceResponseType.JourneySuccess;
       } else if (this.data.state === IdoJourneyResponseState.Pending) {
         responseType = IdoServiceResponseType.ClientInputRequired;
-      } else if (
-        this.rawResponse.data.assertion_error_code == CLIENT_INPUT_UPDATE_REQUIRED_STATUS_CODE
-      ) {
+      } else if (this.data.assertion_error_code == CLIENT_INPUT_UPDATE_REQUIRED_STATUS_CODE) {
         responseType = IdoServiceResponseType.ClientInputUpdateRequired;
       } else if (this.rawResponse.error_code === 4001) {
         responseType = IdoServiceResponseType.JourneyRejection;
@@ -1699,14 +1697,10 @@ export var tsPlatform = (function (exports) {
       return responseType;
     }
     getData() {
-      var _a, _b, _c;
-      const [controlFlowData] =
-        (_b = (_a = this.data) === null || _a === void 0 ? void 0 : _a.control_flow) !== null &&
-        _b !== void 0
-          ? _b
-          : [{}];
+      var _a, _b;
+      const [controlFlowData] = (_a = this.data.control_flow) !== null && _a !== void 0 ? _a : [{}];
       const { data: internalData, ...restData } =
-        (_c = this.data) !== null && _c !== void 0 ? _c : {};
+        (_b = this.data) !== null && _b !== void 0 ? _b : {};
       const { json_data, ...data } =
         internalData !== null && internalData !== void 0 ? internalData : {};
       this.removeFields(controlFlowData, FIELDS_TO_REMOVE_FROM_CONTROL_FLOW);
@@ -1729,6 +1723,7 @@ export var tsPlatform = (function (exports) {
     getJourneyStepId(actionType) {
       const serviceResponseType = this.getType();
       if (serviceResponseType === IdoServiceResponseType.JourneyRejection) {
+        this.rejectionReason = this.rawResponse.error_message;
         return IdoJourneyActionType.Rejection;
       } else if (serviceResponseType === IdoServiceResponseType.JourneySuccess) {
         return IdoJourneyActionType.Success;
@@ -2138,7 +2133,7 @@ export var tsPlatform = (function (exports) {
       (_a = this.journey) === null || _a === void 0 ? void 0 : _a.reject();
     }
     async generateDebugPin() {
-      var _a;
+      var _a, _b;
       if (!this.journey) {
         throw new IdoSdkError(
           'Error occurred while trying to generate debug pin since no journey is active',
@@ -2151,7 +2146,7 @@ export var tsPlatform = (function (exports) {
             headers: this.getInternalHeaders(),
             data: {},
           }));
-      if (!response) {
+      if (!response || !((_b = response.data) === null || _b === void 0 ? void 0 : _b.debug_pin)) {
         throw new MissingResponseError();
       }
       return response.data.debug_pin;
