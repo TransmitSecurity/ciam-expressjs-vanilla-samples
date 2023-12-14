@@ -229,28 +229,7 @@ async function loginPage(actionData, responseOptions) {
         localStorage.setItem('username', username);
         pageUtils.hide('login_form');
         resolve({
-          option: 'create_hub_user',
-          data: { username: username },
-        });
-      } catch (error) {
-        if (error.errorCode === 'webauthn_authentication_canceled') return;
-        window.pageUtils.updateElementText('status', `Error during passkey login: ${error}`);
-      }
-    }
-
-    async function createAirUser() {
-      try {
-        await window.tsPlatform.webauthn.authenticate.autofill.abort();
-        const username = document.getElementById('username').value;
-        if (!username) {
-          window.pageUtils.updateElementText('status', `Please enter a username`);
-          document.getElementById('username').focus();
-          return;
-        }
-        localStorage.setItem('username', username);
-        pageUtils.hide('login_form');
-        resolve({
-          option: 'create_air_user',
+          option: 'escape_option',
           data: { username: username },
         });
       } catch (error) {
@@ -270,18 +249,13 @@ async function loginPage(actionData, responseOptions) {
       pageUtils.show('other_options');
     }
 
-    if (responseOptions.has('create_hub_user')) {
+    if (responseOptions.has('escape_option')) {
       // clear all handlers, this handles multiple runs of the same action
-      document.querySelector('#create_hub_user').removeEventListener('click', createHubUser);
-      document.querySelector('#create_hub_user').addEventListener('click', createHubUser);
-      pageUtils.show('create_hub_user');
-    }
-
-    if (responseOptions.has('create_air_user')) {
-      // clear all handlers, this handles multiple runs of the same action
-      document.querySelector('#create_air_user').removeEventListener('click', createAirUser);
-      document.querySelector('#create_air_user').addEventListener('click', createAirUser);
-      pageUtils.show('create_air_user');
+      document.querySelector('#escape_option').removeEventListener('click', createHubUser);
+      document.querySelector('#escape_option').addEventListener('click', createHubUser);
+      document.querySelector('#escape_option').innerText =
+        responseOptions.get('escape_option').label;
+      pageUtils.show('escape_option');
     }
 
     pageUtils.show('login_form');
