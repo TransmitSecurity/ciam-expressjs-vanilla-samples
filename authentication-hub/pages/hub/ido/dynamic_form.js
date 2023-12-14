@@ -9,6 +9,28 @@ let _submitHandler = null;
 let _rejectHandler = null;
 const phone_parsers = {};
 
+// Add dynamic form to the page
+export function addDynamicFormUI(df_div, journey_container_id = 'journey_container') {
+  removeDynamicFormUI(journey_container_id);
+  const rootDiv = document.getElementById(journey_container_id);
+  rootDiv.appendChild(df_div);
+  df_div.classList.remove('hidden');
+  df_div.style.display = 'block';
+}
+
+// Remove dynamic form from the page
+export function removeDynamicFormUI(journey_container_id = 'journey_container') {
+  try {
+    const rootDiv = document.getElementById(journey_container_id);
+    const dynamic_form = document.getElementById('dynamic_form_body');
+    if (dynamic_form && rootDiv) {
+      rootDiv.removeChild(dynamic_form);
+    }
+  } catch (ex) {
+    console.log(ex);
+  }
+}
+
 export async function startDynamicForm() {
   return new Promise((resolve, reject) => {
     _submitHandler = resolve;
@@ -162,6 +184,7 @@ export function createDynamicFormUI(actionData, responseOptions) {
             });
             _submitHandler = _rejectHandler = null;
           });
+          addEscapeOptionButtonInDiv(elem, df_div);
         } else {
           console.log(`Invalid escape option provided: ${option} - ignoring.`);
         }
@@ -264,11 +287,12 @@ function createMessage(field) {
     wrapperDiv.classList.add('column');
     wrapperDiv.classList.add('gap');
 
-    const label = document.createElement('LABEL');
-    label.setAttribute('for', field.id);
-    label.innerHTML = field.name;
-    label.style = 'margin: 6px; font-weight: lighter;';
-    appendElementInDiv(label, wrapperDiv);
+    const text = document.createElement('DIV');
+    text.setAttribute('for', field.id);
+    text.innerHTML = field.name;
+    text.style =
+      'display: flex; flex-direction: column; font-weight: lighter; overflow-wrap: anywhere; padding: 18px 4px;';
+    appendElementInDiv(text, wrapperDiv);
 
     return wrapperDiv;
   } catch (ex) {
@@ -429,20 +453,21 @@ function createEscapeOptionLink(option) {
   const elem = document.createElement('a');
   elem.id = option.id;
   elem.setAttribute('name', option.id);
+  elem.setAttribute('style', 'text-decoration: underline; cursor: pointer;');
   if (option.label) {
     elem.textContent = option.label;
   }
   return elem;
 }
 
-// function addEscapeOptionButtonInDiv(element, root_div) {
-//   try {
-//     const btn = root_div.querySelector('#delete_button');
-//     root_div.insertBefore(element, btn);
-//   } catch (ex) {
-//     console.log(ex);
-//   }
-// }
+function addEscapeOptionButtonInDiv(element, root_div) {
+  try {
+    const btn = root_div.querySelector('#delete_button');
+    root_div.insertBefore(element, btn);
+  } catch (ex) {
+    console.log(ex);
+  }
+}
 
 function markInputError(id, message) {
   const elem = document.getElementById(id);

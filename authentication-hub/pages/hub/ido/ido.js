@@ -1,45 +1,14 @@
 import { pageUtils } from '../../../../shared/pageUtils.js';
-import { flowId, addDynamicFormUI, removeDynamicFormUI, getJourneyId } from './commonUtils.js';
-import { startDynamicForm, createDynamicFormUI } from './dynamic_form.js';
+import {
+  startDynamicForm,
+  createDynamicFormUI,
+  addDynamicFormUI,
+  removeDynamicFormUI,
+} from './dynamic_form.js';
 import { ClientResponseOptionType, IdoJourneyActionType } from './sdk_interface.js';
 
-// Register event handlers for buttons
-// document.querySelector('#start_journey_button').addEventListener('click', onClick);
-
-// const queryString = window.location.search;
-// const urlParams = new URLSearchParams(queryString);
-const ido = window.tsPlatform.ido;
-
-// function onClick() {
-//   const journeyId = getJourneyId();
-//   startJourney(journeyId);
-// }
-
 async function loginWithUsername(username, originalClientId, src_interaction) {
-  return new Promise((resolve, reject) => {
-    const journeyId = getJourneyId();
-    const params = {
-      username,
-      originalClientId,
-      src_interaction,
-    };
-
-    pageUtils.show('journey_container');
-    return startJourney(journeyId, params)
-      .then(response => {
-        pageUtils.hide('journey_container');
-        resolve(response);
-      })
-      .catch(error => {
-        pageUtils.hide('journey_container');
-        reject(error);
-      });
-  });
-}
-
-window.loginWithUsername = loginWithUsername;
-
-async function startJourney(journeyId, params = {}) {
+  const journeyId = getJourneyId();
   if (!journeyId) {
     throw new Error('Journey id is null');
   }
@@ -48,145 +17,127 @@ async function startJourney(journeyId, params = {}) {
   pageUtils.showLoading();
   const idoResponse = await window.tsPlatform.ido.startJourney(journeyId, {
     flowId: flowId(),
-    additionalParams: params,
+    additionalParams: { username, originalClientId, src_interaction },
   });
   pageUtils.hideLoading();
-  localStorage.setItem('journeyId', journeyId);
+  localStorage.setItem('journeyId', journeyId); // save current journey id in local storage
+  document.getElementById('journey_id').value = journeyId; // save current journey id in UI
+
   return await processJourney(idoResponse);
 }
 
+window.loginWithUsername = loginWithUsername;
+
 async function processJourney(lastIdoResponse) {
-  if (!lastIdoResponse) {
-    throw new Error('IDO response is null');
-  }
+  try {
+    if (!lastIdoResponse) {
+      throw new Error('IDO response is null');
+    }
 
-  let idoResponse = lastIdoResponse;
-  let inJourney = true;
+    pageUtils.show('journey_container');
+    let idoResponse = lastIdoResponse;
+    let inJourney = true;
+    let url = null;
 
-  while (inJourney) {
-    console.log(`IDO Response: ${JSON.stringify(idoResponse)}`);
-    // write to local store, non expired. Clean manually if needed
-    // localStorage.setItem(
-    //   'serializedState',
-    //   JSON.stringify({ state: ido.serializeState(), expires: new Date().getTime() + 60 * 1000 }),
-    // );
+    while (inJourney) {
+      console.log(`IDO Response: ${JSON.stringify(idoResponse)}`);
+      // write to local store, non expired. Clean manually if needed
+      localStorage.setItem(
+        'serializedState',
+        JSON.stringify({
+          state: window.tsPlatform.ido.serializeState(),
+          expires: new Date().getTime() + 60 * 1000,
+        }),
+      );
 
-    const journeyStepId = idoResponse?.journeyStepId;
-    const data = idoResponse?.data;
-    const clientResponseOptions = idoResponse?.clientResponseOptions;
-    let clientInput = null;
+      const journeyStepId = idoResponse?.journeyStepId;
+      const data = idoResponse?.data;
+      const clientResponseOptions = idoResponse?.clientResponseOptions;
+      const error_message =
+        data?.json_data?.message || data?.json_data?.error_message || data?.json_data?.error;
+      let clientInput = null;
 
-    if (idoResponse.data?.app_data?.type == 'dynamic_form') {
-      // override stepId lookup and run dynamic form
-      clientInput = await showDynamicForm(data, clientResponseOptions);
-    } else {
-      // journey step id UI implementation lookup
-      switch (journeyStepId) {
-        case IdoJourneyActionType.Information:
-          clientInput = await showInformation(data, clientResponseOptions);
-          break;
+      if (error_message) {
+        window.pageUtils.updateElementText('status', data.data?.json_data['message']);
+      }
+      if (idoResponse.data.json_data?.url) {
+        url = idoResponse.data.json_data?.url;
+        console.log(`Journey returned redirect url: ${url}`);
+      }
 
-        case 'login_page':
-          pageUtils.hide('journey_container');
-          clientInput = await loginPage(data.app_data, clientResponseOptions);
-          pageUtils.show('journey_container');
-          break;
-        case IdoJourneyActionType.DebugBreak:
-          clientInput = await showInformation({
-            title: 'Breakpoint',
-            text: 'Journey is holding on breakpoint',
-          });
-          break;
-        case IdoJourneyActionType.WebAuthnRegistration:
-          // Handle webauthn registration step
-          clientInput = await showInformation({
-            title: 'Webauthn Register action',
-            text: 'About to register a webauthn key',
-          });
-          clientInput.data.webauthn_encoded_result = await window.tsPlatform.webauthn.register(
-            data.username,
-          );
-          break;
-        case 'authenticate_passkey':
-          clientInput = await showAuthentication({
-            title: 'Authenticate with Webauthn action',
-            text: 'About to authenticate using a webauthn key',
-            data: data.app_data,
-          });
-          break;
-        case IdoJourneyActionType.Success:
-          await showInformation({
-            title: 'Success',
-            text: `Journey is completed successfully with token: ${idoResponse.token}`,
-          });
-          inJourney = false;
-          break;
-        case IdoJourneyActionType.Rejection:
-          await showInformation({
-            title: 'Rejection',
-            text: `Journey is rejected with error: ${idoResponse.rejectionReason}`,
-          });
-          inJourney = false;
-          break;
-        default:
-          throw new Error(`Unexpected step id: ${journeyStepId}`);
+      if (idoResponse.data?.app_data?.type == 'dynamic_form') {
+        // override stepId lookup and run dynamic form
+        clientInput = await showDynamicForm(data.app_data, clientResponseOptions);
+      } else {
+        // journey step id UI implementation lookup
+        switch (journeyStepId) {
+          case IdoJourneyActionType.Information:
+            clientInput = await showInformation(data, clientResponseOptions);
+            break;
+          case 'login_page':
+            pageUtils.hide('journey_container');
+            clientInput = await loginPage(data.app_data, clientResponseOptions);
+            pageUtils.show('journey_container');
+            break;
+          case IdoJourneyActionType.DebugBreak:
+            clientInput = await showInformation({
+              title: 'Breakpoint',
+              text: 'Journey is holding on breakpoint',
+            });
+            break;
+          case IdoJourneyActionType.WebAuthnRegistration:
+            // Handle webauthn registration step
+            clientInput = await showInformation({
+              title: 'Webauthn Register action',
+              text: 'About to register a webauthn key',
+            });
+            clientInput.data.webauthn_encoded_result = await window.tsPlatform.webauthn.register(
+              data.username,
+            );
+            break;
+          case IdoJourneyActionType.Success:
+            alert(`Journey is completed successfully with url: ${url}`);
+            inJourney = false;
+            break;
+          case IdoJourneyActionType.Rejection:
+            await showInformation({
+              title: 'Rejection',
+              text: `Journey is rejected with error: ${idoResponse.rejectionReason}`,
+            });
+            inJourney = false;
+            break;
+          default:
+            throw new Error(`Unexpected step id: ${journeyStepId}`);
+        }
+      }
+
+      if (inJourney) {
+        if (!clientInput) {
+          throw new Error('Client input is null');
+        }
+        pageUtils.showLoading();
+        idoResponse = await window.tsPlatform.ido.submitClientResponse(
+          clientInput.option,
+          clientInput.data,
+        );
+        pageUtils.hideLoading();
       }
     }
 
-    if (inJourney) {
-      if (!clientInput) {
-        throw new Error('Client input is null');
-      }
-      pageUtils.showLoading();
-      idoResponse = await ido.submitClientResponse(clientInput.option, clientInput.data);
-      pageUtils.hideLoading();
-    }
+    pageUtils.hide('journey_container');
+    localStorage.removeItem('serializedState'); // remove serialized state from local storage upon journey completion
+    return url;
+  } catch (error) {
+    removeDynamicFormUI('journey_container');
+    pageUtils.hide('journey_container');
+    localStorage.removeItem('serializedState'); // remove serialized state from local storage upon journey completion
+    throw error;
   }
-
-  return idoResponse;
 }
 
 window.processJourney = processJourney;
 
-async function showInformation(actionData) {
-  return new Promise((resolve /*reject*/) => {
-    function submit() {
-      pageUtils.hide('information_form');
-      resolve({
-        option: ClientResponseOptionType.ClientInput,
-        data: { ...actionData?.data },
-      });
-    }
-
-    pageUtils.updateElementText(
-      'information_form_title',
-      actionData?.title || 'Empty title from server',
-    );
-    pageUtils.updateElementText(
-      'information_form_text',
-      actionData?.text || 'Empty text from server',
-    );
-    pageUtils.updateElementText('information_form_button', actionData?.button_text || 'OK');
-    pageUtils.show('information_form');
-
-    // clear all handlers, this handles multiple runs of the same action
-    document.querySelector('#information_form_button').removeEventListener('click', submit);
-
-    // Handle input field and main submit
-    // eslint-disable-next-line no-unused-vars
-    document.querySelector('#information_form_button').addEventListener('click', submit);
-  });
-}
-
-async function showDynamicForm(actionData, responseOptions) {
-  const df_div = createDynamicFormUI(actionData?.app_data, responseOptions);
-  addDynamicFormUI(df_div);
-  const clientInput = await startDynamicForm();
-  removeDynamicFormUI();
-  return clientInput;
-}
-
-async function loginPage(actionData /*, responseOptions*/) {
+async function loginPage(actionData, responseOptions) {
   const isAutofillSupported = await window.tsPlatform.webauthn.isAutofillSupported();
   if (actionData.username) {
     document.getElementById('username').value = actionData.username;
@@ -223,6 +174,11 @@ async function loginPage(actionData /*, responseOptions*/) {
       try {
         await window.tsPlatform.webauthn.authenticate.autofill.abort();
         const username = document.getElementById('username').value;
+        if (!username) {
+          window.pageUtils.updateElementText('status', `Please enter a username`);
+          document.getElementById('username').focus();
+          return;
+        }
         const webauthn_encoded_result = await window.tsPlatform.webauthn.authenticate.modal(
           username,
         );
@@ -233,68 +189,77 @@ async function loginPage(actionData /*, responseOptions*/) {
       }
     }
 
+    async function otherOptions() {
+      await window.tsPlatform.webauthn.authenticate.autofill.abort();
+      const username = document.getElementById('username').value;
+      if (!username) {
+        window.pageUtils.updateElementText('status', `Please enter a username`);
+        document.getElementById('username').focus();
+        return;
+      }
+      pageUtils.hide('login_form');
+      resolve({
+        option: 'other_options',
+        data: {
+          username: username,
+        },
+      });
+    }
+
     // clear all handlers, this handles multiple runs of the same action
     document.querySelector('#passkey_button').removeEventListener('click', passkeyButton);
     document.querySelector('#passkey_button').addEventListener('click', passkeyButton);
+
+    if (responseOptions.has('other_options')) {
+      // clear all handlers, this handles multiple runs of the same action
+      document.querySelector('#other_options').removeEventListener('click', otherOptions);
+      document.querySelector('#other_options').addEventListener('click', otherOptions);
+      pageUtils.show('other_options');
+    }
 
     pageUtils.show('login_form');
   });
 }
 
-async function showAuthentication(actionData) {
-  return new Promise((resolve /*reject*/) => {
-    async function submit() {
-      const webauthn_encoded_result = await window.tsPlatform.webauthn.authenticate.modal(
-        actionData.data.username,
-      );
-      pageUtils.hide('authentication_form');
-      pageUtils.hide('action_response_error');
-      resolve({
-        option: ClientResponseOptionType.ClientInput,
-        data: {
-          webauthn_encoded_result,
-          type: 'webauthn',
-        },
-      });
+async function showInformation(actionData, responseOptions) {
+  const app_data = actionData;
+  app_data['subtitle'] = actionData.title;
+  delete app_data['title'];
+  app_data['type'] = 'dynamic_form';
+  app_data['actions'] = [];
+  if (actionData.text) {
+    app_data['actions'].push({ type: 'message', id: 'message', name: actionData.text });
+  }
+  return showDynamicForm(app_data, responseOptions);
+}
+
+async function showDynamicForm(app_data, responseOptions) {
+  const df_div = createDynamicFormUI(app_data, responseOptions);
+  addDynamicFormUI(df_div, 'journey_container');
+  const clientInput = await startDynamicForm();
+  removeDynamicFormUI('journey_container');
+  return clientInput;
+}
+
+export function getJourneyId() {
+  try {
+    const journeyIdField = document.getElementById('journey_id');
+    if (!journeyIdField.value) {
+      if (localStorage.getItem('journeyId')) {
+        journeyIdField.value = localStorage.getItem('journeyId');
+      } else if (window.env.VITE_TS_FLEXIDO_JOURNEY_ID) {
+        journeyIdField.value = window.env.VITE_TS_FLEXIDO_JOURNEY_ID;
+      }
     }
+    // save journey id in local storage
+    localStorage.setItem('journeyId', journeyIdField.value);
+    return journeyIdField.value;
+  } catch (error) {
+    localStorage.removeItem('journeyId');
+    throw error;
+  }
+}
 
-    function escape() {
-      pageUtils.hide('authentication_form');
-      pageUtils.hide('action_response_error');
-      resolve({
-        option: 'escape_1',
-        data: {},
-      });
-    }
-    function cancel() {
-      pageUtils.hide('authentication_form');
-      pageUtils.hide('action_response_error');
-      resolve({
-        option: ClientResponseOptionType.Cancel,
-        data: {},
-      });
-    }
-
-    pageUtils.updateElementText(
-      'authentication_form_title',
-      actionData?.title || 'Empty title from server',
-    );
-    pageUtils.updateElementText(
-      'authentication_form_text',
-      actionData?.text || 'Empty text from server',
-    );
-    pageUtils.updateElementText('authenticate_button', actionData?.button_text || 'OK');
-    pageUtils.show('authentication_form');
-
-    // clear all handlers, this handles multiple runs of the same action
-    document.querySelector('#authenticate_button').removeEventListener('click', submit);
-    document.querySelector('#escape_button').removeEventListener('click', escape);
-    document.querySelector('#cancel_button').removeEventListener('click', cancel);
-
-    // Handle input field and main submit
-    // eslint-disable-next-line no-unused-vars
-    document.querySelector('#authenticate_button').addEventListener('click', submit);
-    document.querySelector('#escape_button').addEventListener('click', escape);
-    document.querySelector('#cancel_button').addEventListener('click', cancel);
-  });
+export function flowId() {
+  return `orc_${Math.floor(Math.random() * 1000000000)}`;
 }

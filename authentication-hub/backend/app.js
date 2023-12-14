@@ -4,6 +4,8 @@ import logger from 'morgan';
 import crypto from 'crypto';
 
 import hubRouter from './routes/hub';
+import carsRouter from './routes/cars';
+import airRouter from './routes/air';
 
 const app = express();
 
@@ -25,10 +27,12 @@ app.use(
 
 const indexRouter = Router();
 indexRouter.get('/', (req, res) => {
-  res.redirect(`/hub/`);
+  res.redirect(`/air/`);
 });
 
 app.use('/', indexRouter);
 app.use('/hub', hubRouter);
+app.use('/cars', carsRouter);
+app.use('/air', airRouter);
 
 export const handler = app;
