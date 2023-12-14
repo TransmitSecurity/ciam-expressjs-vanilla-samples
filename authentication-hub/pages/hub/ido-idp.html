@@ -1,0 +1,143 @@
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/hub/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://platform-websdk.transmitsecurity.io/platform-websdk/latest/ts-platform-websdk.js"
+      id="platform-sdk"
+    ></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME Login</title>
+    <script type="module" src="./init.js"></script>
+    <script type="module" src="./ido/ido.js"></script>
+    <script>
+      async function loadPage() {
+        const clientId = window.env.VITE_TS_CLIENT_ID_SSOHUB;
+        window.pageUtils.updateElementText('clientId', clientId);
+        if (localStorage.getItem('username')) {
+          document.getElementById('username').value = localStorage.getItem('username');
+        }
+        await window.initIDO();
+
+        const state = localStorage.getItem('serializedState');
+        const parsedState = state ? JSON.parse(state) : null;
+        if (parsedState && parsedState.expires > new Date().getTime()) {
+          // continue processing pending journey
+          const lastIdoResponse = window.tsPlatform.ido.restoreFromSerializedState(
+            parsedState.state,
+          );
+          window.pageUtils.hide('login_form');
+          window.pageUtils.show('journey_container');
+          const url = await window.processJourney(lastIdoResponse);
+          // Redirect the user to finish the authentication
+          clearAndRedirect(url);
+        } else {
+          // start new journey
+          await loginWithIDO();
+        }
+      }
+
+      async function loginWithIDO() {
+        event.preventDefault();
+        try {
+          const username = document.getElementById('username').value;
+          if (!username) {
+            document.getElementById('username').focus();
+          } else {
+            localStorage.setItem('username', username);
+          }
+
+          const queryParams = new URLSearchParams(window.location.search);
+          const originClientId = queryParams.get('client_id');
+          const src_interaction = queryParams.get('src_interaction');
+          window.pageUtils.hide('login_form');
+          const url = await window.loginWithUsername(username, originClientId, src_interaction);
+          // Redirect the user to finish the authentication
+          // alert(`journey completed successfully, redirecting to ${url}`);
+          window.pageUtils.hide('journey_container');
+          window.pageUtils.show('login_form');
+          clearAndRedirect(url);
+        } catch (ex) {
+          window.pageUtils.hide('journey_container');
+          window.pageUtils.show('login_form');
+          window.pageUtils.updateElementText('status', `Error during login: ${ex}`);
+        }
+      }
+
+      // Clear the serialized state from local storage and redirect to the start page
+      function clearAndRedirect(href) {
+        localStorage.removeItem('journeyId');
+        localStorage.removeItem('serializedState');
+        if (href) {
+          window.location.replace(href);
+        }
+      }
+    </script>
+  </head>
+
+  <body onload="loadPage()">
+    <div class="page" id="page">
+      <header>
+        <a href="/hub/"><img src="/hub/acme-logo.svg" alt="ACME" /></a>
+        <div id="clientIdDiv" class="metadata">Client ID: <span id="clientId"></span></div>
+        <div>
+          <a
+            id="back_to_air"
+            style="text-decoration: underline; cursor: pointer"
+            onclick="clearAndRedirect('/air/')"
+          >
+            Air
+          </a>
+          /
+          <a
+            id="back_to_cars"
+            style="text-decoration: underline; cursor: pointer"
+            onclick="clearAndRedirect('/cars/')"
+          >
+            Cars
+          </a>
+        </div>
+      </header>
+      <main>
+        <form id="login_form" class="content column gap">
+          <h3>Welcome</h3>
+          <input
+            type="text"
+            name="username"
+            id="username"
+            autocomplete="username webauthn"
+            placeholder="Enter username"
+          />
+          <input type="password" name="password" id="password" placeholder="Enter password" />
+          <button class="full-width" type="submit">Login with Password</button>
+          <button id="passkey_button" class="full-width" type="button">Login with Passkey</button>
+          <a id="other_options" class="hidden" style="text-decoration: underline; cursor: pointer"
+            >Other authentication options</a
+          >
+          <div id="status"></div>
+          <div class="row">
+            Don&apos;t have an account? <a href="/pages/hub/signup.html">Sign up</a>
+          </div>
+        </form>
+        <div id="journey_container" class="content hidden">
+          <div id="custom_journey" class="column gap hidden">
+            <input
+              id="journey_id"
+              type="text"
+              class="full-width"
+              autocomplete="true"
+              placeholder="Journey Identifier"
+            />
+            <button class="full-width" type="button" onclick="loginWithIDO()">Start Journey</button>
+            <div class="divider"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

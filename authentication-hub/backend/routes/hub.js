@@ -16,6 +16,12 @@ hubRouter.get(['/', '/login'], async function (req, res) {
   res.redirect(`/pages/hub/login.html?${params.toString()}`);
 });
 
+// Render login page
+hubRouter.get(['/ido-idp'], async function (req, res) {
+  const params = new URLSearchParams(req.query);
+  res.redirect(`/pages/hub/ido-idp.html?${params.toString()}`);
+});
+
 // Authenticate a user with a password
 hubRouter.post('/login', common.utils.rateLimiter(), async function (req, res) {
   console.log(JSON.stringify(req.body));
