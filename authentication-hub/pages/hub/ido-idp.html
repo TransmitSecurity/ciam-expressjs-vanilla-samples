@@ -27,43 +27,33 @@
         const state = localStorage.getItem('serializedState');
         const parsedState = state ? JSON.parse(state) : null;
         if (parsedState && parsedState.expires > new Date().getTime()) {
-          // continue processing pending journey
-          const lastIdoResponse = window.tsPlatform.ido.restoreFromSerializedState(
-            parsedState.state,
-          );
-          window.pageUtils.hide('login_form');
-          window.pageUtils.show('journey_container');
-          const url = await window.processJourney(lastIdoResponse);
-          // Redirect the user to finish the authentication
-          clearAndRedirect(url);
+          await resumeJourney(parsedState); // continue processing pending journey
         } else {
-          // start new journey
-          await loginWithIDO();
+          await newJourney(); // start new journey
         }
       }
 
-      async function loginWithIDO() {
+      async function resumeJourney(parsedState) {
+        const lastIdoResponse = window.tsPlatform.ido.restoreFromSerializedState(parsedState.state);
+        try {
+          const url = await window.processJourney(lastIdoResponse);
+          clearAndRedirect(url);
+        } catch (ex) {
+          window.pageUtils.show('login_form');
+          window.pageUtils.updateElementText('status', `Error during login: ${ex}`);
+        }
+      }
+
+      async function newJourney() {
         event.preventDefault();
         try {
-          const username = document.getElementById('username').value;
-          if (!username) {
-            document.getElementById('username').focus();
-          } else {
-            localStorage.setItem('username', username);
-          }
-
+          // Prepare journey params
           const queryParams = new URLSearchParams(window.location.search);
           const originClientId = queryParams.get('client_id');
           const src_interaction = queryParams.get('src_interaction');
-          window.pageUtils.hide('login_form');
-          const url = await window.loginWithUsername(username, originClientId, src_interaction);
-          // Redirect the user to finish the authentication
-          // alert(`journey completed successfully, redirecting to ${url}`);
-          window.pageUtils.hide('journey_container');
-          window.pageUtils.show('login_form');
+          const url = await window.startJourney(originClientId, src_interaction);
           clearAndRedirect(url);
         } catch (ex) {
-          window.pageUtils.hide('journey_container');
           window.pageUtils.show('login_form');
           window.pageUtils.updateElementText('status', `Error during login: ${ex}`);
         }
@@ -116,6 +106,12 @@
           <input type="password" name="password" id="password" placeholder="Enter password" />
           <button class="full-width" type="submit">Login with Password</button>
           <button id="passkey_button" class="full-width" type="button">Login with Passkey</button>
+          <button id="create_hub_user" class="full-width hidden" type="button">
+            Create Hub User
+          </button>
+          <button id="create_air_user" class="full-width hidden" type="button">
+            Create Air User
+          </button>
           <a id="other_options" class="hidden" style="text-decoration: underline; cursor: pointer"
             >Other authentication options</a
           >
@@ -133,7 +129,7 @@
               autocomplete="true"
               placeholder="Journey Identifier"
             />
-            <button class="full-width" type="button" onclick="loginWithIDO()">Start Journey</button>
+            <button class="full-width" type="button" onclick="newJourney()">Start Journey</button>
             <div class="divider"></div>
           </div>
         </div>

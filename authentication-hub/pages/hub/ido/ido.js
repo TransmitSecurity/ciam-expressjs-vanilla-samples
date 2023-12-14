@@ -7,7 +7,7 @@ import {
 } from './dynamic_form.js';
 import { ClientResponseOptionType, IdoJourneyActionType } from './sdk_interface.js';
 
-async function loginWithUsername(username, originalClientId, src_interaction) {
+async function startJourney(originalClientId, src_interaction) {
   const journeyId = getJourneyId();
   if (!journeyId) {
     throw new Error('Journey id is null');
@@ -17,7 +17,7 @@ async function loginWithUsername(username, originalClientId, src_interaction) {
   pageUtils.showLoading();
   const idoResponse = await window.tsPlatform.ido.startJourney(journeyId, {
     flowId: flowId(),
-    additionalParams: { username, originalClientId, src_interaction },
+    additionalParams: { originalClientId, src_interaction },
   });
   pageUtils.hideLoading();
   localStorage.setItem('journeyId', journeyId); // save current journey id in local storage
@@ -26,7 +26,7 @@ async function loginWithUsername(username, originalClientId, src_interaction) {
   return await processJourney(idoResponse);
 }
 
-window.loginWithUsername = loginWithUsername;
+window.startJourney = startJourney;
 
 async function processJourney(lastIdoResponse) {
   try {
@@ -34,6 +34,7 @@ async function processJourney(lastIdoResponse) {
       throw new Error('IDO response is null');
     }
 
+    pageUtils.hide('login_form');
     pageUtils.show('journey_container');
     let idoResponse = lastIdoResponse;
     let inJourney = true;
@@ -128,6 +129,11 @@ async function processJourney(lastIdoResponse) {
     localStorage.removeItem('serializedState'); // remove serialized state from local storage upon journey completion
     return url;
   } catch (error) {
+    pageUtils.hideLoading();
+    await showInformation({
+      title: 'Rejection',
+      text: `Journey is rejected with error: ${error}`,
+    });
     removeDynamicFormUI('journey_container');
     pageUtils.hide('journey_container');
     localStorage.removeItem('serializedState'); // remove serialized state from local storage upon journey completion
@@ -146,6 +152,7 @@ async function loginPage(actionData, responseOptions) {
   return new Promise((resolve /*reject*/) => {
     function submitPasskeyResult(webauthn_encoded_result) {
       const username = document.getElementById('username').value;
+      localStorage.setItem('username', username);
       pageUtils.hide('login_form');
       resolve({
         option: ClientResponseOptionType.ClientInput,
@@ -179,6 +186,8 @@ async function loginPage(actionData, responseOptions) {
           document.getElementById('username').focus();
           return;
         }
+        localStorage.setItem('username', username);
+
         const webauthn_encoded_result = await window.tsPlatform.webauthn.authenticate.modal(
           username,
         );
@@ -197,6 +206,8 @@ async function loginPage(actionData, responseOptions) {
         document.getElementById('username').focus();
         return;
       }
+      localStorage.setItem('username', username);
+
       pageUtils.hide('login_form');
       resolve({
         option: 'other_options',
@@ -204,6 +215,48 @@ async function loginPage(actionData, responseOptions) {
           username: username,
         },
       });
+    }
+
+    async function createHubUser() {
+      try {
+        await window.tsPlatform.webauthn.authenticate.autofill.abort();
+        const username = document.getElementById('username').value;
+        if (!username) {
+          window.pageUtils.updateElementText('status', `Please enter a username`);
+          document.getElementById('username').focus();
+          return;
+        }
+        localStorage.setItem('username', username);
+        pageUtils.hide('login_form');
+        resolve({
+          option: 'create_hub_user',
+          data: { username: username },
+        });
+      } catch (error) {
+        if (error.errorCode === 'webauthn_authentication_canceled') return;
+        window.pageUtils.updateElementText('status', `Error during passkey login: ${error}`);
+      }
+    }
+
+    async function createAirUser() {
+      try {
+        await window.tsPlatform.webauthn.authenticate.autofill.abort();
+        const username = document.getElementById('username').value;
+        if (!username) {
+          window.pageUtils.updateElementText('status', `Please enter a username`);
+          document.getElementById('username').focus();
+          return;
+        }
+        localStorage.setItem('username', username);
+        pageUtils.hide('login_form');
+        resolve({
+          option: 'create_air_user',
+          data: { username: username },
+        });
+      } catch (error) {
+        if (error.errorCode === 'webauthn_authentication_canceled') return;
+        window.pageUtils.updateElementText('status', `Error during passkey login: ${error}`);
+      }
     }
 
     // clear all handlers, this handles multiple runs of the same action
@@ -215,6 +268,20 @@ async function loginPage(actionData, responseOptions) {
       document.querySelector('#other_options').removeEventListener('click', otherOptions);
       document.querySelector('#other_options').addEventListener('click', otherOptions);
       pageUtils.show('other_options');
+    }
+
+    if (responseOptions.has('create_hub_user')) {
+      // clear all handlers, this handles multiple runs of the same action
+      document.querySelector('#create_hub_user').removeEventListener('click', createHubUser);
+      document.querySelector('#create_hub_user').addEventListener('click', createHubUser);
+      pageUtils.show('create_hub_user');
+    }
+
+    if (responseOptions.has('create_air_user')) {
+      // clear all handlers, this handles multiple runs of the same action
+      document.querySelector('#create_air_user').removeEventListener('click', createAirUser);
+      document.querySelector('#create_air_user').addEventListener('click', createAirUser);
+      pageUtils.show('create_air_user');
     }
 
     pageUtils.show('login_form');
@@ -230,7 +297,11 @@ async function showInformation(actionData, responseOptions) {
   if (actionData.text) {
     app_data['actions'].push({ type: 'message', id: 'message', name: actionData.text });
   }
-  return showDynamicForm(app_data, responseOptions);
+  await showDynamicForm(app_data, responseOptions);
+  return {
+    option: ClientResponseOptionType.ClientInput,
+    data: {},
+  };
 }
 
 async function showDynamicForm(app_data, responseOptions) {

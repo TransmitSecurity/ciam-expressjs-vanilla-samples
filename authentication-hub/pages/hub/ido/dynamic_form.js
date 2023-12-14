@@ -14,8 +14,7 @@ export function addDynamicFormUI(df_div, journey_container_id = 'journey_contain
   removeDynamicFormUI(journey_container_id);
   const rootDiv = document.getElementById(journey_container_id);
   rootDiv.appendChild(df_div);
-  df_div.classList.remove('hidden');
-  df_div.style.display = 'block';
+  window.pageUtils.show(df_div.id);
 }
 
 // Remove dynamic form from the page
