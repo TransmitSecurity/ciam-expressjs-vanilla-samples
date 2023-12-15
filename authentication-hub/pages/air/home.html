@@ -12,6 +12,7 @@
     <title>ACME AIR</title>
     <script type="module" src="./init.js"></script>
   </head>
+
   <body onload="loadPage()">
     <div class="page">
       <header>
@@ -50,12 +51,17 @@
               Logout
             </button>
           </div>
-          <p class="footer">Looking for a rental car? Try <a href="/cars/">here</a></p>
+          <p class="footer">
+            Looking for a rental car? Try <a id="cars_link" href="/cars/">here</a>
+          </p>
         </div>
       </main>
     </div>
     <script>
+      const loginRequired = false;
+
       async function loadPage() {
+        window.pageUtils.showLoading();
         const clientId = window.env.VITE_TS_CLIENT_ID_SSOAIR;
         window.pageUtils.updateElementText('clientId', clientId);
 
@@ -64,19 +70,28 @@
         setUserLoggedIn(userData);
 
         // Print a welcome message
-        if (userData) {
-          window.pageUtils.updateElementText('sub', userData.sub);
+        if (!userData) {
+          // do silent login if sso is enabled
+          const queryParams = new URLSearchParams(window.location.search);
+          if (queryParams.has('silentLogin')) {
+            window.pageUtils.hideLoading();
+            login();
+          }
         }
+        window.pageUtils.hideLoading();
       }
 
-      function setUserLoggedIn(loggedIn) {
-        console.log('Set user logged in', loggedIn);
-        if (loggedIn) {
+      function setUserLoggedIn(userData) {
+        console.log('Set user logged in', userData);
+        if (userData) {
+          window.pageUtils.updateElementText('sub', userData.sub);
           window.pageUtils.hide('loginDiv');
           window.pageUtils.show('logoutDiv');
+          document.getElementById('cars_link').href = '/cars?sso=true';
         } else {
           window.pageUtils.show('loginDiv');
           window.pageUtils.hide('logoutDiv');
+          document.getElementById('cars_link').href = '/cars/';
         }
       }
 
@@ -96,12 +111,12 @@
           response_type: 'code',
           redirect_uri: window.env.VITE_TS_REDIRECT_URI_SSOAIR,
           acr_values: 'urn:transmit:centralized',
+          resource: window.env.VITE_SSO_RESOURCE_URL,
           createNewUser: 'true',
           claims,
         });
         console.log(`queryParams: ${queryParams.toString()}`);
 
-        // resource: window.env.VITE_SSO_RESOURCE_URL,
         const url = `${
           window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io'
         }/oidc/auth?${queryParams.toString()}`;

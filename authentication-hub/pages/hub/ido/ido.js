@@ -59,7 +59,7 @@ async function processJourney(lastIdoResponse) {
       let clientInput = null;
 
       if (error_message) {
-        window.pageUtils.updateElementText('status', data.data?.json_data['message']);
+        window.pageUtils.updateElementText('status', error_message);
       }
       if (idoResponse.data.json_data?.url) {
         url = idoResponse.data.json_data?.url;
@@ -150,6 +150,30 @@ async function loginPage(actionData, responseOptions) {
   }
 
   return new Promise((resolve /*reject*/) => {
+    // Handle form submission
+    document.getElementById('login_form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const obj = Object.fromEntries(formData);
+      if (obj.password == null || obj.password == '') {
+        window.pageUtils.updateElementText('status', `Please enter a password`);
+        return;
+      }
+      if (obj.username == null || obj.username == '') {
+        window.pageUtils.updateElementText('status', `Please enter a username`);
+        return;
+      }
+      // output as an object
+      console.log(obj);
+      pageUtils.hide('login_form');
+      // resolve here...
+      resolve({
+        option: ClientResponseOptionType.ClientInput, // ClientInput is used to return user input
+        data: obj,
+      });
+    });
+
     function submitPasskeyResult(webauthn_encoded_result) {
       const username = document.getElementById('username').value;
       localStorage.setItem('username', username);
@@ -217,7 +241,7 @@ async function loginPage(actionData, responseOptions) {
       });
     }
 
-    async function createHubUser() {
+    async function escapeOption() {
       try {
         await window.tsPlatform.webauthn.authenticate.autofill.abort();
         const username = document.getElementById('username').value;
@@ -251,8 +275,8 @@ async function loginPage(actionData, responseOptions) {
 
     if (responseOptions.has('escape_option')) {
       // clear all handlers, this handles multiple runs of the same action
-      document.querySelector('#escape_option').removeEventListener('click', createHubUser);
-      document.querySelector('#escape_option').addEventListener('click', createHubUser);
+      document.querySelector('#escape_option').removeEventListener('click', escapeOption);
+      document.querySelector('#escape_option').addEventListener('click', escapeOption);
       document.querySelector('#escape_option').innerText =
         responseOptions.get('escape_option').label;
       pageUtils.show('escape_option');

@@ -13,6 +13,9 @@ airRouter.get(['/', '/home'], async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   console.log('==== REQUEST URL: ', req.url);
   const params = new URLSearchParams(req.query);
+  if (params.has('sso') && !req.session.airTokens) {
+    params.append('silentLogin', 'true');
+  }
   res.redirect(`/pages/air/home.html?${params.toString()}`);
 });
 
