@@ -43,7 +43,12 @@
       }
 
       async function passkeyModal() {
-        await abortPasskeyAutofill();
+        const userAgent = window.navigator.userAgent;
+        console.log('userAgent: ', userAgent);
+        if (!userAgent.includes('safari')) {
+          await abortPasskeyAutofill();
+        }
+
         const username = document.getElementById('passkeyInput').value;
 
         try {
