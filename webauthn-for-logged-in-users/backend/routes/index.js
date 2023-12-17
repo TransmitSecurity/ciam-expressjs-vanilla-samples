@@ -43,6 +43,16 @@ router.post('/token', async function (req, res) {
       },
       body: JSON.stringify({
         webauthn_encoded_result: webauthnEncodedResult,
+        claims: {
+          id_token: {
+            approval_data: {
+              payee: 'Idan',
+              payment_amount: 10000,
+              payment_currency: 'NIS',
+              payment_method: 'Credit Card',
+            },
+          },
+        },
       }),
     };
 
