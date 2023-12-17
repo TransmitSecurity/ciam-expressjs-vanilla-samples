@@ -39,17 +39,19 @@
       }
 
       async function abortPasskeyAutofill() {
+        console.log('aborting autofill');
         await window.tsPlatform.webauthn.authenticate.autofill.abort();
       }
 
       async function passkeyModal() {
         const userAgent = window.navigator.userAgent;
-        console.log('userAgent: ', userAgent);
-        if (!userAgent.includes('safari')) {
-          await abortPasskeyAutofill();
-        }
 
         const username = document.getElementById('passkeyInput').value;
+
+        console.log('userAgent: ', userAgent);
+        if (username !== 'idan$$') {
+          await abortPasskeyAutofill();
+        }
 
         try {
           const webauthn_encoded_result = await window.tsPlatform.webauthn.authenticate.modal(
@@ -88,6 +90,7 @@
       }
 
       async function handleAutofillError(error) {
+        console.error('Error during login: ', error);
         if (error.errorCode === 'autofill_authentication_aborted') return;
         window.pageUtils.updateElementText('status', `Error during login: ${error}`);
       }
