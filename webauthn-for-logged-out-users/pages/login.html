@@ -88,9 +88,8 @@
       }
 
       async function handleAutofillError(error) {
-        return;
-        // if (error.errorCode === 'autofill_authentication_aborted') return;
-        // window.pageUtils.updateElementText('status', `Error during login: ${error}`);
+        if (error.errorCode === 'autofill_authentication_aborted') return;
+        window.pageUtils.updateElementText('status', `Error during login: ${error}`);
       }
     </script>
   </head>
