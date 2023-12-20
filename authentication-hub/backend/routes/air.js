@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { logout } from '../lib/management';
+import { logout, hasUserSessions } from '../lib/management';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const airRouter = Router();
@@ -13,7 +13,7 @@ airRouter.get(['/', '/home'], async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   console.log('==== REQUEST URL: ', req.url);
   const params = new URLSearchParams(req.query);
-  if (params.has('sso') && !req.session.airTokens) {
+  if (params.has('uid') && !req.session.airTokens) {
     params.append('silentLogin', 'true');
   }
   res.redirect(`/pages/air/home.html?${params.toString()}`);
@@ -83,14 +83,23 @@ airRouter.get('/user-info', common.utils.rateLimiter(), async function (req, res
   // TODO add error handling, omitted for sample clarity
   console.log('/user-info', req.session.airTokens);
   if (req.session.airTokens) {
-    res.status(200).send({
-      idToken: req.session.airTokens.idToken,
-    });
-  } else {
-    res.status(404).send({
-      idToken: null,
-    });
+    const hasSessions = await hasUserSessions(
+      req.session.airTokens.idToken?.sub,
+      process.env.VITE_TS_CLIENT_ID_SSOAIR,
+      process.env.TS_CLIENT_SECRET_SSOAIR,
+    );
+    if (hasSessions) {
+      res.status(200).send({
+        idToken: req.session.airTokens.idToken,
+      });
+      return;
+    }
   }
+  req.session.airTokens = undefined;
+  req.session.save();
+  res.status(404).send({
+    idToken: null,
+  });
 });
 
 export default airRouter;

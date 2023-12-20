@@ -69,14 +69,11 @@
         const userData = await userInfo();
         setUserLoggedIn(userData);
 
-        // Print a welcome message
-        if (!userData) {
-          // do silent login if sso is enabled
-          const queryParams = new URLSearchParams(window.location.search);
-          if (queryParams.has('silentLogin')) {
-            window.pageUtils.hideLoading();
-            login();
-          }
+        // do silent login if sso is enabled
+        const queryParams = new URLSearchParams(window.location.search);
+        if (!userData && queryParams.has('silentLogin')) {
+          login();
+          return;
         }
         window.pageUtils.hideLoading();
       }
@@ -87,7 +84,7 @@
           window.pageUtils.updateElementText('sub', userData.sub);
           window.pageUtils.hide('loginDiv');
           window.pageUtils.show('logoutDiv');
-          document.getElementById('cars_link').href = '/cars?sso=true';
+          document.getElementById('cars_link').href = '/cars?uid=' + userData.sub;
         } else {
           window.pageUtils.show('loginDiv');
           window.pageUtils.hide('logoutDiv');
@@ -119,7 +116,7 @@
 
         const url = `${
           window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io'
-        }/oidc/auth?${queryParams.toString()}`;
+        }/cis/oidc/auth?${queryParams.toString()}`;
 
         // Request centralized login from the authentication hub
         // See: https://developer.transmitsecurity.com/guides/user/authentication_hub/#3-request-centralized-login

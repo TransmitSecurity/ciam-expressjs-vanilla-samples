@@ -86,7 +86,7 @@
           window.pageUtils.updateElementText('sub', userData.sub);
           window.pageUtils.hide('loginDiv');
           window.pageUtils.show('logoutDiv');
-          document.getElementById('air_link').href = '/air?sso=true';
+          document.getElementById('air_link').href = '/air?uid=' + userData.sub;
         } else {
           window.pageUtils.show('loginDiv');
           window.pageUtils.hide('logoutDiv');
@@ -116,7 +116,7 @@
         });
         const url = `${
           window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io'
-        }/oidc/auth?${queryParams.toString()}`;
+        }/cis/oidc/auth?${queryParams.toString()}`;
 
         // Request centralized login from the authentication hub
         // See: https://developer.transmitsecurity.com/guides/user/authentication_hub/#3-request-centralized-login

@@ -22,6 +22,7 @@ export const config = {
     createUser: `${baseUrl()}/cis/v1/users`,
     getUser: userId => `${baseUrl()}/cis/v1/users/${userId}`,
     getUserByUsername: userName => `${baseUrl()}/cis/v1/users/username/${userName}`,
+    getUserSessions: userId => `${baseUrl()}/cis/v1/sessions/${userId}`,
 
     passwordLogin: `${baseUrl()}/cis/v1/auth/password/login`,
     passwordBackendAuthentication: `${baseUrl()}/cis/v1/auth/password/authenticate`,

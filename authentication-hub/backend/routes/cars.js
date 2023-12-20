@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { logout } from '../lib/management';
+import { logout, hasUserSessions } from '../lib/management';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const carsRouter = Router();
@@ -13,7 +13,7 @@ carsRouter.get(['/', '/home'], async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   console.log('==== REQUEST URL: ', req.url);
   const params = new URLSearchParams(req.query);
-  if (params.has('sso') && !req.session.carTokens) {
+  if (params.has('uid') && !req.session.carTokens) {
     params.append('silentLogin', 'true');
   }
   res.redirect(`/pages/cars/home.html?${params.toString()}`);
@@ -83,14 +83,25 @@ carsRouter.get('/user-info', async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   console.log('/user-info', req.session.carTokens);
   if (req.session.carTokens) {
-    res.status(200).send({
-      idToken: req.session.carTokens.idToken,
-    });
-  } else {
-    res.status(404).send({
-      idToken: null,
-    });
+    const hasSessions = await hasUserSessions(
+      req.session.carTokens.idToken.sub,
+      process.env.VITE_TS_CLIENT_ID_SSOCARS,
+      process.env.TS_CLIENT_SECRET_SSOCARS,
+    );
+
+    if (hasSessions) {
+      res.status(200).send({
+        idToken: req.session.carTokens.idToken,
+      });
+      return;
+    }
   }
+
+  req.session.carTokens = undefined;
+  req.session.save();
+  res.status(404).send({
+    idToken: null,
+  });
 });
 
 export default carsRouter;
