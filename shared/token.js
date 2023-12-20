@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 import jwt from 'jsonwebtoken';
 import jwkToPem from 'jwk-to-pem';
+import * as https from 'https';
 
 /**
  * Obtain a client access token for API authorization
@@ -47,12 +48,17 @@ export async function getUserTokens(authCode, client_id, client_secret, redirect
     redirect_uri: redirect_uri || process.env.TS_REDIRECT_URI,
   });
 
+  const agent = new https.Agent({
+    rejectUnauthorized: false,
+  });
+
   const options = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: params.toString(),
+    agent,
   };
   console.log(JSON.stringify(options));
 
