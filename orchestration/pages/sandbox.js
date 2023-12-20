@@ -104,6 +104,7 @@ async function handleJourneyActionUI(idoResponse) {
       clientResponse = await showAuthentication({
         title: 'Authenticate with Webauthn action',
         text: 'About to authenticate using a webauthn key',
+        idoResponse,
       });
       break;
     case IdoJourneyActionType.DrsTriggerAction:
