@@ -1,5 +1,4 @@
-import { pageUtils } from '../../../shared/pageUtils.js';
-import { executeJourney, flowId, showInformation } from '../commonUtils.js';
+import { executeJourney, flowId, showAuthentication, showInformation } from '../commonUtils.js';
 import { ClientResponseOptionType, IdoJourneyActionType } from '../sdk_interface.js';
 
 // Register event handlers for buttons
@@ -43,6 +42,7 @@ function onClick() {
 }
 
 async function handleJourneyActionUI(idoResponse) {
+  console.log('idoResponse', idoResponse);
   const actionData = idoResponse?.data;
   const stepId = idoResponse?.journeyStepId;
   const responseOptions = idoResponse?.clientResponseOptions || new Map();
@@ -65,6 +65,7 @@ async function handleJourneyActionUI(idoResponse) {
       clientResponse = await showAuthentication({
         title: 'Authenticate with Webauthn action',
         text: 'About to authenticate using a webauthn key',
+        idoResponse,
       });
       break;
     default:
@@ -97,63 +98,5 @@ function handleCollectUsernameForm() {
     );
 
     document.getElementById('collect_username').style.display = 'block';
-  });
-}
-
-async function showAuthentication(actionData) {
-  return new Promise((resolve /*reject*/) => {
-    async function submit() {
-      const webauthn_encoded_result = await window.tsPlatform.webauthn.authenticate.modal(
-        actionData.username,
-      );
-      pageUtils.hide('authentication_form');
-      pageUtils.hide('action_response_error');
-      resolve({
-        option: ClientResponseOptionType.ClientInput,
-        data: {
-          webauthn_encoded_result,
-          type: 'webauthn',
-        },
-      });
-    }
-
-    function escape() {
-      pageUtils.hide('authentication_form');
-      pageUtils.hide('action_response_error');
-      resolve({
-        option: 'escape_1',
-        data: {},
-      });
-    }
-    function cancel() {
-      pageUtils.hide('authentication_form');
-      pageUtils.hide('action_response_error');
-      resolve({
-        option: ClientResponseOptionType.Cancel,
-        data: {},
-      });
-    }
-
-    pageUtils.updateElementText(
-      'authentication_form_title',
-      actionData?.title || 'Empty title from server',
-    );
-    pageUtils.updateElementText(
-      'authentication_form_text',
-      actionData?.text || 'Empty text from server',
-    );
-    pageUtils.updateElementText('authenticate_button', actionData?.button_text || 'OK');
-    pageUtils.show('authentication_form');
-
-    // clear all handlers, this handles multiple runs of the same action
-    document.querySelector('#authenticate_button').removeEventListener('click', submit);
-    document.querySelector('#escape_button').removeEventListener('click', escape);
-    document.querySelector('#cancel_button').removeEventListener('click', cancel);
-
-    // Handle input field and main submit
-    // eslint-disable-next-line no-unused-vars
-    document.querySelector('#authenticate_button').addEventListener('click', submit);
-    document.querySelector('#escape_button').addEventListener('click', escape);
-    document.querySelector('#cancel_button').addEventListener('click', cancel);
   });
 }

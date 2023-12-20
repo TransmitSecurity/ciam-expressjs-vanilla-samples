@@ -182,3 +182,67 @@ export async function showInformation(actionData) {
 export function flowId() {
   return `orc_${Math.floor(Math.random() * 1000000000)}`;
 }
+
+export async function showAuthentication(actionData) {
+  return new Promise((resolve /*reject*/) => {
+    async function submit() {
+      const webauthn_encoded_result = await window.tsPlatform.webauthn.authenticate.modal(
+        actionData.username,
+      );
+      pageUtils.hide('authentication_form');
+      pageUtils.hide('action_response_error');
+      resolve({
+        option: ClientResponseOptionType.ClientInput,
+        data: {
+          webauthn_encoded_result,
+          type: 'webauthn',
+        },
+      });
+    }
+
+    function escape(escapeId) {
+      pageUtils.hide('authentication_form');
+      pageUtils.hide('action_response_error');
+      resolve({
+        option: escapeId,
+        data: {},
+      });
+    }
+
+    pageUtils.updateElementText(
+      'authentication_form_title',
+      actionData?.title || 'Empty title from server',
+    );
+    pageUtils.updateElementText(
+      'authentication_form_text',
+      actionData?.text || 'Empty text from server',
+    );
+    pageUtils.updateElementText('authenticate_button', actionData?.button_text || 'OK');
+    pageUtils.show('authentication_form');
+
+    // clear all handlers, this handles multiple runs of the same action
+    document.querySelector('#authenticate_button').removeEventListener('click', submit);
+
+    // Handle input field and main submit
+    // eslint-disable-next-line no-unused-vars
+    document.querySelector('#authenticate_button').addEventListener('click', submit);
+
+    actionData.idoResponse.clientResponseOptions.forEach(option => {
+      if (option.type === 'custom' || option.type === 'cancel') {
+        const escapeButton = document.getElementById(option.id);
+        if (!escapeButton) {
+          const escapeButton = document.createElement('button');
+          escapeButton.id = option.id;
+          escapeButton.textContent = option.label || option.id;
+          escapeButton.className = 'full-width';
+          escapeButton.removeEventListener('click', () => escape(option.id));
+          escapeButton.addEventListener('click', () => escape(option.id));
+          document.querySelector('#authentication_form > div').appendChild(escapeButton);
+        } else {
+          escapeButton.removeEventListener('click', () => escape(option.id));
+          escapeButton.addEventListener('click', () => escape(option.id));
+        }
+      }
+    });
+  });
+}

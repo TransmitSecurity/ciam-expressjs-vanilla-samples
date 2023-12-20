@@ -1687,6 +1687,8 @@ export var tsPlatform = (function (exports) {
       let responseType = IdoServiceResponseType.JourneyRejection;
       if (this.data.assertions_complete) {
         responseType = IdoServiceResponseType.JourneySuccess;
+      } else if (!this.data.assertions_complete && this.data.assertion_error_code) {
+        responseType = IdoServiceResponseType.JourneyRejection;
       } else if (this.data.state === IdoJourneyResponseState.Pending) {
         responseType = IdoServiceResponseType.ClientInputRequired;
       } else if (this.data.assertion_error_code == CLIENT_INPUT_UPDATE_REQUIRED_STATUS_CODE) {
