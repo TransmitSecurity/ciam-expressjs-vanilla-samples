@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/cars/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME CARS</title>
+    <script type="module" src="./init.js"></script>
+  </head>
+
+  <body onload="loadPage()">
+    <div class="page">
+      <header>
+        <a href="/cars/"><img src="/cars/acme-logo.svg" /></a>
+        <div id="clientIdDiv" class="metadata">ClientID: <span id="clientId"></span></div>
+      </header>
+      <main>
+        <div class="content column gap">
+          <!-- Login button -->
+          <div id="loginDiv" class="column gap hidden">
+            <h3>Find the best car for your road trip</h3>
+            <p>Plan your next adventure with Acme Cars</p>
+
+            <button
+              id="loginButton"
+              onclick="login()"
+              class="full-width"
+              style="background-color: #047857"
+            >
+              Login / Signup
+            </button>
+          </div>
+          <!-- Home page for authenticated user -->
+          <div id="logoutDiv" class="column gap hidden">
+            <h3>Welcome back to Acme Cars!</h3>
+            <div style="margin-bottom: 1rem">
+              <span>Driver id:</span>
+              <span id="sub"></span>
+            </div>
+            <button
+              id="logoutButton"
+              onclick="logout()"
+              class="full-width"
+              style="background-color: #047857"
+            >
+              Logout
+            </button>
+          </div>
+          <p class="footer">
+            Looking for a affordable air tickets? Try <a id="air_link" href="/air/">here</a>
+          </p>
+        </div>
+      </main>
+    </div>
+    <script>
+      const loginRequired = false;
+
+      async function loadPage() {
+        window.pageUtils.showLoading();
+        const clientId = window.env.VITE_TS_CLIENT_ID_ORC_SSOCARS;
+        window.pageUtils.updateElementText('clientId', clientId);
+
+        // Check if the user is authenticated
+        const userData = await userInfo();
+        setUserLoggedIn(userData);
+
+        if (!userData) {
+          // do silent login if sso is enabled
+          const queryParams = new URLSearchParams(window.location.search);
+          if (queryParams.has('silentLogin')) {
+            window.pageUtils.hideLoading();
+            login();
+          }
+        }
+        window.pageUtils.hideLoading();
+      }
+
+      function setUserLoggedIn(userData) {
+        console.log('Set user logged in', userData);
+        if (userData) {
+          window.pageUtils.updateElementText('sub', userData.sub);
+          window.pageUtils.hide('loginDiv');
+          window.pageUtils.show('logoutDiv');
+          document.getElementById('air_link').href = '/air?uid=' + userData.sub;
+        } else {
+          window.pageUtils.show('loginDiv');
+          window.pageUtils.hide('logoutDiv');
+          document.getElementById('air_link').href = '/air/';
+        }
+      }
+
+      async function login() {
+        // We create a claim to get the username in the ID Token
+        const claims = JSON.stringify({
+          id_token: {
+            username: null,
+          },
+        });
+
+        // Here we configure the authentication request parameters
+        // See: https://developer.transmitsecurity.com/openapi/user/oidc/#operation/oidcAuthenticate
+        const queryParams = new URLSearchParams({
+          client_id: window.env.VITE_TS_CLIENT_ID_ORC_SSOCARS,
+          scope: 'openid',
+          response_type: 'code',
+          redirect_uri: window.env.VITE_TS_REDIRECT_URI_ORC_SSOCARS,
+          acr_values: 'urn:transmit:centralized',
+          createNewUser: 'true',
+          claims,
+        });
+        const url = `${
+          window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io'
+        }/cis/oidc/auth?${queryParams.toString()}`;
+
+        // Request centralized login from the authentication hub
+        // See: https://developer.transmitsecurity.com/guides/user/authentication_hub/#3-request-centralized-login
+        window.location.replace(url);
+      }
+
+      async function userInfo() {
+        try {
+          const response = await fetch('/cars/user-info', {
+            method: 'GET',
+            credentials: 'include',
+          });
+
+          const data = await response.json();
+          console.log('Response from /cars/user-info endpoint: ', data);
+          return data.idToken;
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during session check: ${ex}`);
+        }
+      }
+
+      async function logout() {
+        try {
+          const response = await fetch('/cars/logout', {
+            method: 'POST',
+          });
+
+          const data = await response.json();
+          // You can get the number of sessions that were terminated with
+          // data.result.sessions_count
+          console.log('Response from /cars/logout endpoint: ', data);
+
+          // Redirect the user to the login page
+          window.location.replace('/cars/');
+        } catch (ex) {
+          window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
+        }
+      }
+    </script>
+  </body>
+</html>

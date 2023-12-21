@@ -6,13 +6,19 @@ const router = express.Router();
  * For more information see http://localhost:3000/guides/ido/overview/
  * **/
 
-// GET login page
+// GET application menu page
 router.get('/', function (req, res) {
   res.redirect('menu.html');
 });
 
-router.get('/pages/sandbox', function (req, res) {
-  res.redirect('sandbox.html');
+// GET sandbox app page
+router.get('/sandbox', function (req, res) {
+  res.redirect('/pages/sandbox.html');
+});
+
+// GET sso demo starting app page
+router.get('/sso', (req, res) => {
+  res.redirect(`/air/`);
 });
 
 export const indexRouter = router;

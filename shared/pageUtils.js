@@ -56,6 +56,7 @@ export const pageUtils = {
     }
   },
   showLoading: function () {
+    if (document.getElementById('loading-mask')) return; // Already showing
     const mask = document.createElement('div');
     const spinner = document.createElement('div');
 
@@ -69,6 +70,7 @@ export const pageUtils = {
     }, 0);
   },
   hideLoading: function () {
+    if (!document.getElementById('loading-mask')) return; // Already hidden
     const mask = document.getElementById('loading-mask');
     mask.classList.remove('loaded');
 

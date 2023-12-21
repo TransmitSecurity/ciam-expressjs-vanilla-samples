@@ -1,0 +1,58 @@
+<html style="display: none">
+  <head>
+    <link rel="icon" type="image/svg+xml" href="/hub/acme-icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACME CONNECT</title>
+    <script type="module" src="./init.js"></script>
+    <script>
+      function displayPage() {
+        document.getElementById('page').classList.remove('hidden');
+      }
+
+      async function init() {
+        const clientId = window.env.VITE_TS_CLIENT_ID;
+        window.pageUtils.updateElementText('clientId', clientId);
+
+        // Check if the authorization code is present in the query parameters
+        const queryParams = new URLSearchParams(window.location.search);
+        const code = queryParams.get('code');
+
+        console.log('Code', code);
+
+        // If not show the error message
+        if (!code) {
+          displayPage();
+          window.pageUtils.updateElementText('status', queryParams.get('error_description'));
+        } else {
+          // If the code is there, redirect the user to finish the authentication
+          // See: https://developer.transmitsecurity.com/guides/user/authentication_hub/#1-create-your-login-endpoint
+          const url = `${
+            window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io'
+          }/cis/auth/centralized/callback?code=${code}`;
+          console.log(url);
+          window.location.replace(url);
+        }
+      }
+    </script>
+  </head>
+
+  <body onload="init()">
+    <div class="page hidden" id="page">
+      <header>
+        <a href="/hub/"><img src="/hub/acme-logo.svg" alt="ACME" /></a>
+        <div id="clientIdDiv" class="metadata">Client ID: <span id="clientId"></span></div>
+      </header>
+      <main>
+        <div class="content column gap" onsubmit="login()">
+          <span id="status"></span>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

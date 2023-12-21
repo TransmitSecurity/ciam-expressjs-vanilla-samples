@@ -13,6 +13,7 @@ export const config = {
     token: `${baseUrl()}/oidc/token`,
     jwks: `${baseUrl()}/cis/oidc/jwks`,
     logout: `${baseUrl()}/cis/v1/auth/logout`,
+    sessionEnd: `${baseUrl()}/cis/oidc/session/end`,
     backendLogout: `${baseUrl()}/cis/v1/auth/session/logout`,
     sessionAuthenticate: `${baseUrl()}/cis/v1/auth/session/authenticate`,
     backendRefreshToken: `${baseUrl()}/cis/v1/auth/token/refresh`,
@@ -22,6 +23,7 @@ export const config = {
     createUser: `${baseUrl()}/cis/v1/users`,
     getUser: userId => `${baseUrl()}/cis/v1/users/${userId}`,
     getUserByUsername: userName => `${baseUrl()}/cis/v1/users/username/${userName}`,
+    getUserSessions: userId => `${baseUrl()}/cis/v1/sessions/${userId}`,
 
     passwordLogin: `${baseUrl()}/cis/v1/auth/password/login`,
     passwordBackendAuthentication: `${baseUrl()}/cis/v1/auth/password/authenticate`,

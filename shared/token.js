@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 import jwt from 'jsonwebtoken';
 import jwkToPem from 'jwk-to-pem';
+import * as https from 'https';
 
 /**
  * Obtain a client access token for API authorization
@@ -20,13 +21,20 @@ async function getClientCredsToken(resource = '', client_id, client_secret) {
 
   if (resource) params['resource'] = resource;
 
-  const response = await fetch(url, {
+  const options = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams(params).toString(),
-  });
+  };
+
+  if (process.env.VITE_TS_IGNORE_SSL === 'true') {
+    options.agent = new https.Agent({
+      rejectUnauthorized: false,
+    });
+  }
+  const response = await fetch(url, options);
 
   // No error handling for the sake of simplicity, assuming the router level catches exceptions
   const clientToken = await response.json();
@@ -54,6 +62,13 @@ export async function getUserTokens(authCode, client_id, client_secret, redirect
     },
     body: params.toString(),
   };
+
+  if (process.env.VITE_TS_IGNORE_SSL === 'true') {
+    options.agent = new https.Agent({
+      rejectUnauthorized: false,
+    });
+  }
+
   console.log(JSON.stringify(options));
 
   // No error handling for the sake of simplicity, assuming the router level catches exceptions

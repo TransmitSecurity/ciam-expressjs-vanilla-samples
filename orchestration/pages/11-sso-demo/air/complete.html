@@ -1,0 +1,79 @@
+<html style="display: none">
+  <head>
+    <title>ACME AIR</title>
+    <script type="module" src="./init.js"></script>
+    <script>
+      function displayPage() {
+        document.getElementById('page').classList.remove('hidden');
+      }
+
+      async function init() {
+        const clientId = window.env.VITE_TS_CLIENT_ID;
+        window.pageUtils.updateElementText('clientId', clientId);
+
+        // Check if code is present in the query parameters
+        const queryParams = new URLSearchParams(window.location.search);
+        const code = queryParams.get('code');
+
+        console.log('Code', code);
+
+        // If not show an error message
+        if (!code) {
+          displayPage();
+          window.pageUtils.updateElementText('status', queryParams.get('error_description'));
+        } else {
+          // If the code is there, exchange it and redirect the user to the home page
+          exchangeAuthorizationCode(code);
+        }
+      }
+
+      // This function is triggered the flow is complete, and we can exchange the code for an ID token
+      // For more information see https://developer.transmitsecurity.com/openapi/user/passwords/#operation/tokenExchange
+      async function exchangeAuthorizationCode(authCode) {
+        try {
+          const response = await fetch('/air/fetch-tokens', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              authCode: authCode,
+            }),
+          });
+
+          if (response.status === 200) {
+            // Redirect the user to their home page if the token exchange was successful
+            window.location.replace('/air/home');
+          } else {
+            displayPage();
+            window.pageUtils.updateElementText(
+              'status',
+              `Error during token exchange for code ${authCode}`,
+            );
+          }
+        } catch (ex) {
+          displayPage();
+          window.pageUtils.updateElementText(
+            'status',
+            `Error during token exchange for code ${authCode}: ${ex}`,
+          );
+        }
+      }
+    </script>
+  </head>
+
+  <body onload="init()">
+    <div class="page hidden" id="page">
+      <header>
+        <a href="/air/"><img src="/air/acme-logo.svg" alt="ACME" /></a>
+        <div id="clientIdDiv">Client ID: <span id="clientId"></span></div>
+      </header>
+      <main>
+        <div class="content column gap" onsubmit="login()">
+          <span id="status"></span>
+          <button onclick="window.location.replace('/air/home')">Back</button>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
