@@ -7,34 +7,14 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <script
-      src="https://platform-websdk.transmitsecurity.io/platform-websdk/latest/ts-platform-websdk.js"
-      id="platform-sdk"
-    ></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ACME Login</title>
     <script type="module" src="./init.js"></script>
-    <script type="module" src="./ido/ido.js"></script>
+
     <script>
       async function loadPage() {
         const clientId = window.env.VITE_TS_CLIENT_ID_SSOHUB;
         window.pageUtils.updateElementText('clientId', clientId);
-        if (localStorage.getItem('username')) {
-          document.getElementById('username').value = localStorage.getItem('username');
-        }
-        await window.initIDO();
-
-        const state = localStorage.getItem('serializedState');
-        const parsedState = state ? JSON.parse(state) : null;
-        if (parsedState && parsedState.expires > new Date().getTime()) {
-          const lastIdoResponse = window.tsPlatform.ido.restoreFromSerializedState(parsedState);
-          window.pageUtils.hide('login_form');
-          window.pageUtils.show('journey_container');
-          await window.processJourney(lastIdoResponse);
-        } else {
-          localStorage.removeItem('serializedState');
-          await loginWithIDO();
-        }
       }
 
       // This function is triggered the users input their username and password. It is sent for a backend validation.
@@ -71,33 +51,6 @@
           window.pageUtils.updateElementText('status', `Error during login: ${ex}`);
         }
       }
-
-      async function loginWithIDO() {
-        event.preventDefault();
-        try {
-          const username = document.getElementById('username').value;
-          if (!username) {
-            window.pageUtils.updateElementText('status', 'Please enter a username');
-            document.getElementById('username').focus();
-            return;
-          } else {
-            localStorage.setItem('username', username);
-          }
-
-          const queryParams = new URLSearchParams(window.location.search);
-          const originClientId = queryParams.get('client_id');
-          const src_interaction = queryParams.get('src_interaction');
-          window.pageUtils.hide('login_form');
-          const url = await window.loginWithUsername(username, originClientId, src_interaction);
-          // Redirect the user to finish the authentication
-          alert(`journey completed successfully, redirecting to ${url}`);
-          window.pageUtils.show('login_form');
-          // window.location.replace(url);
-        } catch (ex) {
-          window.pageUtils.show('login_form');
-          window.pageUtils.updateElementText('status', `Error during login: ${ex}`);
-        }
-      }
     </script>
   </head>
 
@@ -106,81 +59,18 @@
       <header>
         <a href="/hub/"><img src="/hub/acme-logo.svg" alt="ACME" /></a>
         <div id="clientIdDiv" class="metadata">Client ID: <span id="clientId"></span></div>
-        <button
-          id="reset_client"
-          type="cancel"
-          class="shadow-on-hover"
-          onclick="clearClientState()"
-        >
-          Air
-        </button>
-        <script>
-          // Clear the serialized state from local storage and redirect to the start page
-          function clearClientState() {
-            if (localStorage.getItem('serializedState')) {
-              localStorage.removeItem('serializedState');
-            }
-            window.location.href = 'http://localhost:8080';
-          }
-        </script>
       </header>
       <main>
-        <form id="login_form" class="content column gap" onsubmit="login()">
+        <form class="content column gap" onsubmit="login()">
           <h3>Welcome</h3>
-          <input
-            type="text"
-            name="username"
-            id="username"
-            autocomplete="username webauthn"
-            placeholder="Enter username"
-          />
+          <input type="text" name="username" id="username" placeholder="Enter username" />
           <input type="password" name="password" id="password" placeholder="Enter password" />
-          <button class="full-width" type="submit">Login with Password</button>
-          <button id="passkey_button" class="full-width" type="button">Login with Passkey</button>
-          <input id="journey_id" type="text" autocomplete="true" placeholder="Journey Identifier" />
-          <button class="full-width" type="button" onclick="loginWithIDO()">
-            Run Custom Journey
-          </button>
+          <button class="full-width" type="submit">Login</button>
           <div id="status"></div>
           <div class="row">
             Don&apos;t have an account? <a href="/pages/hub/signup.html">Sign up</a>
           </div>
         </form>
-        <div id="journey_container" class="content hidden">
-          <div id="journey_start" class="column gap hidden">
-            <button id="start_journey_button" class="full-width">Start Journey</button>
-          </div>
-          <div id="information_form" class="column gap hidden">
-            <div class="column gap">
-              <h3 id="information_form_title" style="font-weight: bold">Title</h3>
-              <div
-                id="information_form_text"
-                style="font-family: Sans-serif"
-                class="column long-text"
-              >
-                Text here
-              </div>
-              <button id="information_form_button" class="full-width" type="submit">OK</button>
-            </div>
-          </div>
-          <div id="authentication_form" class="column gap hidden">
-            <div class="column gap">
-              <h3 id="authentication_form_title" style="font-weight: bold">Title</h3>
-              <div
-                id="authentication_form_text"
-                style="font-family: Sans-serif"
-                class="column long-text"
-              >
-                Text here
-              </div>
-              <button id="authenticate_button" class="full-width" type="submit">
-                Authenticate
-              </button>
-              <button id="escape_button" class="full-width" type="submit">Escape</button>
-              <button id="cancel_button" class="full-width" type="submit">Cancel</button>
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   </body>

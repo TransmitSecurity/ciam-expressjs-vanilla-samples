@@ -13,7 +13,6 @@ hubRouter.get('/complete', async function (req, res) {
 // Render login page
 hubRouter.get(['/', '/login'], async function (req, res) {
   const params = new URLSearchParams(req.query);
-  console.log('params', params.toString());
   res.redirect(`/pages/hub/login.html?${params.toString()}`);
 });
 

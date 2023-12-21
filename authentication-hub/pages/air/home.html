@@ -97,13 +97,12 @@
           redirect_uri: window.env.VITE_TS_REDIRECT_URI_SSOAIR,
           acr_values: 'urn:transmit:centralized',
           createNewUser: 'true',
+          resource: window.env.VITE_SSO_RESOURCE_URL,
           claims,
         });
-        console.log(`queryParams: ${queryParams.toString()}`);
-
-        // resource: window.env.VITE_SSO_RESOURCE_URL,
         const url = `${
-          window.env.VITE_TS_API_BASE || 'https://api.transmitsecurity.io'
+          window.env.VITE_TS_API_BASE ||
+          'https://api.userid.security' /*'https://api.transmitsecurity.io'*/
         }/oidc/auth?${queryParams.toString()}`;
 
         // Request centralized login from the authentication hub
