@@ -1,4 +1,4 @@
-import { pageUtils } from '../../../../shared/pageUtils.js';
+import { pageUtils } from '@ciam-expressjs-vanilla-samples/shared/pageUtils.js';
 import {
   startDynamicForm,
   createDynamicFormUI,
@@ -130,10 +130,6 @@ async function processJourney(lastIdoResponse) {
     return url;
   } catch (error) {
     pageUtils.hideLoading();
-    await showInformation({
-      title: 'Rejection',
-      text: `Journey is rejected with error: ${error}`,
-    });
     removeDynamicFormUI('journey_container');
     pageUtils.hide('journey_container');
     localStorage.removeItem('serializedState'); // remove serialized state from local storage upon journey completion
@@ -151,7 +147,7 @@ async function loginPage(actionData, responseOptions) {
 
   return new Promise((resolve /*reject*/) => {
     // Handle form submission
-    document.getElementById('login_form').addEventListener('submit', function (e) {
+    document.getElementById('login_form').addEventListener('submit', async function (e) {
       e.preventDefault();
 
       const formData = new FormData(e.target);
@@ -164,6 +160,9 @@ async function loginPage(actionData, responseOptions) {
         window.pageUtils.updateElementText('status', `Please enter a username`);
         return;
       }
+
+      await window.tsPlatform.webauthn.authenticate.autofill.abort();
+
       // output as an object
       console.log(obj);
       pageUtils.hide('login_form');
