@@ -97,7 +97,7 @@ async function processJourney(lastIdoResponse) {
             );
             break;
           case IdoJourneyActionType.Success:
-            alert(`Journey is completed successfully with url: ${url}`);
+            // alert(`Journey is completed successfully with url: ${url}`);
             inJourney = false;
             break;
           case IdoJourneyActionType.Rejection:

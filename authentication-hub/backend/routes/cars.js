@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { logout, hasUserSessions } from '../lib/management';
+import { hasUserSessions } from '../lib/management';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
 
 const carsRouter = Router();
@@ -36,11 +36,16 @@ carsRouter.get('/login', async function (req, res) {
 carsRouter.post('/logout', common.utils.rateLimiter(), async function (req, res) {
   // TODO add error handling, omitted for sample clarity
   try {
-    const accessToken = req.session.carTokens.accessToken;
     req.session.carTokens = undefined;
     req.session.save();
-    const result = await logout(accessToken);
-    res.send(result);
+
+    const params = new URLSearchParams({
+      client_id: process.env.VITE_TS_CLIENT_ID_SSOCARS,
+      post_logout_redirect_uri: req.headers.origin + req.baseUrl,
+    });
+
+    const url = `${common.config.apis.sessionEnd}?${params.toString()}`;
+    res.status(200).send({ url });
   } catch (ex) {
     res.send({ error: ex });
   }

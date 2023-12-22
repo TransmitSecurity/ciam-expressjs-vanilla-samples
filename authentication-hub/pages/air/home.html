@@ -151,7 +151,7 @@
           console.log(data.error);
 
           // Redirect the user to the login page
-          window.location.replace('/air/');
+          window.location.replace(data.url);
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
         }

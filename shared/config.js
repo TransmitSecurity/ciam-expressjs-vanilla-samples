@@ -14,6 +14,7 @@ export const config = {
     jwks: `${baseUrl()}/cis/oidc/jwks`,
     logout: `${baseUrl()}/cis/v1/auth/logout`,
     backendLogout: `${baseUrl()}/cis/v1/auth/session/logout`,
+    sessionEnd: `${baseUrl()}/cis/oidc/session/end`,
     sessionAuthenticate: `${baseUrl()}/cis/v1/auth/session/authenticate`,
     backendRefreshToken: `${baseUrl()}/cis/v1/auth/token/refresh`,
 

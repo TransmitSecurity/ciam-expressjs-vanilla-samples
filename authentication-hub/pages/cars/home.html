@@ -150,7 +150,7 @@
           console.log('Response from /cars/logout endpoint: ', data);
 
           // Redirect the user to the login page
-          window.location.replace('/cars/');
+          window.location.replace(data.url);
         } catch (ex) {
           window.pageUtils.updateElementText('status', `Error during logout: ${ex}`);
         }
