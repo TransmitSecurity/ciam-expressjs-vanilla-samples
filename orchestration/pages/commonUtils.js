@@ -93,7 +93,10 @@ export async function executeJourney(
     let idoResponse = null;
     if (!restoreState) {
       pageUtils.showLoading();
+      pageUtils.updateElementText('journey_id', `Journey Id: '${journeyName}'`);
       idoResponse = await sdk.startJourney(journeyName, additionalParams);
+      const debugPin = await sdk.generateDebugPin();
+      pageUtils.updateElementText('debug_pin', `Debug pin: ${debugPin}`);
       pageUtils.hideLoading();
     } else {
       idoResponse = sdk.restoreFromSerializedState(restoreState);

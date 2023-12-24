@@ -5,7 +5,7 @@ import { IdoJourneyActionType } from '../sdk_interface.js';
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'testm';
+const JOURNEY_NAME = 'DRS';
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: flowId(),
   additionalParams: {},
@@ -64,7 +64,8 @@ async function handleJourneyActionUI(idoResponse) {
     case IdoJourneyActionType.DrsTriggerAction:
       // eslint-disable-next-line no-case-declarations
       const { actionToken } = await window.tsPlatform.drs.triggerActionEvent(
-        window.drs.actionType.LOGIN,
+        // window.drs.actionType.LOGIN,
+        actionData.action_type,
       );
       console.log('Action Token', actionToken);
       // Add code here to send the action and the received actionToken to your backend
