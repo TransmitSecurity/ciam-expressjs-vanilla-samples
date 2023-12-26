@@ -220,7 +220,7 @@ export async function showAuthentication(actionData) {
       'authentication_form_text',
       actionData?.text || 'Empty text from server',
     );
-    pageUtils.updateElementText('authenticate_button', actionData?.button_text || 'OK');
+    pageUtils.hide('authenticate_button');
     pageUtils.show('authentication_form');
 
     // clear all handlers, this handles multiple runs of the same action
@@ -229,6 +229,16 @@ export async function showAuthentication(actionData) {
     // Handle input field and main submit
     // eslint-disable-next-line no-unused-vars
     document.querySelector('#authenticate_button').addEventListener('click', submit);
+
+    actionData.idoResponse.data.methods.forEach(method => {
+      if (method.type === 'webauthn') {
+        pageUtils.show('authenticate_button');
+        pageUtils.updateElementText(
+          'authenticate_button',
+          actionData?.button_text || 'Authenticate with Webauthn',
+        );
+      }
+    });
 
     actionData.idoResponse.clientResponseOptions.forEach(option => {
       if (option.type === 'custom' || option.type === 'cancel') {
