@@ -7,7 +7,7 @@ import { ClientResponseOptionType, IdoJourneyActionType } from './sdk_interface.
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
 
-const JOURNEY_NAME = 'DRS';
+const JOURNEY_NAME = 'ENTER_JOURNEY_NAME_HERE';
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: flowId(),
   additionalParams: { username: 'John Doe', plus: true },
