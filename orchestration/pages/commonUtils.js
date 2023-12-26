@@ -190,7 +190,7 @@ export async function showAuthentication(actionData) {
   return new Promise((resolve /*reject*/) => {
     async function submit() {
       const webauthn_encoded_result = await window.tsPlatform.webauthn.authenticate.modal(
-        actionData.username,
+        actionData.idoResponse.data.username,
       );
       pageUtils.hide('authentication_form');
       pageUtils.hide('action_response_error');
