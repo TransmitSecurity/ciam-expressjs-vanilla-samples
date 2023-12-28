@@ -1,13 +1,26 @@
 import { pageUtils } from '../../shared/pageUtils.js';
-import { executeJourney, flowId, showAuthentication, showInformation } from './commonUtils.js';
+import { executeJourney, flowId, showAuthentication, showInformation, sdk } from './commonUtils.js';
 import { ClientResponseOptionType, IdoJourneyActionType } from './sdk_interface.js';
 // import { tsPlatform } from '../../node_modules/orchestration/dist/web-sdk-ido.js'; // debug only
 
 // Register event handlers for buttons
 document.querySelector('#restart_journey_button').addEventListener('click', onClick);
 document.querySelector('#start_journey_button').addEventListener('click', onClick);
+document.querySelector('#debug_button').addEventListener('click', generateDebugToken);
+document.querySelector('#restart_journey').addEventListener('click', restartJourney);
 
-const JOURNEY_NAME = 'ENTER_JOURNEY_NAME_HERE';
+async function generateDebugToken() {
+  const debugPin = await sdk.generateDebugPin();
+  pageUtils.updateElementText('debug_pin', `Debug pin: ${debugPin}`);
+  pageUtils.hide('debug_button');
+}
+
+async function restartJourney() {
+  localStorage.removeItem('serializedState');
+  window.location.reload();
+}
+
+const JOURNEY_NAME = 'kba';
 const JOURNEY_ADDITIONAL_PARAMS = {
   flowId: flowId(),
   additionalParams: { username: 'John Doe', plus: true },
@@ -98,6 +111,11 @@ async function handleJourneyActionUI(idoResponse) {
       });
       clientResponse.data.webauthn_encoded_result = await window.tsPlatform.webauthn.register(
         actionData.username,
+        {
+          displayName: actionData.display_name,
+          allowCrossPlatformAuthenticators: actionData.allow_cross_platform_authenticators,
+          registerAsDiscoverable: actionData.register_as_discoverable,
+        },
       );
       break;
     case IdoJourneyActionType.Authentication:

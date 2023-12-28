@@ -3,7 +3,7 @@ import { pageUtils } from '../../shared/pageUtils.js';
 import { ClientResponseOptionType, IdoServiceResponseType } from './sdk_interface.js';
 import { startDynamicForm, createDynamicFormUI } from './dynamic_form.js';
 
-let sdk = null;
+export let sdk = null;
 
 export const DEFAULT_SDK_INIT_OPTIONS = {
   clientId: 'az8xbjlb1zbfot2husyw7qu0kb3qj074',
@@ -95,8 +95,6 @@ export async function executeJourney(
       pageUtils.showLoading();
       pageUtils.updateElementText('journey_id', `Journey Id: '${journeyName}'`);
       idoResponse = await sdk.startJourney(journeyName, additionalParams);
-      const debugPin = await sdk.generateDebugPin();
-      pageUtils.updateElementText('debug_pin', `Debug pin: ${debugPin}`);
       pageUtils.hideLoading();
     } else {
       idoResponse = sdk.restoreFromSerializedState(restoreState);

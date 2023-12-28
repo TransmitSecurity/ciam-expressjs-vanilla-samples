@@ -63,6 +63,11 @@ async function handleJourneyActionUI(idoResponse) {
       });
       clientResponse.data.webauthn_encoded_result = await window.tsPlatform.webauthn.register(
         actionData.username,
+        {
+          displayName: actionData.display_name,
+          allowCrossPlatformAuthenticators: actionData.allow_cross_platform_authenticators,
+          registerAsDiscoverable: actionData.register_as_discoverable,
+        },
       );
       break;
     default:
