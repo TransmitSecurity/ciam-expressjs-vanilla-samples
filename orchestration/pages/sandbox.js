@@ -66,7 +66,7 @@ async function handleJourneyActionUI(idoResponse) {
 
   switch (stepId) {
     case IdoJourneyActionType.Information:
-      clientResponse = await showInformation(actionData, responseOptions);
+      clientResponse = await showInformation({ ...actionData, responseOptions });
       break;
     case IdoJourneyActionType.DebugBreak:
       clientResponse = await showInformation({

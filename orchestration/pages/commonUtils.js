@@ -160,6 +160,15 @@ export async function showInformation(actionData) {
       });
     }
 
+    function escape(escapeId) {
+      pageUtils.hide('authentication_form');
+      pageUtils.hide('action_response_error');
+      resolve({
+        option: escapeId,
+        data: {},
+      });
+    }
+
     pageUtils.updateElementText(
       'information_form_title',
       actionData?.title || 'Empty title from server',
@@ -177,6 +186,24 @@ export async function showInformation(actionData) {
     // Handle input field and main submit
     // eslint-disable-next-line no-unused-vars
     document.querySelector('#information_form_button').addEventListener('click', submit);
+
+    actionData.responseOptions.forEach(option => {
+      if (option.type === 'custom' || option.type === 'cancel') {
+        const escapeButton = document.getElementById(option.id);
+        if (!escapeButton) {
+          const escapeButton = document.createElement('button');
+          escapeButton.id = option.id;
+          escapeButton.textContent = option.label || option.id;
+          escapeButton.className = 'full-width';
+          escapeButton.removeEventListener('click', () => escape(option.id));
+          escapeButton.addEventListener('click', () => escape(option.id));
+          document.querySelector('#information_form > div').appendChild(escapeButton);
+        } else {
+          escapeButton.removeEventListener('click', () => escape(option.id));
+          escapeButton.addEventListener('click', () => escape(option.id));
+        }
+      }
+    });
   });
 }
 
