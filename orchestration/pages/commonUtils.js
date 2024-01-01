@@ -186,8 +186,7 @@ export async function showInformation(actionData) {
     // Handle input field and main submit
     // eslint-disable-next-line no-unused-vars
     document.querySelector('#information_form_button').addEventListener('click', submit);
-
-    actionData.responseOptions.forEach(option => {
+    actionData?.responseOptions?.forEach(option => {
       if (option.type === 'custom' || option.type === 'cancel') {
         const escapeButton = document.getElementById(option.id);
         if (!escapeButton) {
