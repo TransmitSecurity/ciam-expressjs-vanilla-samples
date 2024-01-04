@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { common } from '@ciam-expressjs-vanilla-samples/shared';
+import * as https from 'https';
 
 const SSO_GROUP_CLIENT_IDS = [
   process.env.VITE_TS_CLIENT_ID_SSOAIR,
@@ -27,12 +28,16 @@ export async function getUser(userId) {
  */
 export async function hasUserSessions(userId, client_id, client_secret) {
   const clientToken = await common.tokens.getClientCredsToken(null, client_id, client_secret);
+  const agent = new https.Agent({
+    rejectUnauthorized: false,
+  });
 
   const response = await fetch(common.config.apis.getUserSessions(userId), {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${clientToken}`,
     },
+    agent,
   });
 
   const result = await response.json();
