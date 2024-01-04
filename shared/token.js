@@ -16,6 +16,10 @@ async function getClientCredsToken(resource = '', client_id, client_secret) {
     grant_type: 'client_credentials',
   };
 
+  const agent = new https.Agent({
+    rejectUnauthorized: false,
+  });
+
   console.log('URL:', url);
   console.log('ClientCreds:', params);
 
@@ -27,6 +31,7 @@ async function getClientCredsToken(resource = '', client_id, client_secret) {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams(params).toString(),
+    agent,
   });
 
   // No error handling for the sake of simplicity, assuming the router level catches exceptions
