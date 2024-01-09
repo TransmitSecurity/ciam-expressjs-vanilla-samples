@@ -22,8 +22,7 @@ export async function getUser(userId) {
  * See: https://developer.transmitsecurity.com/guides/user/manage_user_sessions/#step-5-logout-session
  */
 export async function logout(accessToken) {
-  const url =
-    common.config.apis.logout; /* <-legacy. To be replaced with: common.config.apis.logout */
+  const url = common.config.apis.logout;
 
   const response = await fetch(url, {
     method: 'POST',
