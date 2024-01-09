@@ -35,7 +35,7 @@
           const url = `${
             window.env.VITE_TS_API_BASE ||
             'https://api.userid.security' /*'https://api.transmitsecurity.io'*/
-          }/auth/centralized/callback?code=${code}`;
+          }/cis/auth/centralized/callback?code=${code}`;
           console.log(url);
           window.location.replace(url);
         }
