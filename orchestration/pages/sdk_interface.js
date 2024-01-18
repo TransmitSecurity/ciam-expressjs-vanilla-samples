@@ -62,13 +62,14 @@ export var ClientResponseOptionType;
   /**
    * @description Client response option type for client failure in the Journey.
    */
-  ClientResponseOptionType['Fail'] = 'fail';
+  ClientResponseOptionType['Fail'] = 'action_failure';
   /**
    * @description Client response option type for custom branch in the Journey, used for custom branching.
    */
   ClientResponseOptionType['Custom'] = 'custom';
 })(ClientResponseOptionType || (ClientResponseOptionType = {}));
 /**
+ * @deprecated
  * @enum
  * @description The enum for the Journey step types.
  */
@@ -101,6 +102,10 @@ export var IdoJourneyActionType;
    * @description `journeyStepId` for a Rejection action.
    */
   IdoJourneyActionType['Rejection'] = 'action:rejection';
+  /**
+   * @description `journeyStepId` for a Rejection action.
+   */
+  IdoJourneyActionType['Success'] = 'action:success';
   /**
    * @description `journeyStepId` for an Information action.
    */
@@ -165,7 +170,7 @@ export var IdoJourneyActionType;
    *    "username": "<USERNAME>",
    *    "display_name": "<DISPLAY_NAME>",
    *    "register_as_discoverable": <true|false>,
-   *    "allow_cross_Platform_authenticators": <true|false>
+   *    "allow_cross_platform_authenticators": <true|false>
    *  }
    * }
    * ```
@@ -229,7 +234,40 @@ export var IdoJourneyActionType;
    */
   IdoJourneyActionType['IdentityVerification'] = 'action:id_verification';
   /**
-   * @description `journeyStepId` for Authentication action.
-   */
+     * @description `journeyStepId` for Authentication action.
+     * Part of the response received in `idoServiceResponse`:
+     * ```json
+     * {
+     *  "data": {
+     *    "methods": [{
+     *      "type": "webauthn"
+     *     }],
+     *    "username": "<USERNAME>",
+     *    },
+     * }
+     * ```
+     *
+     * Data to send with `submitClientResponse`:
+     *
+     * Webauthn success:
+     * ```json
+     *  submitClientResponse(ClientResponseOptionType.ClientInput, {
+     *    "type": "webauthn",
+     *    "webauthn_encoded_result": "<WEBAUTHN_ENCODED_RESULT_FROM_SDK>"
+     *  });
+     * ```
+  
+     * Webauthn cancel
+     * ```json
+     *  submitClientResponse(ClientResponseOptionType.Cancel, {});
+     * ```
+     *
+     * Webauthn fail (data with escape option)
+     * ```json
+     *  submitClientResponse(ClientResponseOptionType.Fail, {
+     *    "type": "webauthn"
+     *  });
+     * ```
+     */
   IdoJourneyActionType['Authentication'] = 'transmit_platform_authentication';
 })(IdoJourneyActionType || (IdoJourneyActionType = {}));

@@ -194,7 +194,7 @@ export async function showInformation(actionData) {
       }
     }
 
-    actionData?.responseOptions?.forEach(option => {
+    for (const option in actionData?.idoResponse?.clientResponseOptions) {
       if (option.type === 'custom' || option.type === 'cancel') {
         const escapeButton = document.getElementById(option.id);
         if (!escapeButton) {
@@ -210,7 +210,7 @@ export async function showInformation(actionData) {
           escapeButton.addEventListener('click', () => escape(option.id));
         }
       }
-    });
+    }
   });
 }
 
@@ -262,7 +262,7 @@ export async function showAuthentication(actionData) {
     // eslint-disable-next-line no-unused-vars
     document.querySelector('#authenticate_button').addEventListener('click', submit);
 
-    actionData.idoResponse.data.methods.forEach(method => {
+    for (const method of actionData.idoResponse.data.methods) {
       if (method.type === 'webauthn') {
         pageUtils.show('authenticate_button');
         pageUtils.updateElementText(
@@ -270,9 +270,10 @@ export async function showAuthentication(actionData) {
           actionData?.button_text || 'Authenticate with Webauthn',
         );
       }
-    });
+    }
 
-    actionData.idoResponse.clientResponseOptions.forEach(option => {
+    for (const id in actionData.idoResponse.clientResponseOptions) {
+      const option = actionData.idoResponse.clientResponseOptions[id];
       if (option.type === 'custom' || option.type === 'cancel') {
         const escapeButton = document.getElementById(option.id);
         if (!escapeButton) {
@@ -288,6 +289,6 @@ export async function showAuthentication(actionData) {
           escapeButton.addEventListener('click', () => escape(option.id));
         }
       }
-    });
+    }
   });
 }

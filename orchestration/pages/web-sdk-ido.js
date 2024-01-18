@@ -1613,7 +1613,6 @@ export var tsPlatform = (function (exports) {
     'assertions_complete',
     'state',
     'control_flow',
-    'failure_data',
     'rejection_data',
   ];
   const ESCAPE_OPTIONS_MAP = {
@@ -1687,7 +1686,11 @@ export var tsPlatform = (function (exports) {
       let responseType = IdoServiceResponseType.JourneyRejection;
       if (this.data.assertions_complete) {
         responseType = IdoServiceResponseType.JourneySuccess;
-      } else if (!this.data.assertions_complete && this.data.assertion_error_code) {
+      } else if (
+        !this.data.assertions_complete &&
+        this.data.assertion_error_code &&
+        this.data.state !== IdoJourneyResponseState.Pending
+      ) {
         responseType = IdoServiceResponseType.JourneyRejection;
       } else if (this.data.state === IdoJourneyResponseState.Pending) {
         responseType = IdoServiceResponseType.ClientInputRequired;
@@ -1700,6 +1703,9 @@ export var tsPlatform = (function (exports) {
     }
     getData() {
       var _a, _b;
+      if (this.data.data && Object.keys(this.data.data).length) {
+        return this.data.data;
+      }
       const [controlFlowData] = (_a = this.data.control_flow) !== null && _a !== void 0 ? _a : [{}];
       const { data: internalData, ...restData } =
         (_b = this.data) !== null && _b !== void 0 ? _b : {};
@@ -1756,16 +1762,13 @@ export var tsPlatform = (function (exports) {
     }
     getClientResponseActions() {
       var _a;
-      const clientResponseActions = new Map([
-        [
-          ClientResponseOptionType.ClientInput,
-          {
-            type: ClientResponseOptionType.ClientInput,
-            id: 'client_input',
-            label: 'Client Input',
-          },
-        ],
-      ]);
+      const clientResponseActions = {
+        [ClientResponseOptionType.ClientInput]: {
+          type: ClientResponseOptionType.ClientInput,
+          id: 'client_input',
+          label: 'Client Input',
+        },
+      };
       (_a = this.escapes) === null || _a === void 0
         ? void 0
         : _a.forEach(({ id, display_name: label }) => {
@@ -1774,11 +1777,11 @@ export var tsPlatform = (function (exports) {
               (_a = ESCAPE_OPTIONS_MAP[id]) !== null && _a !== void 0
                 ? _a
                 : ClientResponseOptionType.Custom;
-            clientResponseActions.set(id, {
+            clientResponseActions[id] = {
               type,
               id,
               label,
-            });
+            };
           });
       return clientResponseActions;
     }
@@ -2135,7 +2138,7 @@ export var tsPlatform = (function (exports) {
       (_a = this.journey) === null || _a === void 0 ? void 0 : _a.reject();
     }
     async generateDebugPin() {
-      var _a, _b;
+      var _a;
       if (!this.journey) {
         throw new IdoSdkError(
           'Error occurred while trying to generate debug pin since no journey is active',
@@ -2148,7 +2151,7 @@ export var tsPlatform = (function (exports) {
             headers: this.getInternalHeaders(),
             data: {},
           }));
-      if (!response || !((_b = response.data) === null || _b === void 0 ? void 0 : _b.debug_pin)) {
+      if (!response) {
         throw new MissingResponseError();
       }
       return response.data.debug_pin;
