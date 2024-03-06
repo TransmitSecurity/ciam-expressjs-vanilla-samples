@@ -56,7 +56,7 @@ router.post('/send-magic-link', common.utils.rateLimiter(), async function (req,
     try {
       accessToken = await common.tokens.getClientCredsToken();
       if (!accessToken) {
-        res.status(500).send({ error: 'could not fetch access token' });
+        return res.status(500).send({ error: 'could not fetch access token' });
       }
 
       // send the magic link
