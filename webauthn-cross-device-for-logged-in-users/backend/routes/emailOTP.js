@@ -31,7 +31,7 @@ router.post('/email-otp', async function (req, res) {
       // For more information see https://developer.transmitsecurity.com/guides/user/retrieve_client_tokens/
       accessToken = await common.tokens.getClientCredsToken();
       if (!accessToken) {
-        res.status(500).send({ error: 'could not fetch access token' });
+        return res.status(500).send({ error: 'could not fetch access token' });
       }
 
       // send the OTP email
