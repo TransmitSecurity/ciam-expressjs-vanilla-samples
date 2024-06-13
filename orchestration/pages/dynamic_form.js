@@ -148,9 +148,9 @@ export function createDynamicFormUI(actionData, responseOptions) {
     _submitHandler = _rejectHandler = null;
   });
 
-  // set escape options
+  // iterate through responseOptions and add custom buttons
   if (responseOptions) {
-    responseOptions.forEach((option /*, index*/) => {
+    for (const option of Object.entries(responseOptions)) {
       if (option.type == 'custom') {
         if (option.label && option.id) {
           const elem = createEscapeOptionButton(option);
@@ -167,7 +167,7 @@ export function createDynamicFormUI(actionData, responseOptions) {
           console.log(`Invalid escape option provided: ${option} - ignoring.`);
         }
       }
-    });
+    }
   }
 
   df_div.querySelector('#dynamic_form_error').classList.add('hidden');
@@ -548,7 +548,8 @@ function collectOutput(actions_response) {
       if (obj) {
         const field_id = Object.keys(obj)[0];
         const elem = document.getElementById(field_id);
-        switch (elem.type) {
+        const type = elem.type || '';
+        switch (type) {
           case 'checkbox':
             output.actions[field_id] = elem.checked;
             break;
