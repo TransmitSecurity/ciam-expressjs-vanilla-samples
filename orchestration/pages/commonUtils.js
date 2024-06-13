@@ -7,8 +7,8 @@ let sdk = null;
 
 export const DEFAULT_SDK_INIT_OPTIONS = {
   clientId: 'az8xbjlb1zbfot2husyw7qu0kb3qj074',
-  serverPath: 'https://dev.orchestration.northwesternmutual.com',
-  appId: 'cx_account_recovery_dev',
+  serverPath: 'https://0dau9szmld2g6zq50g9i6.transmit.security',
+  appId: 'default_application',
 };
 
 // Initialize the SDK
