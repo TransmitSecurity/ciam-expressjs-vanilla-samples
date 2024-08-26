@@ -32,8 +32,7 @@ router.post('/token', async function (req, res) {
   try {
     const webauthnEncodedResult = req.body.webauthn_encoded_result;
     const url = common.config.apis.webauthnToken;
-    const token =
-      'eyJhbGciOiJSUzI1NiIsInR5cCI6ImF0K2p3dCIsImtpZCI6IkNwVE00aUdsaU1va2xnYWZ2RFhBNFRiY2xjeW55RF93TWdqT2ZoaUNVVUUifQ.eyJ0aWQiOiJ0cmFuc21pdHNlY3VyaXR5IiwiYXBwX25hbWUiOiJGbGV4SUQgQXBwIiwiYXBwX2lkIjoiT2tpYWwwUHZiamE5NzgycG9KaGc5Iiwicm9sZXMiOlsiQWRtaW4iXSwianRpIjoiWkl0elZtdVFTRlBka3RaQ3o0Q3ZGIiwic3ViIjoia3A5ODFucS50cmFuc21pdHNlY3VyaXR5LnRyYW5zbWl0IiwiaWF0IjoxNzE2Nzk5NDc4LCJleHAiOjE3MTY4MDMwNzgsImNsaWVudF9pZCI6ImtwOTgxbnEudHJhbnNtaXRzZWN1cml0eS50cmFuc21pdCIsImlzcyI6Imh0dHBzOi8vdXNlcmlkLWRldi5pbyIsImF1ZCI6Imh0dHBzOi8vaWRvLmlkZW50aXR5LnNlY3VyaXR5L2lmNWpjNDZkcng4OXVxNWEycTVleDlncDB4aGdjeHp6In0.sVVsZ9124IFg78rcQA-21DcVqqmvK0S4d9bzC3PfZWb8x8Uu6QJphWUBhLFIRgALqwdM7CsrEkneeDhwfmIMdyEyXg4kOFK7hxvrK2I-3hyMWvs5AexIptLe79CeUfaR7CtgXx_Vpz5kdV1PuCYgR2MZwo9ujFjWXUprkwuIVtXAsfbD05rLLBAUWtRXIDu3DIfq_QACFkBQsuOa2mzcCZt5WDFYuNx1Z7H1L8twIG0DuPlzoUC02DEhyyZALHCAG4Xp7Fn5-rSGG6jDLdcZi21Esv7GIUAypCaWXFJQOR2RApWNdakwh1sKzDmhBLazUJsD7iqPaLjslUGWETyrLg'; //await common.tokens.getClientCredsToken();
+    const token = await common.tokens.getClientCredsToken();
     const request = {
       method: 'POST',
       headers: {
