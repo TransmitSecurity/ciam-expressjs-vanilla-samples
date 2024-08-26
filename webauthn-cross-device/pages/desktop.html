@@ -81,7 +81,7 @@
             window.pageUtils.show('qrDiv');
             window.pageUtils.hide('spinner');
           };
-          qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=220x220`;
+          qrImg.src = `https://quickchart.io/qr?text=${url}&chs=220x220`;
 
           window.pageUtils.updateElementText('url', url);
         } else {
@@ -91,6 +91,7 @@
           );
           window.pageUtils.hide('spinner');
         }
+        console.log(controller);
       } catch (ex) {
         console.log(ex);
         window.pageUtils.updateElementText('status', `Error during init: ${ex}`);
