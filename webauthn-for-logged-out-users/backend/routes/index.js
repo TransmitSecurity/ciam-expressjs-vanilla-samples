@@ -78,6 +78,7 @@ router.post('/webauthn/register', async function (req, res) {
 
     // This is your internal user identifier that will be associated to the WebAuthn credential.
     const user_identifier = crypto.randomUUID();
+    const user_email = `${user_identifier}@gmail.com`;
 
     const request = {
       method: 'POST',
@@ -87,6 +88,7 @@ router.post('/webauthn/register', async function (req, res) {
       },
       body: JSON.stringify({
         external_user_id: user_identifier,
+        user_email: user_email,
         webauthn_encoded_result: webauthnEncodedResult,
       }),
     };

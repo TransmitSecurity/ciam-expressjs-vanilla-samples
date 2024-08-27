@@ -12,7 +12,7 @@
     <title>ACME</title>
     <script
       type="text/javascript"
-      src="https://platform-websdk.transmitsecurity.io/platform-websdk/1.6.0/ts-platform-websdk.js"
+      src="https://platform-websdk.transmitsecurity.io/platform-websdk/1.9.0/ts-platform-websdk.js"
     ></script>
     <script type="module" src="./init.js"></script>
     <script>
@@ -49,7 +49,7 @@
           window.pageUtils.show('qrDiv');
           window.pageUtils.hide('spinner');
         };
-        qrImg.src = `https://chart.googleapis.com/chart?cht=qr&chl=${url}&chs=220x220`;
+        qrImg.src = `https://quickchart.io/qr?text=${url}&chs=220x220`;
       }
 
       async function onCredentialAuthenticate(sessionId) {
