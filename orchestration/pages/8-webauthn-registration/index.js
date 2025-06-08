@@ -20,7 +20,7 @@ if (parsedState && parsedState.expires > new Date().getTime()) {
     JOURNEY_ADDITIONAL_PARAMS,
     parsedState.state,
     undefined,
-    { webauthn: { serverPath: 'https://api.idsec-stg.com' } },
+    { webauthn: { serverPath: 'https://api.transmitsecurity.io' } },
   );
 } else {
   localStorage.removeItem('serializedState');
@@ -33,7 +33,7 @@ function onClick() {
     JOURNEY_ADDITIONAL_PARAMS,
     undefined,
     undefined,
-    { webauthn: { serverPath: 'https://api.idsec-stg.com' } },
+    { webauthn: { serverPath: 'https://api.transmitsecurity.io' } },
   );
 }
 

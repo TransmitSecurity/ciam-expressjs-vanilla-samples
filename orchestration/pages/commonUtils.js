@@ -6,8 +6,8 @@ import { startDynamicForm, createDynamicFormUI } from './dynamic_form.js';
 let sdk = null;
 
 export const DEFAULT_SDK_INIT_OPTIONS = {
-  clientId: 'az8xbjlb1zbfot2husyw7qu0kb3qj074',
-  serverPath: 'https://0dau9szmld2g6zq50g9i6.transmit.security',
+  clientId: 'nslmxtqfxt8hq9guai4vwql0hn1n297j',
+  serverPath: 'https://api.transmitsecurity.io/ido',
   appId: 'default_application',
 };
 

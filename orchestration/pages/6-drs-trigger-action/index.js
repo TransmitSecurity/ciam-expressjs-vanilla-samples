@@ -41,7 +41,7 @@ function onClick() {
     JOURNEY_ADDITIONAL_PARAMS,
     undefined,
     undefined,
-    { drs: { serverPath: 'https://collect.riskid-stg.io' } },
+    { drs: { serverPath: 'https://api.transmitsecurity.io/risk-collect/' } },
   );
 }
 

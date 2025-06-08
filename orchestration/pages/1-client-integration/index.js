@@ -16,9 +16,9 @@ function onClick() {
     },
     undefined,
     {
-      clientId: 'demo-client-id',
-      serverPath: 'https://appclips.poc.transmit-field.com',
-      appId: 'idosdk',
+      clientId: '246z720t5nnetdgp0xw9tbai6zf4cvtf',
+      serverPath: 'https://api.transmitsecurity.io/ido',
+      appId: 'default_application',
     },
   );
 }
