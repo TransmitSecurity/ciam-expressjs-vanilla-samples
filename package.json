@@ -25,7 +25,7 @@
     "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-import": "^2.27.5",
     "husky": "9.1.7",
-    "prettier": "^2.8.4"
+    "prettier": "^3.8.0"
   },
   "scripts": {
     "prepare": "husky",
