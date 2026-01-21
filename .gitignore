@@ -7,7 +7,7 @@
 .idea
 TODOS.md
 yarn-error.log
-.husky/
+.husky/_
 **/.DS_Store
 .DS_Store
 .history
