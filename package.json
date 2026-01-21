@@ -28,7 +28,7 @@
     "prettier": "^2.8.4"
   },
   "scripts": {
-    "prepare": "husky install && rm -rf .husky/pre-commit && npx husky add .husky/pre-commit \"yarn lint && yarn format && git add .\"",
+    "prepare": "husky",
     "start:npm": "npm run --cwd $SAMPLE start",
     "start": "yarn --cwd $SAMPLE start",
     "lint": "eslint \"**/*.{js,html}\" --fix",
