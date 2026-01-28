@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html style="display: none">
   <head>
     <link rel="icon" type="image/svg+xml" href="/acme-icon.svg" />
@@ -170,9 +170,8 @@
         const username = document.getElementById('emailInput').value;
 
         try {
-          const webauthn_encoded_result = await window.tsPlatform.webauthn.authenticate.modal(
-            username,
-          );
+          const webauthn_encoded_result =
+            await window.tsPlatform.webauthn.authenticate.modal(username);
           await handleSuccessfulPasskeyValidation(webauthn_encoded_result);
         } catch (err) {
           if (err.errorCode == 'webauthn_authentication_canceled') {
