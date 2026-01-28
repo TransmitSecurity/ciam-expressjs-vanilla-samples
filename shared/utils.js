@@ -7,7 +7,7 @@ function rateLimiter() {
     limiter ||
     rateLimit({
       windowMs: 60 * 1000, // 1 minute
-      max: process.env.TS_RATE_LIMIT || 10, // 10 requests per minute per IP
+      limit: process.env.TS_RATE_LIMIT || 10, // 10 requests per minute per IP
       message: 'Too many requests from this IP, please try again in a minute',
     });
   return limiter;

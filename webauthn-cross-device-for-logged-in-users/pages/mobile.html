@@ -104,9 +104,8 @@
         window.pageUtils.showLoading();
 
         // Execute the registration API calls
-        const encodedResult = await window.tsPlatform.webauthn.crossDevice.register(
-          crossDeviceTicketId,
-        );
+        const encodedResult =
+          await window.tsPlatform.webauthn.crossDevice.register(crossDeviceTicketId);
         const registrationResult = await fetch(`/webauthn/register`, {
           method: 'POST',
           headers: {
