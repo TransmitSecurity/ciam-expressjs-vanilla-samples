@@ -21,7 +21,7 @@
   ],
   "devDependencies": {
     "eslint": "^8.45.0",
-    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-html": "^8.1.4",
     "eslint-plugin-import": "^2.27.5",
     "husky": "9.1.7",
