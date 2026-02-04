@@ -9,7 +9,7 @@
     "dotenv": "16.0.3",
     "express": "~4.19.2",
     "morgan": "~1.10.1",
-    "node-fetch": "^3.3.0",
+    "node-fetch": "^3.3.2",
     "@ciam-expressjs-vanilla-samples/shared": "1.0.0",
     "express-rate-limit": "~8.2.1"
   },

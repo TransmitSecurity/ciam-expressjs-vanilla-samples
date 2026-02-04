@@ -10,7 +10,7 @@
     "express": "~4.19.2",
     "express-rate-limit": "8.2.1",
     "@ciam-expressjs-vanilla-samples/shared": "1.0.0",
-    "node-fetch": "^3.3.0"
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
