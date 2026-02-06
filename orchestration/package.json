@@ -9,6 +9,6 @@
     "@ciam-expressjs-vanilla-samples/shared": "1.0.0"
   },
   "devDependencies": {
-    "sass": "1.97.2"
+    "sass": "1.97.3"
   }
 }
