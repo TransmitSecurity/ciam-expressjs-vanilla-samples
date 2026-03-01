@@ -7,14 +7,14 @@
   },
   "dependencies": {
     "dotenv": "16.0.3",
-    "express": "~4.19.2",
+    "express": "~5.2.1",
     "express-session": "^1.17.3",
     "morgan": "~1.10.1",
     "node-fetch": "^3.3.2",
     "@ciam-expressjs-vanilla-samples/shared": "1.0.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.17",
+    "@types/express": "^5.0.6",
     "sass": "1.97.3",
     "vite": "^4.5.3",
     "vite-plugin-mix": "0.4.0"
