@@ -6,7 +6,7 @@
     "start": "vite --debug --host"
   },
   "dependencies": {
-    "dotenv": "16.0.3",
+    "dotenv": "17.3.1",
     "express": "~4.19.2",
     "express-rate-limit": "8.2.2",
     "@ciam-expressjs-vanilla-samples/shared": "1.0.0",
