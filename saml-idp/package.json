@@ -6,12 +6,12 @@
     "start": "vite --debug --host --port 8080"
   },
   "dependencies": {
-    "dotenv": "16.0.3",
+    "dotenv": "17.3.1",
     "express": "~5.2.1",
     "morgan": "~1.10.1",
     "node-fetch": "^3.3.2",
     "@ciam-expressjs-vanilla-samples/shared": "1.0.0",
-    "express-rate-limit": "8.2.1"
+    "express-rate-limit": "8.2.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
