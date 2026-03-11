@@ -11,7 +11,7 @@
     "morgan": "~1.10.1",
     "node-fetch": "^3.3.2",
     "@ciam-expressjs-vanilla-samples/shared": "1.0.0",
-    "express-rate-limit": "~8.2.2"
+    "express-rate-limit": "~8.3.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
