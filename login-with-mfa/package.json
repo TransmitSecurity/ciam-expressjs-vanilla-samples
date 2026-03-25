@@ -20,7 +20,7 @@
     "@types/express": "^5.0.6",
     "@types/morgan": "^1.9.10",
     "sass": "1.98.0",
-    "vite": "^4.5.3",
+    "vite": "^8.0.2",
     "vite-plugin-mix": "0.4.0"
   },
   "keywords": []
